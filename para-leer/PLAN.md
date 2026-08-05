@@ -175,34 +175,35 @@ With that change: **Casilda ~11h, Felipe ~10h.** At roughly 6 focused hours a da
 **the MVP lands on day 3**, leaving days 4–6 for evaluation, bonuses, docs and slides —
 which is the right shape, because F7 (slides) needs C6's numbers and cannot be rushed.
 
-### The actual calendar
+### The actual calendar — submission is Thursday 13 August
 
-Both of us work the same hours until **Saturday**, when Felipe moves 7 hours away. **We do
-not work weekends.** So the working days available are:
+**Six working days, and the MVP takes two of them.** That is a comfortable margin, and the
+whole point of it is iteration: getting a working thing early so the remaining four days
+improve it rather than build it.
 
 | | |
 |---|---|
-| **Wed 5 Aug** (part day) | `C1` `C2` `C1c` · `S6` `F3` |
+| **Wed 5 Aug** (part day) | `C1` ✅ `C2` ✅ `C1c` ✅ · `S6` `F3` |
 | **Thu 6 Aug** | `C4` `C5a` · `C3` `F4` |
-| **Fri 7 Aug** | `C7` · `F6` · verify → **MVP** |
-| Sat–Sun | not working |
-| **Mon 10 Aug onwards** | bonuses, evaluation, docs, slides |
+| **Fri 7 Aug** | `C7` · `F6` · verify → **MVP LIVE** |
+| Sat–Sun | not working. Felipe moves 7 hours away on Saturday. |
+| **Mon 10 Aug** | `C6` evaluation · `F1` notebook parser |
+| **Tue 11 Aug** | `C3b` re-index with notebooks · `C5b` quiz + explain tools |
+| **Wed 12 Aug** | `F2` Study Notes · translation · `F7` slides · re-run eval |
+| **Thu 13 Aug** | buffer + **submit** |
 
-Because we're in the same hours until Saturday, handovers barely matter this week — pair
-on anything that's stuck instead of writing it up. From Monday the 7-hour gap is real and
-the **Next pickup / notes** column becomes the handover.
+**Do not let the buffer become the plan.** Wednesday 12th is for fixing what the Monday
+evaluation exposes, not for starting anything new. If something is not started by Tuesday
+lunchtime, it does not go in.
 
-**⚠ Unresolved and it changes everything: when is the actual submission?**
+Two consequences of the dates:
 
-If it is **Friday**, this plan does not pass the brief — `C6` (LangSmith evaluation) and
-`F7` (slides) are *explicitly graded deliverables*, and both currently sit after the MVP
-with no weekend to absorb them. In that case we must cut the MVP further (one tool, ~20
-lessons instead of 120) and start `C6` on Thursday.
-
-If the deadline is **the following week**, the plan as written is right: MVP Friday, then
-Mon–Wed for evaluation, notebooks, bonuses and slides.
-
-**Confirm the date before Thursday morning.**
+- **We work the same hours until Saturday.** Handovers barely matter this week — pair on
+  anything stuck instead of writing it up. From Monday the 7-hour gap is real and the
+  **Next pickup / notes** column becomes the actual handover.
+- **`C6` (LangSmith evaluation) moves to Monday, first thing.** It is a graded deliverable
+  and it is also what tells us what to fix — running it on day 1 of the second week means
+  four days to act on what it finds. Running it late makes it a formality.
 
 If the MVP is not up by end of Friday, cut notebook indexing and ship video-only.
 

@@ -1,0 +1,41 @@
+{
+  "_about": {
+    "purpose": "Ground truth for C6. Every expected_lessons value is a real lesson id from data/lessons.json, chosen from the lesson TITLES rather than guessed, then verified against retrieval.",
+    "expected_lessons": "Lessons that would be a correct citation. Several topics were genuinely taught across more than one day, so any listed lesson counts as correct.",
+    "kinds": "content = explain something | location = where was it covered | spanish = must answer in Spanish | unanswerable = must refuse | followup = second turn, tests memory",
+    "note": "Summary/Study-Notes questions are deliberately absent: F2 does not exist yet. Add them once it does."
+  },
+  "cases": [
+    {"id": "f01", "kind": "content", "question": "What is RAG and why would I use it?", "expected_lessons": ["w7d2"], "must_mention": ["retriev", "context"]},
+    {"id": "f02", "kind": "content", "question": "What is an embedding?", "expected_lessons": ["w4d3"], "must_mention": ["vector", "similar"]},
+    {"id": "f03", "kind": "content", "question": "How does CLIP work?", "expected_lessons": ["w8d1"], "must_mention": ["image", "text"]},
+    {"id": "f04", "kind": "content", "question": "What is the difference between precision and recall?", "expected_lessons": ["w2d2"], "must_mention": ["precision", "recall"]},
+    {"id": "f05", "kind": "content", "question": "How do I deploy a model with FastAPI?", "expected_lessons": ["w6d1"], "must_mention": ["api"]},
+    {"id": "f06", "kind": "content", "question": "What is quantization and why does it help?", "expected_lessons": ["w5d4", "w5d5"], "must_mention": ["model"]},
+    {"id": "f07", "kind": "content", "question": "What is overfitting and how do I spot it?", "expected_lessons": ["w2d1", "w2d3"], "must_mention": ["train"]},
+    {"id": "f08", "kind": "content", "question": "How does tokenization work in NLP?", "expected_lessons": ["w4d2"], "must_mention": ["token"]},
+    {"id": "f09", "kind": "content", "question": "What is LoRA and how does it relate to fine-tuning?", "expected_lessons": ["w5d5"], "must_mention": ["fine"]},
+    {"id": "f10", "kind": "content", "question": "What is a transformer architecture?", "expected_lessons": ["w5d2"], "must_mention": ["attention"]},
+    {"id": "f11", "kind": "content", "question": "How does backpropagation train a neural network?", "expected_lessons": ["w3d1"], "must_mention": ["gradient|descent|derivative|slope|error", "weight|parameter"]},
+    {"id": "f12", "kind": "content", "question": "What is prompt injection?", "expected_lessons": ["w5d3"], "must_mention": ["prompt"]},
+    {"id": "f13", "kind": "content", "question": "How does chunking work when indexing documents?", "expected_lessons": ["w7d2"], "must_mention": ["chunk"]},
+    {"id": "f14", "kind": "content", "question": "What is a JOIN in SQL?", "expected_lessons": ["w5d1"], "must_mention": ["table"]},
+
+    {"id": "l01", "kind": "location", "question": "Where was cosine similarity covered?", "expected_lessons": ["w4d3", "w8d1"]},
+    {"id": "l02", "kind": "location", "question": "Which lesson explained LangChain memory?", "expected_lessons": ["w7d3", "w7d1"]},
+    {"id": "l03", "kind": "location", "question": "When did we cover data augmentation?", "expected_lessons": ["w3d4"]},
+    {"id": "l04", "kind": "location", "question": "Where was regular expressions taught?", "expected_lessons": ["w4d1"]},
+    {"id": "l05", "kind": "location", "question": "Which day covered pandas groupby?", "expected_lessons": ["w1d5", "w1d4"]},
+
+    {"id": "e01", "kind": "spanish", "question": "¿Qué es un embedding y para qué sirve?", "expected_lessons": ["w4d3"], "must_be_language": "spanish"},
+    {"id": "e02", "kind": "spanish", "question": "¿Cómo funciona RAG?", "expected_lessons": ["w7d2"], "must_be_language": "spanish"},
+    {"id": "e03", "kind": "spanish", "question": "¿Dónde se explicó el overfitting?", "expected_lessons": ["w2d1", "w2d3"], "must_be_language": "spanish"},
+
+    {"id": "u01", "kind": "unanswerable", "question": "What is the capital of France?", "expected_lessons": []},
+    {"id": "u02", "kind": "unanswerable", "question": "Which Kubernetes operator should I use for autoscaling?", "expected_lessons": []},
+    {"id": "u03", "kind": "unanswerable", "question": "What did the instructor say about quantum error correction?", "expected_lessons": []},
+
+    {"id": "m01", "kind": "followup", "question": "What is RAG?", "followup": "Explain that more simply.", "expected_lessons": ["w7d2"], "followup_must_not_search": true},
+    {"id": "m02", "kind": "followup", "question": "What is an embedding?", "followup": "And where was it covered?", "expected_lessons": ["w4d3"]}
+  ]
+}
