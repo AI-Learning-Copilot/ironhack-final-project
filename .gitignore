@@ -10,3 +10,15 @@ __pycache__/
 .DS_Store
 
 # Private course data
+#
+# The repo is PUBLIC, so raw transcripts stay out of it. They contain classmates'
+# names and classroom conversations (Zainab, Tejal, Alice, Ursula, Kriti, Antonio...)
+# and those people never agreed to be published.
+#
+# Nothing is lost: data/raw/looms.txt + data/raw/fetch_captions.sh regenerate all 122
+# transcripts in about 4 minutes for anyone with Loom access. Run:
+#     bash data/raw/fetch_captions.sh
+data/raw/captions/
+
+# Whisper/audio scratch, if we ever need the 2 uncaptioned videos
+data/raw/audio/
