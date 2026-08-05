@@ -1,2 +1,3 @@
 .env
-.DS_Storeg
+.DS_Store
+.venv
