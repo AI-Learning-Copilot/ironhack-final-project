@@ -1,3 +1,12 @@
+# Environment
+.venv/
 .env
+
+# Python
+__pycache__/
+*.pyc
+
+# macOS
 .DS_Store
-.venv
+
+# Private course data
