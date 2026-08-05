@@ -27,13 +27,31 @@ business case in the README is literally this product.
 |---|---|
 | Loom recordings | **122** across 33 lesson days (`w1d1` → `w8d2`) |
 | Total runtime | **91.4 hours** (avg 45 min) |
-| Transcripts (`.vtt`) | **120** — 2 admin sessions have no captions, skipped |
+| Transcripts (`.vtt`) | **120** — see below for the 2 without captions |
 | Metadata (`.info.json`) | 122, each with the Loom title `AI 2026.06 - w1d1 - c - Intro to AI Engineering` |
 | Notebooks | 60+ in `demos_ai_eng/` (**pull latest — local copy is missing `15_Evaluation/`**) |
 | Size on disk | 8.8 MB |
 
-Lives in `data/captions/`, indexed by `data/looms.txt` (`<day> <loom_id>` per line).
-Re-runnable with `data/fetch_captions.sh` (idempotent — skips what it already has).
+Lives in `data/raw/captions/` (gitignored), indexed by `data/raw/looms.txt`. Re-runnable
+with `bash data/raw/fetch_captions.sh` (idempotent — skips what it already has).
+
+### The 2 recordings without captions — resolved
+
+Metadata came down for **all 122**. Captions came down for **120**. The two gaps are not a
+download failure — Loom has no transcript for them at all (`"subtitles": []` in both
+`.info.json` files, so there is nothing to retry):
+
+| Recording | Length | Decision |
+|---|---|---|
+| `w3d4 - d - intro to Standup meetings` | 37 min | **Skip.** Pure process admin, no teaching content. Nobody will ask about it. |
+| `w6d2 - a - Project-3 Kick-off` | 45 min | **Whisper it** (task `C0`, ~$0.27). Probably the most-asked-about recording — "what exactly do they want in the project?" |
+
+Chunks from the Whisper pass carry `transcript_source: "whisper"` so the writeup can point
+at it and, if quality is worse than Loom's captions, we can measure or filter it separately.
+This also satisfies README objective 2 (speech recognition) in the *ingestion* path, not
+only the microphone input.
+
+**Neither is on the MVP path.** 118 teaching recordings is more than enough to demo.
 
 ## 3. Architecture — two decisions that drive everything
 
@@ -111,6 +129,82 @@ built independently and merged without conflicts.
   ]
 }
 ```
+
+## 4b. The MVP — freeze this and defend it
+
+**The MVP is the smallest thing that satisfies the brief and is demoable end to end.**
+Everything else is a bonus, and bonuses only get built once this is stable and deployed.
+
+A student opens a URL and:
+
+1. Asks a question in natural language
+2. Gets an answer **grounded in our course material**, not the model's general knowledge
+3. Sees **which lesson** it came from and an embedded Loom **cued to the exact second**
+4. Asks a follow-up that only makes sense with memory ("explain that more simply")
+5. …and the agent **chose between at least two tools** to do it
+
+That's it. Five things. If those work on a public URL, the project passes.
+
+**Explicitly NOT in the MVP** — do not start any of these until the five above are live:
+notebook indexing, Study Notes, quiz, translation, voice input, lesson picker UI.
+
+Ranked order once the MVP is up:
+1. **Notebook indexing** (F1 → C3) — the dual-source citation is our differentiator
+2. **Quiz tool** — cheap, and it makes agent routing obviously necessary
+3. **Study Notes** — the strongest bonus in Felipe's plan
+4. **Translation** — one line in the system prompt
+5. **Voice input** — last, and only if everything else is finished
+
+### Critical path to MVP
+
+```
+S1a ✅ → C1 (VTT parser) → C3 (index) → C4 (agent) → C5 (tools) → C7 (wire) → F6 (deploy)
+          3h               3h           4h           4h           1h          2h
+```
+
+**≈ 17 hours, and almost all of it currently sits on Casilda.** Felipe's tasks (F1, F2, F5)
+are parallel or downstream, so he is not on the critical path at all — which means the MVP
+date is set entirely by one person's throughput. That is the main scheduling risk.
+
+**Fix: Felipe takes C3 (indexing).** He is already writing F1, and indexing is the step that
+consumes both parsers, so it is a natural fit. Casilda hands him chunks; he owns building
+and committing the index. That moves 3 hours off the critical path and gives him something
+real before the app work starts.
+
+With that change: **Casilda ~11h, Felipe ~10h.** At roughly 6 focused hours a day each,
+**the MVP lands on day 3**, leaving days 4–6 for evaluation, bonuses, docs and slides —
+which is the right shape, because F7 (slides) needs C6's numbers and cannot be rushed.
+
+### The actual calendar
+
+Both of us work the same hours until **Saturday**, when Felipe moves 7 hours away. **We do
+not work weekends.** So the working days available are:
+
+| | |
+|---|---|
+| **Wed 5 Aug** (part day) | `C1` `C2` `C1c` · `S6` `F3` |
+| **Thu 6 Aug** | `C4` `C5a` · `C3` `F4` |
+| **Fri 7 Aug** | `C7` · `F6` · verify → **MVP** |
+| Sat–Sun | not working |
+| **Mon 10 Aug onwards** | bonuses, evaluation, docs, slides |
+
+Because we're in the same hours until Saturday, handovers barely matter this week — pair
+on anything that's stuck instead of writing it up. From Monday the 7-hour gap is real and
+the **Next pickup / notes** column becomes the handover.
+
+**⚠ Unresolved and it changes everything: when is the actual submission?**
+
+If it is **Friday**, this plan does not pass the brief — `C6` (LangSmith evaluation) and
+`F7` (slides) are *explicitly graded deliverables*, and both currently sit after the MVP
+with no weekend to absorb them. In that case we must cut the MVP further (one tool, ~20
+lessons instead of 120) and start `C6` on Thursday.
+
+If the deadline is **the following week**, the plan as written is right: MVP Friday, then
+Mon–Wed for evaluation, notebooks, bonuses and slides.
+
+**Confirm the date before Thursday morning.**
+
+If the MVP is not up by end of Friday, cut notebook indexing and ship video-only.
 
 ## 5. Who does what
 
@@ -280,7 +374,7 @@ it should sit on one account with a limit set, not "whoever's key is in Render".
 
 **1. Streamlit, or FastAPI + React?**
 Felipe's plan says Streamlit. Casilda's earlier plan said FastAPI/Render + React/Vercel.
-**Recommendation: Streamlit.** Six days, two people, a 7-hour timezone gap — one deploy
+**Recommendation: Streamlit.** Six days, two people — one deploy
 beats two. No CORS, no `X-API-Key` plumbing, no keeping two services in sync. Streamlit
 has `st.audio_input` for the voice bonus and `components.iframe()` handles the Loom embed.
 
