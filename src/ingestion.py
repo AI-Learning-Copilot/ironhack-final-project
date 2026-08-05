@@ -117,14 +117,23 @@ def load_recording(vtt_path: Path) -> Recording:
     )
 
 
+# The dev index (task C1c). Deliberately NOT "the first five lessons" — week 1 is Python
+# basics, which tells us nothing about whether retrieval works on the material we will
+# actually demo. These five span the topics a student is most likely to ask about, and
+# include two that are easy to confuse (w4d3 embeddings vs w7d2 RAG) so we can see
+# whether the retriever picks the right one.
+DEV_LESSONS = ("w1d4", "w4d3", "w7d1", "w7d2", "w8d1")
+
+
 def load_all(
     captions_dir: Path = CAPTIONS_DIR,
     limit_lessons: int | None = None,
+    lessons: tuple[str, ...] | list[str] | None = None,
 ) -> list[Recording]:
     """Every recording that has captions, sorted by lesson then segment.
 
-    `limit_lessons` builds the dev index (task C1c): pass 5 to load only the first five
-    lesson days, so agent work can start without waiting for the full corpus.
+    `lessons` selects specific lesson days — pass `DEV_LESSONS` for the dev index.
+    `limit_lessons` takes the first N lesson days instead.
     """
     paths = sorted(captions_dir.glob("*.en.vtt"))
     if not paths:
@@ -135,7 +144,13 @@ def load_all(
     recordings = [load_recording(p) for p in paths]
     recordings.sort(key=lambda r: (r.lesson_id, r.segment))
 
-    if limit_lessons is not None:
+    if lessons is not None:
+        wanted = set(lessons)
+        missing = wanted - {r.lesson_id for r in recordings}
+        if missing:
+            raise ValueError(f"no captions for lesson(s): {sorted(missing)}")
+        recordings = [r for r in recordings if r.lesson_id in wanted]
+    elif limit_lessons is not None:
         keep = sorted({r.lesson_id for r in recordings})[:limit_lessons]
         recordings = [r for r in recordings if r.lesson_id in keep]
     return recordings

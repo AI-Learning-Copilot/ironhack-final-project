@@ -22,3 +22,6 @@ data/raw/captions/
 
 # Whisper/audio scratch, if we ever need the 2 uncaptioned videos
 data/raw/audio/
+
+# Indexes
+index/dev/
