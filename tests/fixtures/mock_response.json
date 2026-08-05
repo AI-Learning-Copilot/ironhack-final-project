@@ -1,0 +1,19 @@
+{
+  "answer": "**Indexing** is the stage of a RAG pipeline that prepares your documents for retrieval. It has three steps:\n\n1. **Split** the documents into chunks small enough to fit a context window\n2. **Embed** each chunk into a vector\n3. **Store** those vectors so they can be searched by similarity\n\nIt was covered in week 7 day 2, and demonstrated in the LangChain RAG notebook.",
+  "citations": [
+    {
+      "source_type": "video",
+      "lesson_id": "w7d2",
+      "label": "w7d2 · RAG II - Indexing · 14:32",
+      "url": "https://www.loom.com/embed/9adc63fbe9f84e93a7334a8c80c20569?t=872s",
+      "start_seconds": 872
+    },
+    {
+      "source_type": "notebook",
+      "lesson_id": "w7d2",
+      "label": "14_LangChain/3_langchain-RAG.ipynb · cell 12",
+      "url": "https://github.com/ironhack-ai-eng-june2026/demos_ai_eng/blob/main/14_LangChain/3_langchain-RAG.ipynb",
+      "start_seconds": -1
+    }
+  ]
+}
