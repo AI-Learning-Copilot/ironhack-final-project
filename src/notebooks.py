@@ -17,7 +17,33 @@ from pathlib import Path
 from schemas import NOTEBOOK_MAX_CHARS, notebook_chunk
 
 
-DEMOS_DIR = Path(__file__).resolve().parents[2] / "demos_ai_eng"
+def _find_demos_dir() -> Path:
+    """Locate the demos_ai_eng clone.
+
+    We keep it in different places: Felipe has it beside the repo, Casilda has it inside
+    her course folder. Hard-coding either one means the parser only runs on one machine,
+    which we would not notice until the other person tried to build the index.
+
+    Set DEMOS_AI_ENG_DIR in .env to override.
+    """
+    import os
+
+    override = os.getenv("DEMOS_AI_ENG_DIR")
+    candidates = [Path(override)] if override else []
+    candidates += [
+        Path(__file__).resolve().parents[2] / "demos_ai_eng",
+        Path.home() / "Desktop/AI_Engineering/Lectures/demos_ai_eng",
+        Path.home() / "demos_ai_eng",
+    ]
+    for candidate in candidates:
+        if candidate.is_dir():
+            return candidate
+    # Return the first candidate so the error names a concrete path rather than failing
+    # somewhere deeper with a confusing message.
+    return candidates[0]
+
+
+DEMOS_DIR = _find_demos_dir()
 
 
 # Explicit mapping is intentional. Notebook filenames and lesson days do not have a
