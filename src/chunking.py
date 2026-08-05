@@ -58,11 +58,28 @@ def chunk_cues(
     return chunks
 
 
+def contextual_header(recording: Recording) -> str:
+    """A one-line topic label prepended to every chunk before embedding.
+
+    Without this, a chunk is raw spoken transcript and nothing else, so a topic query
+    has to match rambling speech rather than the subject. That fails exactly where it
+    matters most: "how does CLIP work" returned w7d1 LangChain, while the lesson
+    actually titled "Multimodal Search Engine with CLIP" — 99 chunks, 14 of them
+    mentioning CLIP — did not appear at all, because the words "Multimodal", "Search"
+    and "CLIP" existed only in metadata.
+
+    The header is part of the embedded text on purpose. It also helps the model, which
+    then sees which lesson an excerpt came from without being told separately.
+    """
+    return f"[{recording.lesson_id} · {recording.title}]"
+
+
 def chunk_recording(recording: Recording) -> list[dict]:
     """A Recording -> chunks in the frozen schema, ready for Chroma."""
+    header = contextual_header(recording)
     return [
         video_chunk(
-            text,
+            f"{header}\n{text}",
             lesson_id=recording.lesson_id,
             lesson_title=recording.title,
             loom_id=recording.loom_id,

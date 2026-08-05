@@ -18,18 +18,19 @@ from pydantic import BaseModel, Field
 from retrieval import search, search_with_scores
 from schemas import build_citation, format_timestamp
 
-# Chroma returns distances, so lower is closer. Measured on the dev index, 5 queries each:
+# Chroma returns distances, so lower is closer. Re-measured after contextual headers
+# were added to chunk text (which tightened every on-topic score):
 #
-#   on-topic  (RAG, embeddings, chunking, cosine similarity, vector DBs)   0.638 - 1.012
-#   off-topic (capital of France, paella, changing a tyre, 1998 World Cup) 1.552 - 1.751
-#   borderline ("train a model on a Roman aqueduct dataset")               1.091
+#   on-topic  (RAG, embeddings, chunking, cosine sim, vector DBs, CLIP)   0.721 - 0.923
+#   off-topic (capital of France, paella, changing a tyre, 1998 World Cup) 1.381 - 1.682
+#   borderline ("train a model on a Roman aqueduct dataset")              1.119
 #
-# 1.3 sits in the empty band. The borderline case stays IN on purpose: "how do I train a
-# model" genuinely is course material, only the dataset is not, and the agent already
-# words that refusal correctly on its own.
+# 1.3 sits in the empty band, with a 0.196 margin above the worst on-topic score. The
+# borderline case stays IN on purpose: "how do I train a model" genuinely is course
+# material, only the dataset is not, and the agent words that refusal correctly itself.
 #
-# This is fitted to ten queries, so treat it as a starting point. C6 should re-tune it
-# against the 25-question eval set, which includes three deliberately unanswerable ones.
+# Fitted to eleven queries, so treat it as a starting point. C6 should re-tune it against
+# the 25-question eval set, which includes three deliberately unanswerable ones.
 RELEVANCE_CUTOFF = 1.3
 
 
