@@ -221,3 +221,33 @@ def chunk_notebook(
             )
 
     return chunks
+
+def chunk_all_notebooks(demos_dir: Path = DEMOS_DIR) -> list[dict]:
+    """Every notebook in NOTEBOOK_LESSONS, as chunks.
+
+    Lesson titles come from data/lessons.json so a notebook citation reads the same as
+    a video one. Notebooks that are mapped but missing from the clone are skipped with a
+    warning rather than raising — a partial index beats no index during the week.
+
+    Coverage is currently weeks 7-8 only, because NOTEBOOK_LESSONS is a hand-checked
+    mapping and guessing the rest from folder names would produce confidently wrong
+    citations. Extending it means reading the "Files:" list in each #3--resources post.
+    """
+    import json
+
+    lessons_path = Path(__file__).resolve().parents[1] / "data" / "lessons.json"
+    lessons = json.loads(lessons_path.read_text()) if lessons_path.exists() else {}
+
+    chunks: list[dict] = []
+    for relative, lesson_id in NOTEBOOK_LESSONS.items():
+        path = demos_dir / relative
+        if not path.exists():
+            print(f"  skipping missing notebook: {relative}")
+            continue
+        title = lessons.get(lesson_id, {}).get("title", lesson_id)
+        chunks.extend(
+            chunk_notebook(
+                path, lesson_id=lesson_id, lesson_title=title, demos_dir=demos_dir
+            )
+        )
+    return chunks

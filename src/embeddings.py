@@ -27,6 +27,7 @@ from langchain_openai import OpenAIEmbeddings
 
 from chunking import chunk_all
 from ingestion import DEV_LESSONS, load_all
+from notebooks import chunk_all_notebooks
 from schemas import COLLECTION_NAME, EMBED_DIMENSIONS, EMBED_MODEL
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
@@ -99,6 +100,8 @@ def main() -> None:
     group = parser.add_mutually_exclusive_group(required=True)
     group.add_argument("--dev", action="store_true", help=f"only {', '.join(DEV_LESSONS)}")
     group.add_argument("--full", action="store_true", help="all 120 recordings")
+    parser.add_argument("--no-notebooks", action="store_true",
+                        help="video only, for comparing retrieval with and without")
     args = parser.parse_args()
 
     if args.dev:
@@ -109,7 +112,18 @@ def main() -> None:
         target = FULL_INDEX
 
     chunks = chunk_all(recordings)
-    print(f"{len(recordings)} recordings -> {len(chunks):,} chunks")
+    print(f"{len(recordings)} recordings -> {len(chunks):,} video chunks")
+
+    # Notebooks go into the SAME collection, discriminated by source_type. That is the
+    # whole point of the single-collection decision: one question can return both the
+    # minute of the recording and the notebook cell that demonstrates it.
+    if not args.no_notebooks:
+        notebook_chunks = chunk_all_notebooks()
+        print(f"{len({c['metadata']['notebook'] for c in notebook_chunks})} notebooks "
+              f"-> {len(notebook_chunks):,} notebook chunks")
+        chunks += notebook_chunks
+
+    print(f"total {len(chunks):,} chunks")
     build_index(chunks, target)
 
 
