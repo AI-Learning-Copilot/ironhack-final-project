@@ -1,0 +1,26 @@
+#!/bin/bash
+# Blocks any commit that contains something shaped like an API key.
+# Install (both of us, once):  git config core.hooksPath .githooks
+#
+# This repo is PUBLIC. A key pushed here is compromised the moment it lands, and
+# rewriting history does not un-leak it — you have to revoke and reissue.
+
+patterns='sk-[A-Za-z0-9_-]{20,}|lsv2_[A-Za-z0-9_-]{20,}|sk-proj-[A-Za-z0-9_-]{20,}'
+hits=$(git diff --cached --name-only --diff-filter=ACM | while read -r f; do
+  [ -f "$f" ] && git show ":$f" 2>/dev/null | grep -qE "$patterns" && echo "$f"
+done)
+
+if [ -n "$hits" ]; then
+  echo "BLOCKED: these staged files look like they contain an API key:"
+  echo "$hits" | sed 's/^/    /'
+  echo
+  echo "The repo is public. Move the value into .env (gitignored) and reference it"
+  echo "with os.getenv(). If it was already pushed, revoke the key and reissue it."
+  echo "Override only if you are certain:  git commit --no-verify"
+  exit 1
+fi
+
+if git diff --cached --name-only | grep -qx ".env"; then
+  echo "BLOCKED: .env must never be committed. Use .env.example instead."
+  exit 1
+fi
