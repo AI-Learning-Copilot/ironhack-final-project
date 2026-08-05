@@ -94,11 +94,26 @@ class Copilot:
             return_intermediate_steps=True,
         )
 
+    # If the model says it wasn't covered, we show no sources — whatever the retriever
+    # thought. A distance threshold alone cannot catch this: "quantum error correction"
+    # scores 1.04 against the QLoRA and Quantization lessons, because the embeddings see
+    # "quantum" and "quantization" as near neighbours. The agent refused correctly and
+    # the UI still rendered five confident-looking videos underneath the refusal.
+    REFUSAL_MARKERS = (
+        "wasn't covered", "was not covered", "not covered", "does not cover",
+        "do not cover", "not appear", "no está", "no fue cubierto",
+    )
+
     def ask(self, question: str) -> dict:
         """Answer one question. Returns the frozen {answer, citations} shape."""
         self.collector.reset()
         result = self.executor.invoke({"input": question})
-        return build_response(result["output"], self.collector.metadatas)
+        answer = result["output"]
+
+        lowered = answer.lower()
+        if any(marker in lowered for marker in self.REFUSAL_MARKERS):
+            return build_response(answer, [])
+        return build_response(answer, self.collector.metadatas)
 
     def tools_used(self, result: dict | None = None) -> list[str]:
         """Names of the tools called on the last turn — used by the memory demo."""
