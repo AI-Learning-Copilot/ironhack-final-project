@@ -185,6 +185,10 @@ def make_tools(
         # Cap at 6 excerpts even when 8 were retrieved: more context does not make a
         # better 3-question quiz, it just adds tokens and lets the model wander off-topic.
         context = "\n\n".join(d.page_content.strip() for d in hits[:6])
+        # QUIZ FORMAT CONTRACT:
+        # Keep this output format aligned with the frozen contract in
+        # para-leer/SCHEMA.md. app/app.py parses this text to build the
+        # interactive quiz and calculate the student's score.
         prompt = (
             f"Using ONLY the course excerpts below, write {num_questions} multiple-choice "
             f"quiz questions about '{topic}'. Each question needs 4 options labelled A-D "

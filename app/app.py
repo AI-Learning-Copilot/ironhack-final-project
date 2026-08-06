@@ -162,6 +162,10 @@ def _extract_option(line: str) -> tuple[str, str] | None:
 def parse_quiz(answer: str) -> tuple[str, list[dict]]:
     """Parse the backend quiz text into structured quiz questions.
 
+    IMPORTANT: This format is a frozen cross-file contract documented in
+    para-leer/SCHEMA.md. If the quiz generator format changes in src/tools.py,
+    this parser must be reviewed at the same time.
+
     The backend currently returns quizzes in this form:
 
         Question text

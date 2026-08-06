@@ -151,3 +151,43 @@ committed index carries scrubbed text. See task C1b.
 
 **Acceptance test for `schemas.py`:** if Felipe cannot build his mock from it without asking
 a question, it isn't finished.
+
+
+---
+
+## Quiz text format contract
+
+The `generate_quiz` tool and the interactive Streamlit quiz UI share the
+following text-format contract.
+
+Each multiple-choice question must be returned in this form:
+
+```text
+<question>
+A) <option>
+B) <option>
+C) <option>
+D) <option>
+Answer: <letter>
+```
+
+### Rules
+
+- Each question has exactly four options: A, B, C, and D.
+- Each question has exactly one correct answer.
+- The correct answer is written on a separate `Answer:` line.
+- The answer value is one letter only: A, B, C, or D.
+- Questions may optionally be numbered.
+- Introductory text before the questions is allowed.
+- Markdown emphasis around lines is tolerated by the UI.
+- The Streamlit parser also tolerates `)`, `.`, or `:` after option letters.
+
+This format is consumed by `app/app.py` to build the interactive quiz and
+calculate the student's score.
+
+If this format changes, both `src/tools.py` and `app/app.py` must be reviewed
+together.
+
+**Contract producer:** `src/tools.py` → `generate_quiz`
+
+**Contract consumer:** `app/app.py` → `parse_quiz`
