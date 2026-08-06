@@ -92,14 +92,85 @@ def render_citation(citation: dict) -> None:
             st.write(label)
 
 
+def _is_answer_line(line: str) -> bool:
+    """Detect quiz answer lines, including Markdown-formatted answers."""
+    cleaned = line.strip()
+
+    # The quiz generator may return:
+    # Answer: B
+    # **Answer: B**
+    # __Answer: B__
+    cleaned = cleaned.replace("**", "")
+    cleaned = cleaned.replace("__", "")
+    cleaned = cleaned.strip()
+
+    return cleaned.lower().startswith("answer:")
+
+
+def _clean_answer_line(line: str) -> str:
+    """Remove Markdown wrappers before displaying a quiz answer."""
+    cleaned = line.strip()
+    cleaned = cleaned.replace("**", "")
+    cleaned = cleaned.replace("__", "")
+    return cleaned.strip()
+
+
+def render_quiz(answer: str) -> None:
+    """Render quiz answers behind collapsed reveal controls."""
+    blocks = answer.split("\n\n")
+
+    for block in blocks:
+        lines = block.strip().splitlines()
+
+        if not lines:
+            continue
+
+        answer_lines = [
+            line
+            for line in lines
+            if _is_answer_line(line)
+        ]
+
+        visible_lines = [
+            line
+            for line in lines
+            if not _is_answer_line(line)
+        ]
+
+        if visible_lines:
+            st.markdown("\n".join(visible_lines))
+
+        for answer_line in answer_lines:
+            with st.expander("👁️ Show answer", expanded=False):
+                st.markdown(
+                    f"**{_clean_answer_line(answer_line)}**"
+                )
+
+
 def render_response(response: dict) -> None:
     """Render one Copilot response and its citations."""
-    st.markdown(response.get("answer", "No answer returned."))
+    answer = response.get("answer", "No answer returned.")
+
+    # Quiz responses contain explicit Answer: lines. The backend may wrap
+    # those lines in Markdown, so use tolerant detection rather than
+    # checking only for a literal "Answer:" prefix.
+    is_quiz = any(
+        _is_answer_line(line)
+        for line in answer.splitlines()
+    )
+
+    if is_quiz:
+        render_quiz(answer)
+    else:
+        st.markdown(answer)
 
     citations = response.get("citations", [])
 
     if citations:
-        with st.expander(f"Sources ({len(citations)})", expanded=True):
+        with st.expander(
+            f"Sources ({len(citations)})",
+            expanded=True,
+        ):
             for citation in citations:
                 with st.container(border=True):
                     render_citation(citation)
@@ -194,4 +265,3 @@ if question:
             # traceback or secrets in the normal interface.
             with st.expander("Technical details"):
                 st.code(f"{type(exc).__name__}: {exc}")
-                
