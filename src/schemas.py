@@ -31,6 +31,26 @@ NOTEBOOK_MAX_CHARS = 1500
 EMBED_MODEL = "text-embedding-3-small"
 EMBED_DIMENSIONS = 512
 
+# Chat model. Not part of the frozen contracts — just shared config so agent.py and
+# tools.py (which both make LLM calls) can't drift to two different models.
+CHAT_MODEL = "gpt-4o-mini"
+
+# Refusal detection. agent.py uses this to decide whether to drop citations (a
+# confidently-wrong retrieval can still surface 5 irrelevant chunks even when the model
+# correctly judges the topic uncovered — see the "quantum" vs "quantization" case).
+# evaluation.py uses the SAME list to score refusals. One list, not two: a bare "no
+# está" here once matched "no está disponible" inside a completely correct Spanish
+# answer about training data and silently deleted 5 good citations. Every phrase below
+# is specific to REFUSING, not just containing a negation.
+#
+# The system prompt gives the model this exact English template and a Spanish example,
+# so wording stays predictable enough for keyword matching to work.
+REFUSAL_MARKERS = (
+    "wasn't covered", "was not covered", "not covered in the course",
+    "does not cover", "do not cover", "doesn't cover",
+    "no fue cubierto", "no está cubierto", "no se cubrió",
+)
+
 NOTEBOOK_REPO = "https://github.com/ironhack-ai-eng-june2026/demos_ai_eng/blob/main"
 LOOM_EMBED = "https://www.loom.com/embed"
 

@@ -28,15 +28,10 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO_ROOT / "src"))
 
 from agent import Copilot  # noqa: E402
+from schemas import REFUSAL_MARKERS  # noqa: E402
 
 CASES_PATH = Path(__file__).parent / "test_questions.json"
 DATASET_NAME = "ai-learning-copilot-eval"
-
-REFUSAL_MARKERS = (
-    "wasn't covered", "was not covered", "not covered", "does not cover",
-    "no está", "no fue cubierto", "not appear", "don't have information",
-    "no information",
-)
 
 # Enough to tell Spanish from English without a language-detection dependency.
 SPANISH_MARKERS = (" el ", " la ", " los ", " las ", " que ", " para ", " es ", " un ",

@@ -27,7 +27,7 @@
         "w4d3"
       ],
       "must_mention": [
-        "vector",
+        "vector|numbers|numerical|dimensional",
         "similar"
       ]
     },
