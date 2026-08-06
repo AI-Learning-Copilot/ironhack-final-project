@@ -6,6 +6,7 @@ instance in Streamlit session state so conversational memory survives reruns.
 
 from __future__ import annotations
 
+import json
 import re
 import sys
 from pathlib import Path
@@ -252,8 +253,6 @@ def parse_quiz(answer: str) -> tuple[str, list[dict]]:
         )
 
         if question_match:
-            # If for any reason a previous question is still open,
-            # preserve it before starting the next one.
             if current_options and current_answer:
                 save_current_question()
 
@@ -264,14 +263,11 @@ def parse_quiz(answer: str) -> tuple[str, list[dict]]:
             continue
 
         if quiz_started:
-            # If we have not reached the options yet, this belongs to the
-            # current question text.
             if not current_options:
                 current_question_lines.append(
                     _strip_markdown(line)
                 )
         else:
-            # Text such as "Here are your quiz questions..."
             intro_lines.append(line)
 
     # Defensive final save in case the model omitted a trailing blank line.
@@ -613,6 +609,103 @@ with st.sidebar:
         "course recordings."
     )
 
+    st.divider()
+
+    # -----------------------------------------------------------------------
+    # Course browser
+    # -----------------------------------------------------------------------
+
+    st.subheader("📚 Browse the course")
+
+    lessons_path = ROOT_DIR / "data" / "lessons.json"
+
+    with lessons_path.open(
+        "r",
+        encoding="utf-8",
+    ) as file:
+        lessons = json.load(file)
+
+    # Build available week numbers from IDs such as w7d2.
+    weeks = sorted(
+        {
+            int(lesson_id.split("d")[0][1:])
+            for lesson_id in lessons
+        }
+    )
+
+    selected_week = st.selectbox(
+        "Week",
+        weeks,
+        format_func=lambda week: f"Week {week}",
+    )
+
+    # Only show lesson days belonging to the selected week.
+    week_lessons = {
+        lesson_id: lesson
+        for lesson_id, lesson in lessons.items()
+        if lesson_id.startswith(f"w{selected_week}d")
+    }
+
+    lesson_ids = sorted(
+        week_lessons,
+        key=lambda lesson_id: int(
+            lesson_id.split("d")[1]
+        ),
+    )
+
+    def lesson_label(lesson_id: str) -> str:
+        """Create a compact label for the lesson selectbox."""
+        day = lesson_id.split("d")[1]
+        title = week_lessons[lesson_id]["title"]
+
+        # Use the first topic so long lesson titles do not overwhelm
+        # the sidebar selectbox.
+        first_topic = title.split(" · ")[0]
+
+        if len(first_topic) > 45:
+            first_topic = first_topic[:42] + "..."
+
+        return f"Day {day} — {first_topic}"
+
+    selected_lesson_id = st.selectbox(
+        "Lesson",
+        lesson_ids,
+        format_func=lesson_label,
+    )
+
+    selected_lesson = week_lessons[
+        selected_lesson_id
+    ]
+
+    # Show the complete contents of the selected lesson underneath.
+    st.caption(
+        selected_lesson["title"]
+    )
+
+    st.divider()
+
+    # -----------------------------------------------------------------------
+    # Answer language
+    # -----------------------------------------------------------------------
+
+    st.subheader("🌐 Answer language")
+
+    language = st.selectbox(
+        "Language",
+        [
+            "Auto — match my question",
+            "English",
+            "Español",
+        ],
+        label_visibility="collapsed",
+    )
+
+    st.caption(
+        "Auto answers in the same language as your question."
+    )
+
+    st.divider()
+
     if st.button(
         "New conversation",
         use_container_width=True,
@@ -677,8 +770,24 @@ if question:
             with st.spinner(
                 "Searching the course material..."
             ):
+                # Keep Auto's existing behaviour. For an explicitly selected
+                # language, add an internal instruction without changing the
+                # student's visible question in the chat.
+                if language == "English":
+                    agent_question = (
+                        f"{question}\n\n"
+                        "Answer in English."
+                    )
+                elif language == "Español":
+                    agent_question = (
+                        f"{question}\n\n"
+                        "Responde en español."
+                    )
+                else:
+                    agent_question = question
+
                 response = (
-                    st.session_state.copilot.ask(question)
+                    st.session_state.copilot.ask(agent_question)
                 )
 
             # The assistant message will become the next message
