@@ -1,12 +1,12 @@
-"""Streamlit shell for the Ironhack AI Course Copilot.
+"""Streamlit app for the Ironhack AI Course Copilot.
 
-F3 intentionally runs against tests/fixtures/mock_response.json.
-The real Copilot agent will be connected during C7.
+The UI talks directly to the real Copilot agent and keeps one Copilot
+instance in Streamlit session state so conversational memory survives reruns.
 """
 
 from __future__ import annotations
 
-import json
+import sys
 from pathlib import Path
 
 import streamlit as st
@@ -17,7 +17,13 @@ import streamlit as st
 # ---------------------------------------------------------------------------
 
 ROOT_DIR = Path(__file__).resolve().parents[1]
-MOCK_RESPONSE_PATH = ROOT_DIR / "tests" / "fixtures" / "mock_response.json"
+SRC_DIR = ROOT_DIR / "src"
+
+# Allow the Streamlit app to import the project modules from src/.
+if str(SRC_DIR) not in sys.path:
+    sys.path.insert(0, str(SRC_DIR))
+
+from agent import Copilot  # noqa: E402
 
 
 # ---------------------------------------------------------------------------
@@ -32,17 +38,22 @@ st.set_page_config(
 
 
 # ---------------------------------------------------------------------------
+# Session state
+# ---------------------------------------------------------------------------
+
+if "copilot" not in st.session_state:
+    st.session_state.copilot = Copilot()
+
+if "messages" not in st.session_state:
+    st.session_state.messages = []
+
+
+# ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
 
-def load_mock_response() -> dict:
-    """Load the frozen response fixture used while building the F3 UI."""
-    with MOCK_RESPONSE_PATH.open("r", encoding="utf-8") as file:
-        return json.load(file)
-
-
 def render_citation(citation: dict) -> None:
-    """Render one citation without making the UI calculate citation data."""
+    """Render one citation using metadata prepared by the backend."""
     source_type = citation.get("source_type", "")
     label = citation.get("label", "Course source")
     url = citation.get("url", "")
@@ -58,50 +69,112 @@ def render_citation(citation: dict) -> None:
         source_name = "Course source"
 
     st.markdown(f"**{icon} {source_name}**")
-    st.markdown(f"[{label}]({url})")
+
+    if url:
+        st.markdown(f"[{label}]({url})")
+    else:
+        st.write(label)
+
+
+def render_response(response: dict) -> None:
+    """Render one Copilot response and its citations."""
+    st.markdown(response.get("answer", "No answer returned."))
+
+    citations = response.get("citations", [])
+
+    if citations:
+        with st.expander(f"Sources ({len(citations)})", expanded=True):
+            for citation in citations:
+                with st.container(border=True):
+                    render_citation(citation)
+
+
+def reset_conversation() -> None:
+    """Clear both the visible chat and the agent's conversation memory."""
+    if "copilot" in st.session_state:
+        st.session_state.copilot.reset()
+
+    st.session_state.messages = []
 
 
 # ---------------------------------------------------------------------------
-# UI
+# Sidebar
+# ---------------------------------------------------------------------------
+
+with st.sidebar:
+    st.header("Course Copilot")
+
+    st.write(
+        "Answers are grounded in the Ironhack AI Engineering "
+        "course recordings."
+    )
+
+    if st.button("New conversation", use_container_width=True):
+        reset_conversation()
+        st.rerun()
+
+
+# ---------------------------------------------------------------------------
+# Main UI
 # ---------------------------------------------------------------------------
 
 st.title("🎓 Ironhack AI Course Copilot")
 
 st.write(
     "Ask a question about the AI Engineering course and get an answer "
-    "grounded in the course material."
+    "grounded in the recorded lessons."
 )
 
-question = st.text_input(
-    "What would you like to know?",
-    placeholder="Example: What is indexing in a RAG pipeline?",
+
+# Render previous conversation turns.
+for message in st.session_state.messages:
+    with st.chat_message(message["role"]):
+        if message["role"] == "assistant":
+            render_response(message["response"])
+        else:
+            st.markdown(message["content"])
+
+
+# Chat input stays at the bottom of the conversation.
+question = st.chat_input(
+    "Ask something about the course..."
 )
 
-ask_clicked = st.button(
-    "Ask Copilot",
-    type="primary",
-    use_container_width=True,
-)
 
-if ask_clicked:
-    if not question.strip():
-        st.warning("Please enter a question first.")
+if question:
+    # Save and immediately display the student's question.
+    st.session_state.messages.append(
+        {
+            "role": "user",
+            "content": question,
+        }
+    )
 
-    else:
-        # F3 uses the frozen fixture.
-        # C7 will replace this with the real Copilot().ask(question) call.
-        response = load_mock_response()
+    with st.chat_message("user"):
+        st.markdown(question)
 
-        st.divider()
+    # Ask the real RAG agent.
+    with st.chat_message("assistant"):
+        try:
+            with st.spinner("Searching the course material..."):
+                response = st.session_state.copilot.ask(question)
 
-        st.subheader("Answer")
-        st.markdown(response["answer"])
+            render_response(response)
 
-        citations = response.get("citations", [])
+            st.session_state.messages.append(
+                {
+                    "role": "assistant",
+                    "response": response,
+                }
+            )
 
-        if citations:
-            st.subheader("Sources")
+        except Exception as exc:
+            st.error(
+                "The Course Copilot could not answer this question. "
+                "Please try again."
+            )
 
-            for citation in citations:
-                with st.container(border=True):
-                    render_citation(citation)
+            # Useful during local MVP development without exposing the
+            # traceback or secrets in the normal interface.
+            with st.expander("Technical details"):
+                st.code(f"{type(exc).__name__}: {exc}")
