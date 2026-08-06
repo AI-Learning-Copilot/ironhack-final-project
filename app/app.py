@@ -10,7 +10,6 @@ import sys
 from pathlib import Path
 
 import streamlit as st
-import streamlit.components.v1 as components
 
 
 # ---------------------------------------------------------------------------
@@ -69,10 +68,9 @@ def render_citation(citation: dict) -> None:
             # include the timestamp query parameter, so the player opens
             # directly at the cited point in the lecture.
             if "loom.com/embed/" in url:
-                components.iframe(
+                st.iframe(
                     url,
                     height=360,
-                    scrolling=False,
                 )
         else:
             st.write(label)
