@@ -115,17 +115,14 @@ A student asks one question and wants the best answer regardless of source. Two 
 means querying twice and merging — a re-ranking problem we don't want on this deadline.
 `where={"source_type": "video"}` gives us the two-collection behaviour for free.
 
-**3. Whisper the Project-3 kickoff. Skip the standup intro.**
+**3. Both uncaptioned recordings are out of scope.**
 
-The two recordings Loom has no captions for:
-- `w3d4 - d - intro to Standup meetings` (37 min) — pure admin. **Skipped.**
-- `w6d2 - a - Project-3 Kick-off` (45 min) — likely the single most-asked-about recording
-  ("what exactly do they want in the project?"). **Transcribe with Whisper API**, ~$0.27
-  and ~10 minutes.
+Loom has no captions for two recordings, and neither is teaching material:
+- `w3d4 - d - intro to Standup meetings` (37 min) — process admin.
+- `w6d2 - a - Project-3 Kick-off` (45 min) — homework briefing, not a lesson.
 
-This also earns a real grading point: README objective 2 asks for speech recognition
-integration, and a Whisper fallback in the *ingestion* path satisfies it beyond the mic
-input. Chunks from it carry `transcript_source: "whisper"` so the writeup can point at it.
+Decided 6 Aug (CGS + FM). The corpus is the course's *teaching* content, so the honest
+figure is **120 of 120 teaching recordings**, not "120 of 122". No Whisper pass is run.
 
 **4. Notebook citations link to the public Ironhack repo.**
 
