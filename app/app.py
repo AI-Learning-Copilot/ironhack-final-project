@@ -71,7 +71,7 @@ def render_citation(citation: dict) -> None:
             if "loom.com/embed/" in url:
                 st.iframe(
                     url,
-                    height=360,
+                    height=190,
                 )
         else:
             st.write(label)
@@ -558,13 +558,25 @@ def render_response(
     citations = response.get("citations", [])
 
     if citations:
+        # Keep retrieval untouched, but avoid overwhelming the UI with
+        # five large source players after every answer.
+        visible_citations = citations[:3]
+
+        source_label = f"Sources ({len(visible_citations)} shown)"
+
         with st.expander(
-            f"Sources ({len(citations)})",
+            source_label,
             expanded=True,
         ):
-            for citation in citations:
-                with st.container(border=True):
-                    render_citation(citation)
+            columns = st.columns(len(visible_citations))
+
+            for column, citation in zip(
+                columns,
+                visible_citations,
+            ):
+                with column:
+                    with st.container(border=True):
+                        render_citation(citation)
 
 
 # ---------------------------------------------------------------------------
