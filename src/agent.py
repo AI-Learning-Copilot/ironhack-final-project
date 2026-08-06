@@ -57,6 +57,13 @@ knowledge and do not apologise at length. Use almost exactly this template, tran
 to the student's language: "That wasn't covered in the course." (Spanish example: \
 "Eso no fue cubierto en el curso.") Using this near-exact wording matters — it is how \
 the citations get cleaned up afterwards.
+- For compound or mixed questions, evaluate EACH part of the student's question against \
+the tool results. Answer only the parts that are supported by the course material. If \
+one part is supported and another is not, answer the supported part normally and say \
+plainly that the unsupported part was not covered in the course. NEVER fill an \
+unsupported part using your own general knowledge, even if you know the answer. Every \
+factual claim in your answer must be supported by the tool results or by information \
+already established from course material earlier in this conversation.
 - generate_quiz's output is already formatted for the student — relay it as returned, \
 do not compress it into prose.
 - NEVER call the same tool with the same (or near-identical) arguments twice. If a \
@@ -136,8 +143,20 @@ class Copilot:
         # retriever thought. A distance threshold alone cannot catch this: "quantum
         # error correction" scores 1.04 against the QLoRA and Quantization lessons,
         # because the embeddings see "quantum" and "quantization" as near neighbours.
-        if any(marker in lowered for marker in REFUSAL_MARKERS):
-            return build_response(answer, [])
+        # Drop citations only for a full refusal. A mixed question may contain a
+        # supported answer plus an explicit refusal for the unsupported part; in
+        # that case the citations for the supported material must remain visible.
+        is_refusal = any(marker in lowered for marker in REFUSAL_MARKERS)
+
+        if is_refusal:
+            short_answer = answer.strip().lower()
+
+            # Full refusals are deliberately short ("That wasn't covered in the
+            # course."). Longer answers containing a refusal marker are partial
+            # refusals and may still have valid course-grounded content.
+            if len(short_answer.split()) <= 20:
+                return build_response(answer, [])
+
         return build_response(answer, self.collector.metadatas)
 
     def tools_used(self, result: dict | None = None) -> list[str]:
