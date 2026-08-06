@@ -10,6 +10,7 @@ import sys
 from pathlib import Path
 
 import streamlit as st
+import streamlit.components.v1 as components
 
 
 # ---------------------------------------------------------------------------
@@ -59,21 +60,38 @@ def render_citation(citation: dict) -> None:
     url = citation.get("url", "")
 
     if source_type == "video":
-        icon = "🎥"
-        source_name = "Lecture video"
+        st.markdown("**🎥 Lecture video**")
+
+        if url:
+            st.markdown(f"[{label}]({url})")
+
+            # Loom URLs produced by the backend already use /embed/ and
+            # include the timestamp query parameter, so the player opens
+            # directly at the cited point in the lecture.
+            if "loom.com/embed/" in url:
+                components.iframe(
+                    url,
+                    height=360,
+                    scrolling=False,
+                )
+        else:
+            st.write(label)
+
     elif source_type == "notebook":
-        icon = "📓"
-        source_name = "Course notebook"
-    else:
-        icon = "🔗"
-        source_name = "Course source"
+        st.markdown("**📓 Course notebook**")
 
-    st.markdown(f"**{icon} {source_name}**")
+        if url:
+            st.markdown(f"[{label}]({url})")
+        else:
+            st.write(label)
 
-    if url:
-        st.markdown(f"[{label}]({url})")
     else:
-        st.write(label)
+        st.markdown("**🔗 Course source**")
+
+        if url:
+            st.markdown(f"[{label}]({url})")
+        else:
+            st.write(label)
 
 
 def render_response(response: dict) -> None:
@@ -178,3 +196,4 @@ if question:
             # traceback or secrets in the normal interface.
             with st.expander("Technical details"):
                 st.code(f"{type(exc).__name__}: {exc}")
+                
