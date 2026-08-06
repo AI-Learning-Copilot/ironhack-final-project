@@ -17,7 +17,33 @@ from pathlib import Path
 from schemas import NOTEBOOK_MAX_CHARS, notebook_chunk
 
 
-DEMOS_DIR = Path(__file__).resolve().parents[2] / "demos_ai_eng"
+def _find_demos_dir() -> Path:
+    """Locate the demos_ai_eng clone.
+
+    We keep it in different places: Felipe has it beside the repo, Casilda has it inside
+    her course folder. Hard-coding either one means the parser only runs on one machine,
+    which we would not notice until the other person tried to build the index.
+
+    Set DEMOS_AI_ENG_DIR in .env to override.
+    """
+    import os
+
+    override = os.getenv("DEMOS_AI_ENG_DIR")
+    candidates = [Path(override)] if override else []
+    candidates += [
+        Path(__file__).resolve().parents[2] / "demos_ai_eng",
+        Path.home() / "Desktop/AI_Engineering/Lectures/demos_ai_eng",
+        Path.home() / "demos_ai_eng",
+    ]
+    for candidate in candidates:
+        if candidate.is_dir():
+            return candidate
+    # Return the first candidate so the error names a concrete path rather than failing
+    # somewhere deeper with a confusing message.
+    return candidates[0]
+
+
+DEMOS_DIR = _find_demos_dir()
 
 
 # Explicit mapping is intentional. Notebook filenames and lesson days do not have a
@@ -194,4 +220,34 @@ def chunk_notebook(
                 )
             )
 
+    return chunks
+
+def chunk_all_notebooks(demos_dir: Path = DEMOS_DIR) -> list[dict]:
+    """Every notebook in NOTEBOOK_LESSONS, as chunks.
+
+    Lesson titles come from data/lessons.json so a notebook citation reads the same as
+    a video one. Notebooks that are mapped but missing from the clone are skipped with a
+    warning rather than raising — a partial index beats no index during the week.
+
+    Coverage is currently weeks 7-8 only, because NOTEBOOK_LESSONS is a hand-checked
+    mapping and guessing the rest from folder names would produce confidently wrong
+    citations. Extending it means reading the "Files:" list in each #3--resources post.
+    """
+    import json
+
+    lessons_path = Path(__file__).resolve().parents[1] / "data" / "lessons.json"
+    lessons = json.loads(lessons_path.read_text()) if lessons_path.exists() else {}
+
+    chunks: list[dict] = []
+    for relative, lesson_id in NOTEBOOK_LESSONS.items():
+        path = demos_dir / relative
+        if not path.exists():
+            print(f"  skipping missing notebook: {relative}")
+            continue
+        title = lessons.get(lesson_id, {}).get("title", lesson_id)
+        chunks.extend(
+            chunk_notebook(
+                path, lesson_id=lesson_id, lesson_title=title, demos_dir=demos_dir
+            )
+        )
     return chunks

@@ -42,6 +42,38 @@ _SPEAKER_TAG = re.compile(r"</?v[^>]*>")
 _WHITESPACE = re.compile(r"\s+")
 _FILENAME = re.compile(r"^(?P<lesson_id>w\d+d\d+)__(?P<loom_id>[0-9a-f]{32})$")
 
+# --- classmate anonymisation (task C1b) -------------------------------------
+#
+# The repo is public and the committed index stores chunk text, so classroom
+# conversation directed at named people would be published. Those people never agreed
+# to that.
+#
+# We scrub DIRECT ADDRESS, not names. A global find-and-replace on a roster would
+# corrupt the teaching content, because the instructor uses the same first names as
+# examples:
+#
+#   "x will have the value Alice"          <- Python loop demo, must survive
+#   "those numbers, Alice, Bob, Charlie"   <- list example, must survive
+#   "Thanks, Kriti. You were writing to me" <- real classmate, must go
+#
+# Matching on the greeting/thanks that precedes a name separates the two cleanly, and
+# leaves anything used as data or as an example untouched.
+# The greeting is case-insensitive; the NAME deliberately is not. Making the whole
+# pattern case-insensitive would match ordinary words — "thanks for", "sorry but" —
+# and quietly delete real text.
+_ADDRESS = re.compile(
+    r"\b((?i:hi|hey|hello|thanks|thank you|sorry|bye|bye-bye|welcome back|good morning|"
+    r"good afternoon|good evening|see you|congrats|congratulations|exactly|correct|"
+    r"perfect|absolutely|indeed))([,\s]+)([A-Z][a-z]{2,14})\b"
+)
+
+# "Antonio, David, Kriti, you can use breakout room two" — a roster read aloud.
+_ROSTER = re.compile(
+    r"\b([A-Z][a-z]{2,14}(?:\s*,\s*[A-Z][a-z]{2,14}){1,6})\s*,\s*(you|please)\b"
+)
+
+ANON = "[student]"
+
 
 @dataclass(frozen=True)
 class Cue:
@@ -63,13 +95,19 @@ class Recording:
         return self.cues[-1].start_seconds if self.cues else 0
 
 
+def anonymise(text: str) -> str:
+    """Replace names used as direct address. Names used as data are left alone."""
+    text = _ADDRESS.sub(lambda m: f"{m.group(1)}{m.group(2)}{ANON}", text)
+    return _ROSTER.sub(lambda m: f"{ANON}, {m.group(2)}", text)
+
+
 def clean_text(text: str) -> str:
-    """Strip speaker tags, collapse whitespace, fix mangled jargon."""
+    """Strip speaker tags, collapse whitespace, fix jargon, anonymise classmates."""
     text = _SPEAKER_TAG.sub("", text)
     text = _WHITESPACE.sub(" ", text).strip()
     for pattern, replacement in JARGON_FIXES.items():
         text = re.sub(pattern, replacement, text, flags=re.IGNORECASE)
-    return text
+    return anonymise(text)
 
 
 def timestamp_to_seconds(stamp: str) -> int:

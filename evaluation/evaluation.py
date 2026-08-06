@@ -93,6 +93,13 @@ def score_case(case: dict, response: dict, followup: dict | None) -> dict:
         if not checks[key]:
             notes.append(f"answer mentions none of {alternatives}")
 
+    for wanted in case.get("expect_source_types", []):
+        key = f"cites:{wanted}"
+        checks[key] = any(c["source_type"] == wanted for c in response["citations"])
+        if not checks[key]:
+            got = sorted({c["source_type"] for c in response["citations"]}) or ["none"]
+            notes.append(f"no {wanted} citation; got {got}")
+
     if case.get("must_be_language") == "spanish":
         checks["answered_in_spanish"] = looks_spanish(answer)
         if not checks["answered_in_spanish"]:
