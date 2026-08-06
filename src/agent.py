@@ -19,27 +19,49 @@ from langchain.memory import ConversationSummaryBufferMemory
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_openai import ChatOpenAI
 
-from schemas import build_response
+from schemas import CHAT_MODEL, REFUSAL_MARKERS, build_response
 from tools import CitationCollector, make_tools
 
 load_dotenv(Path(__file__).resolve().parents[1] / ".env")
 
-MODEL = "gpt-4o-mini"
+MODEL = CHAT_MODEL
 
 SYSTEM_PROMPT = """You are the AI Learning Copilot for an Ironhack AI Engineering \
 bootcamp. You answer questions using ONLY what was said in the recorded lessons.
+
+You have five tools. Pick ONE per turn based on what the student is actually asking for:
+
+- search_course_material — a factual lookup ("what is X", "how does X work").
+- find_timestamp — WHERE/WHEN something was covered, not what it means.
+- explain_concept — the student explicitly asks you to explain/teach something, usually \
+wanting a simpler or more intuitive framing than a plain lookup.
+- generate_quiz — the student asks to be quizzed or tested.
+- lesson_index — "what did we cover in week X" / "what lessons exist" — a table of \
+contents question, not a concept question.
 
 How to answer:
 - Always call a tool before answering a question about course content. Never answer \
 from your own knowledge of the subject, even when you are confident. The student wants \
 to know what THEIR instructor said, not what is generally true.
-- Use search_course_material to explain something. Use find_timestamp when they ask \
-where or when a topic was covered.
-- Search once. Only search again if the first result was empty or clearly about \
-something else.
-- If a tool returns NO_RESULTS, say plainly that it was not covered in the recordings. \
-Do not fall back on general knowledge and do not apologise at length. A short honest \
-"that wasn't covered in the course" is the correct answer.
+- Call at most one tool per turn. Only call a second if the first came back empty or \
+was clearly about the wrong thing.
+- EXCEPTION — simplification follow-ups: if the student asks you to simplify, clarify, \
+or re-explain something you already covered THIS CONVERSATION, do NOT call any tool, \
+including explain_concept. Re-explain from what is already in the conversation instead. \
+    Example — turn 1: "What is a vector database?" -> you call search_course_material, \
+    answer with citations. Turn 2: "explain that more simply" -> you call NO tool at \
+    all, you just rephrase your own previous answer using an analogy.
+- If a tool returns NO_RESULTS, OR the results it did return are clearly not actually \
+about what was asked, say plainly that it was not covered. Do not fall back on general \
+knowledge and do not apologise at length. Use almost exactly this template, translated \
+to the student's language: "That wasn't covered in the course." (Spanish example: \
+"Eso no fue cubierto en el curso.") Using this near-exact wording matters — it is how \
+the citations get cleaned up afterwards.
+- generate_quiz's output is already formatted for the student — relay it as returned, \
+do not compress it into prose.
+- NEVER call the same tool with the same (or near-identical) arguments twice. If a \
+result looks wrong or irrelevant, that IS your answer: the topic was not covered. \
+Retrying the same search will return the same thing again.
 
 How to write:
 - Answer in the SAME LANGUAGE the student used. The recordings are in English; translate \
@@ -48,9 +70,7 @@ your explanation, never the quotes.
 timestamps, or markdown links — those are attached automatically, and anything you type \
 by hand will be wrong.
 - Be direct and concrete. Prefer the instructor's own framing and examples over a \
-textbook definition.
-- When the student asks you to simplify, re-explain what you already said more simply. \
-Do not search again."""
+textbook definition."""
 
 
 class Copilot:
@@ -58,8 +78,10 @@ class Copilot:
 
     def __init__(self, model: str = MODEL, verbose: bool = False) -> None:
         self.collector = CitationCollector()
-        self.tools = make_tools(self.collector)
         llm = ChatOpenAI(model=model, temperature=0)
+        # Same llm instance reused inside explain_concept/generate_quiz — one model
+        # client per Copilot, not two.
+        self.tools = make_tools(self.collector, llm=llm)
 
         prompt = ChatPromptTemplate.from_messages(
             [
@@ -94,24 +116,27 @@ class Copilot:
             return_intermediate_steps=True,
         )
 
-    # If the model says it wasn't covered, we show no sources — whatever the retriever
-    # thought. A distance threshold alone cannot catch this: "quantum error correction"
-    # scores 1.04 against the QLoRA and Quantization lessons, because the embeddings see
-    # "quantum" and "quantization" as near neighbours. The agent refused correctly and
-    # the UI still rendered five confident-looking videos underneath the refusal.
-    REFUSAL_MARKERS = (
-        "wasn't covered", "was not covered", "not covered", "does not cover",
-        "do not cover", "not appear", "no está", "no fue cubierto",
-    )
+    # LangChain's own message when max_iterations is hit — not a real answer, must
+    # never reach the student verbatim and must never carry citations. Seen when a
+    # borderline query (e.g. "quantum" scoring close to "quantization") leaves the model
+    # unable to settle on either a real answer or a clean refusal within the iteration cap.
+    _ITERATION_LIMIT_MESSAGE = "agent stopped due to"
 
     def ask(self, question: str) -> dict:
         """Answer one question. Returns the frozen {answer, citations} shape."""
         self.collector.reset()
         result = self.executor.invoke({"input": question})
         answer = result["output"]
-
         lowered = answer.lower()
-        if any(marker in lowered for marker in self.REFUSAL_MARKERS):
+
+        if self._ITERATION_LIMIT_MESSAGE in lowered:
+            return build_response("That wasn't covered in the course.", [])
+
+        # If the model says it wasn't covered, we show no sources — whatever the
+        # retriever thought. A distance threshold alone cannot catch this: "quantum
+        # error correction" scores 1.04 against the QLoRA and Quantization lessons,
+        # because the embeddings see "quantum" and "quantization" as near neighbours.
+        if any(marker in lowered for marker in REFUSAL_MARKERS):
             return build_response(answer, [])
         return build_response(answer, self.collector.metadatas)
 
