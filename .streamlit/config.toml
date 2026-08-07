@@ -9,7 +9,8 @@
 [theme]
 primaryColor = "#818cf8"             # indigo — buttons, focus rings, links
 backgroundColor = "#FBFAFF"          # near-white with a violet cast
-secondaryBackgroundColor = "#EEF0FE" # chat bubbles, sidebar, code blocks
+secondaryBackgroundColor = "#E2E6FD" # code blocks, popovers — deepened to match the
+                                     # chat bubbles, which app.py paints itself
 textColor = "#1E1B4B"                # deep indigo — 14:1 on the background
 font = "sans serif"                  # real families are loaded as CSS in app.py
 
