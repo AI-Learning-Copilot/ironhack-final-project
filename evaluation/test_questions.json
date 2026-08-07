@@ -303,8 +303,10 @@
       "id": "n03",
       "kind": "content",
       "question": "How is conversation memory implemented in LangChain?",
+      "note": "w7d2 added 7 Aug. The answer cites 14_LangChain/4_langchain-memory.ipynb at distance 0.393, the closest match in the corpus, and that notebook is filed under w7d2 by BOTH evaluation/course_resources.csv line 194 and NOTEBOOK_LESSONS. The lecture on memory was w7d3; the notebook lives on w7d2. golden_questions.csv row 76 encodes the same mismatch. This widens a stale expectation, it does not loosen a real assertion.",
       "expected_lessons": [
         "w7d3",
+        "w7d2",
         "w7d1"
       ],
       "expect_source_types": [
