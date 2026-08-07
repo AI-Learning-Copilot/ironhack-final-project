@@ -7,6 +7,7 @@ instance in Streamlit session state so conversational memory survives reruns.
 from __future__ import annotations
 
 import json
+import random
 import re
 import sys
 from pathlib import Path
@@ -40,11 +41,211 @@ st.set_page_config(
 
 
 # ---------------------------------------------------------------------------
+# Theme — "Vapor Chrome"
+# ---------------------------------------------------------------------------
+#
+# Colours live in .streamlit/config.toml (Streamlit reads those itself).
+# Everything below is what config.toml cannot express: web fonts, the header
+# gradient, and the citation card styling.
+#
+# Palette: #c4b5fd violet · #818cf8 indigo · #67e8f9 cyan · #a5f3fc ice
+
+st.markdown(
+    """
+    <style>
+    @import url('https://fonts.googleapis.com/css2?family=Sora:wght@600;700&family=Manrope:wght@400;500;600&display=swap');
+
+    html, body, [class*="st-"], .stMarkdown, .stChatInput textarea {
+        font-family: 'Manrope', system-ui, sans-serif;
+    }
+    h1, h2, h3, h4 {
+        font-family: 'Sora', system-ui, sans-serif;
+        letter-spacing: -0.02em;
+    }
+
+    /* Streamlit draws its icons as ligatures in a Material icon font. The rule above
+       matches those spans too and renders them as literal words such as
+       "keyboard_double_arrow_left". Hand the icon font back. */
+    [class*="material-icons"], [data-testid="stIconMaterial"], .material-icons,
+    span[data-testid^="stIcon"], .material-symbols-rounded {
+        font-family: 'Material Symbols Rounded', 'Material Icons' !important;
+    }
+
+    /* Hero — the iridescent band the whole palette exists for. */
+    .vc-hero {
+        background: linear-gradient(115deg, #c4b5fd 0%, #818cf8 38%, #67e8f9 78%, #a5f3fc 100%);
+        border-radius: 16px;
+        padding: 0.95rem 1.3rem;
+        margin-bottom: 1rem;
+        box-shadow: 0 8px 22px -12px rgba(129, 140, 248, 0.55);
+    }
+    .vc-hero h1 {
+        margin: 0;
+        font-size: 1.45rem;
+        color: #10102E;
+    }
+    .vc-hero p {
+        margin: 0.2rem 0 0;
+        font-size: 0.87rem;
+        color: #241F5A;
+    }
+    .vc-stats {
+        margin-top: 0.6rem;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.4rem;
+    }
+    .vc-stats span {
+        background: rgba(255, 255, 255, 0.72);
+        border-radius: 999px;
+        padding: 0.2rem 0.7rem;
+        font-size: 0.78rem;
+        font-weight: 600;
+        color: #241F5A;
+        white-space: nowrap;
+    }
+
+    /* Citations sit in a tinted card so sources read as one group, not loose text. */
+    .stChatMessage [data-testid="stExpander"] details {
+        border: 1px solid #DCDDFB;
+        border-radius: 12px;
+        background: #F7F6FF;
+    }
+
+    /* ---------------------------------------------------------------- sidebar */
+
+    /* The same iridescent wash as the hero, dialled right down so it reads as a
+       tinted panel rather than a second hero competing with the first. */
+    section[data-testid="stSidebar"] {
+        background: linear-gradient(180deg, #EDE9FE 0%, #E7ECFE 45%, #E0F5FC 100%);
+        border-right: 1px solid #D7D9FA;
+    }
+
+    /* Section titles: Sora, indigo, with a gradient rule underneath so
+       "Browse the course" and "Answer language" read as real section headers. */
+    section[data-testid="stSidebar"] h1,
+    section[data-testid="stSidebar"] h2,
+    section[data-testid="stSidebar"] h3 {
+        font-family: 'Sora', system-ui, sans-serif !important;
+        color: #1E1B4B;
+        font-size: 1.02rem;
+        letter-spacing: -0.01em;
+        padding-bottom: 0.4rem;
+        border-bottom: 2px solid;
+        border-image: linear-gradient(90deg, #818cf8, #67e8f9) 1;
+    }
+
+    /* Field labels — smaller, uppercase, so they stop competing with the titles. */
+    section[data-testid="stSidebar"] label p {
+        font-size: 0.74rem !important;
+        font-weight: 700 !important;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: #4C43A8 !important;
+    }
+
+    /* Dropdowns: white on the tinted panel so they read as controls, not text. */
+    section[data-testid="stSidebar"] [data-baseweb="select"] > div {
+        background: #FFFFFF;
+        border: 1px solid #C9CDF7;
+        border-radius: 10px;
+    }
+
+    /* The helper captions under each control. */
+    section[data-testid="stSidebar"] [data-testid="stCaptionContainer"] p,
+    section[data-testid="stSidebar"] small {
+        color: #5B54A6 !important;
+    }
+
+    /* Streamlit's default divider is a hard grey line; soften it into the palette. */
+    section[data-testid="stSidebar"] hr {
+        border-color: #CFD3F7;
+        opacity: 0.8;
+    }
+
+    /* ------------------------------------------------------------- chat + misc */
+
+    /* Assistant and user bubbles, tinted rather than Streamlit grey. */
+    .stChatMessage {
+        background: #E8EAFE;
+        border: 1px solid #C9CDF7;
+        border-radius: 14px;
+    }
+
+    /* The student's own turn gets the cyan end of the palette, so the two
+       speakers are told apart by colour and not only by avatar. */
+    .stChatMessage:has([data-testid="stChatMessageAvatarUser"]) {
+        background: #DDF3FB;
+        border-color: #A9DFF0;
+    }
+
+    /* Starter question buttons — white cards on the tinted page, indigo on hover. */
+    .stButton > button {
+        background: #FFFFFF;
+        border: 1px solid #C9CDF7;
+        border-radius: 12px;
+        color: #2A2470;
+        font-weight: 600;
+        text-align: left;
+        padding: 0.55rem 0.85rem;
+    }
+    .stButton > button:hover {
+        border-color: #818cf8;
+        background: #F3F2FF;
+        color: #1E1B4B;
+    }
+
+    /* Chat input picks up the palette instead of the default red focus ring. */
+    .stChatInput textarea:focus {
+        border-color: #818cf8 !important;
+        box-shadow: 0 0 0 2px rgba(129, 140, 248, 0.28) !important;
+    }
+
+    /* Links across the app in the palette indigo, not Streamlit red. */
+    a, a:visited {
+        color: #4F46E5 !important;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
+
+
+# ---------------------------------------------------------------------------
 # Session state
 # ---------------------------------------------------------------------------
 
-if "copilot" not in st.session_state:
+# Custom avatars. Streamlit's defaults are red/orange icons, the only colours on
+# screen that sit outside the palette.
+AVATARS = {"user": "🧑‍🎓", "assistant": "🎓"}
+
+LESSONS_PATH = ROOT_DIR / "data" / "lessons.json"
+
+# Loom's public watch URL. The agent emits /embed/ links for the inline players;
+# the syllabus links out instead, so it wants the share form.
+LOOM_SHARE = "https://www.loom.com/share"
+
+
+@st.cache_data
+def load_lessons() -> dict:
+    """The course calendar, generated from the recording metadata."""
+    with LESSONS_PATH.open("r", encoding="utf-8") as file:
+        return json.load(file)
+
+
+SYLLABUS_LESSONS = load_lessons()
+
+# Streamlit keeps session state across reruns, including a Copilot built by an older
+# version of the module. Bump this whenever Copilot gains state the app relies on, so a
+# live session rebuilds instead of failing on a missing attribute.
+COPILOT_VERSION = 2
+
+if (
+    "copilot" not in st.session_state
+    or st.session_state.get("copilot_version") != COPILOT_VERSION
+):
     st.session_state.copilot = Copilot()
+    st.session_state.copilot_version = COPILOT_VERSION
 
 if "messages" not in st.session_state:
     st.session_state.messages = []
@@ -556,9 +757,21 @@ def render_response(
     if citations:
         # Keep retrieval untouched, but avoid overwhelming the UI with
         # five large source players after every answer.
+        #
+        # citations arrive most-relevant-first: retrieval returns nearest-first by
+        # embedding distance and build_response() preserves that order while
+        # deduplicating. So the first three are the closest matches, and everything
+        # after them is still relevant, just further away.
         visible_citations = citations[:3]
+        extra_citations = citations[3:]
 
         source_label = f"Sources ({len(visible_citations)} shown)"
+
+        if extra_citations:
+            source_label = (
+                f"Sources ({len(visible_citations)} shown, "
+                f"{len(extra_citations)} more below)"
+            )
 
         with st.expander(
             source_label,
@@ -573,6 +786,23 @@ def render_response(
                 with column:
                     with st.container(border=True):
                         render_citation(citation)
+
+            # Everything past the top three is listed as a plain link rather than a
+            # player. A student who wants the other passages can still reach them,
+            # and the answer does not turn into a wall of embedded videos.
+            if extra_citations:
+                st.markdown("")
+                st.caption("Other relevant sources")
+
+                for citation in extra_citations:
+                    icon = "🎥" if citation.get("source_type") == "video" else "📓"
+                    label = citation.get("label", "Course source")
+                    url = citation.get("url", "")
+
+                    if url:
+                        st.markdown(f"{icon} [{label}]({url})")
+                    else:
+                        st.markdown(f"{icon} {label}")
 
 
 # ---------------------------------------------------------------------------
@@ -602,20 +832,16 @@ def reset_conversation() -> None:
 # ---------------------------------------------------------------------------
 
 with st.sidebar:
-    st.header("Course Copilot")
-
-    st.write(
-        "Answers are grounded in the Ironhack AI Engineering "
-        "course recordings."
-    )
-
-    st.divider()
+    # No title or strapline here on purpose. The hero at the top of the main
+    # column already carries the product name and what it does; repeating it in
+    # the sidebar said the same thing twice in two different styles. The sidebar
+    # is controls only.
 
     # -----------------------------------------------------------------------
     # Course browser
     # -----------------------------------------------------------------------
 
-    st.subheader("📚 Browse the course")
+    st.subheader("🎯 Scope")
 
     lessons_path = ROOT_DIR / "data" / "lessons.json"
 
@@ -682,6 +908,107 @@ with st.sidebar:
         selected_lesson["title"]
     )
 
+    # This used to be display-only: you picked a lesson and nothing happened. The
+    # syllabus in the main column lists lessons better, so these controls earn their
+    # place by narrowing what the copilot can see — the one thing a list cannot do.
+    #
+    # The scope is set on the Copilot rather than written into the question, so every
+    # tool shares it. That is what makes "quiz me on week 7" mean a quiz built from
+    # week 7's material and not a whole-course quiz that mentions week 7.
+    scope_choice = st.radio(
+        "Answers come from",
+        ["Whole course", f"Week {selected_week}", selected_lesson_id],
+        key="scope_choice",
+        help=(
+            "Narrows every tool, not just search. A quiz scoped to a week is "
+            "written only from that week's material."
+        ),
+    )
+
+    if scope_choice == "Whole course":
+        st.session_state.scope_week = None
+        st.session_state.scope_lesson = ""
+    elif scope_choice.startswith("Week"):
+        st.session_state.scope_week = selected_week
+        st.session_state.scope_lesson = ""
+    else:
+        st.session_state.scope_week = None
+        st.session_state.scope_lesson = selected_lesson_id
+
+    st.divider()
+
+    # -----------------------------------------------------------------------
+    # Quiz builder
+    # -----------------------------------------------------------------------
+    #
+    # The quiz is the clearest use of the scope above, so it lives next to it: pick
+    # how much of the course to be tested on, optionally narrow to a topic, generate.
+    # Leaving the topic blank quizzes on whatever the chosen scope covers, which is
+    # the point of scoping by week.
+
+    st.subheader("📝 Quiz me")
+
+    quiz_topic = st.text_input(
+        "Topic (optional)",
+        key="quiz_topic",
+        placeholder="e.g. embeddings",
+        help="Leave blank to be quizzed on whatever the scope above covers.",
+    )
+
+    quiz_count = st.slider(
+        "Questions",
+        min_value=3,
+        max_value=5,
+        value=3,
+        key="quiz_count",
+    )
+
+    scope_words = {
+        "Whole course": "the course",
+        f"Week {selected_week}": f"week {selected_week}",
+    }.get(scope_choice, f"lesson {selected_lesson_id}")
+
+    if st.button(
+        f"Generate quiz · {scope_words}",
+        use_container_width=True,
+        key="quiz_button",
+    ):
+        topic = quiz_topic.strip()
+
+        if not topic:
+            # A blank topic used to send the literal phrase "the main concepts covered
+            # in the course" to the embedder. That is not a topic — it is a sentence
+            # about topics, and it lands nearest the generic intro/overview talk, which
+            # is week 1. Every whole-course quiz came out of week 1.
+            #
+            # Instead, pick a real lesson from whatever is in scope and quiz on that.
+            # Random, so pressing the button twice covers different ground.
+            candidates = [
+                lesson
+                for lesson_id, lesson in SYLLABUS_LESSONS.items()
+                if (
+                    not st.session_state.scope_lesson
+                    or lesson_id == st.session_state.scope_lesson
+                )
+                and (
+                    not st.session_state.scope_week
+                    or lesson_id.startswith(f"w{st.session_state.scope_week}d")
+                )
+            ]
+
+            if candidates:
+                chosen = random.choice(candidates)
+                # Lesson titles are several topics joined by " · "; one is a better
+                # quiz seed than the whole string.
+                topic = random.choice(chosen["title"].split(" · ")).strip()
+            else:
+                topic = f"the main concepts covered in {scope_words}"
+
+        st.session_state.pending_question = (
+            f"Quiz me on {topic}. Give me {quiz_count} questions."
+        )
+        st.rerun()
+
     st.divider()
 
     # -----------------------------------------------------------------------
@@ -718,12 +1045,136 @@ with st.sidebar:
 # Main UI
 # ---------------------------------------------------------------------------
 
-st.title("🎓 Ironhack AI Course Copilot")
-
-st.write(
-    "Ask a question about the AI Engineering course and get an answer "
-    "grounded in the recorded lessons."
+st.markdown(
+    """
+    <div class="vc-hero">
+      <h1>🎓 Ironhack AI Course Copilot</h1>
+      <p>Ask anything from the bootcamp. Every answer is grounded in the recorded
+      lessons and plays the video at the exact second it was explained.</p>
+      <div class="vc-stats">
+        <span>120 teaching recordings</span>
+        <span>91 hours</span>
+        <span>32 lesson days</span>
+        <span>English &amp; Español</span>
+      </div>
+    </div>
+    """,
+    unsafe_allow_html=True,
 )
+
+
+# ---------------------------------------------------------------------------
+# Full syllabus
+# ---------------------------------------------------------------------------
+#
+# The sidebar browser answers "show me one lesson". This answers "what does the
+# course actually contain?" — the whole 8 weeks at once, which is the question a
+# student has before they know what to ask.
+#
+# Collapsed by default so it costs one line when nobody wants it. Everything is
+# read from data/lessons.json, which is generated from the recording metadata, so
+# it cannot drift from what is actually indexed.
+
+
+def render_syllabus(lessons: dict) -> None:
+    """The whole course, grouped by week, with a link per recording."""
+    by_week: dict[int, list[str]] = {}
+
+    for lesson_id in sorted(lessons):
+        week = int(lesson_id.split("d")[0].lstrip("w"))
+        by_week.setdefault(week, []).append(lesson_id)
+
+    total_recordings = sum(
+        len(lessons[lesson_id].get("recordings", []))
+        for lesson_id in lessons
+    )
+    total_hours = sum(
+        recording.get("duration_seconds", 0)
+        for lesson_id in lessons
+        for recording in lessons[lesson_id].get("recordings", [])
+    ) / 3600
+
+    st.caption(
+        f"{len(lessons)} lesson days · {total_recordings} recordings · "
+        f"{total_hours:.0f} hours. Every one is searchable above."
+    )
+
+    for week in sorted(by_week):
+        with st.expander(f"Week {week}"):
+            for lesson_id in by_week[week]:
+                lesson = lessons[lesson_id]
+                recordings = lesson.get("recordings", [])
+
+                day_minutes = sum(
+                    r.get("duration_seconds", 0) for r in recordings
+                ) / 60
+
+                st.markdown(
+                    f"**{lesson_id}** · {lesson.get('title', '')} "
+                    f"<span style='color:#6B63B5'>· {day_minutes:.0f} min</span>",
+                    unsafe_allow_html=True,
+                )
+
+                for recording in recordings:
+                    minutes = recording.get("duration_seconds", 0) / 60
+                    title = recording.get("title", "Untitled")
+                    loom_id = recording.get("loom_id", "")
+                    url = f"{LOOM_SHARE}/{loom_id}"
+
+                    if loom_id:
+                        st.markdown(
+                            f"&nbsp;&nbsp;🎥 [{title}]({url}) · {minutes:.0f} min",
+                            unsafe_allow_html=True,
+                        )
+                    else:
+                        st.markdown(f"&nbsp;&nbsp;🎥 {title} · {minutes:.0f} min")
+
+                st.markdown("")
+
+
+with st.expander("🗂️ Full course syllabus — all 8 weeks"):
+    render_syllabus(SYLLABUS_LESSONS)
+
+
+# ---------------------------------------------------------------------------
+# Starter questions
+# ---------------------------------------------------------------------------
+#
+# Shown only on an empty conversation. Two jobs: they fill what would otherwise
+# be a blank page, and they let the app be demoed by clicking rather than typing,
+# which removes the risk of a typo in front of an audience.
+#
+# Each one exercises a different capability, so clicking through them left to
+# right is a complete demo.
+
+STARTERS = [
+    ("📍 Where was cosine similarity covered?", "Where was cosine similarity covered?"),
+    ("📓 Show me the code for chunking with LangChain", "Show me the code for splitting documents into chunks with LangChain."),
+    ("📝 Quiz me on RAG", "Quiz me on RAG"),
+    ("🌍 ¿Cómo funciona RAG?", "¿Cómo funciona RAG?"),
+]
+
+# A starter click has to survive the rerun, so it is staged in session state and
+# picked up next to st.chat_input() exactly like a typed question.
+if "pending_question" not in st.session_state:
+    st.session_state.pending_question = None
+
+if not st.session_state.messages:
+    st.caption("Try one of these:")
+
+    for row_start in range(0, len(STARTERS), 2):
+        for column, (label, prompt) in zip(
+            st.columns(2),
+            STARTERS[row_start:row_start + 2],
+        ):
+            with column:
+                if st.button(
+                    label,
+                    key=f"starter_{row_start}_{label}",
+                    use_container_width=True,
+                ):
+                    st.session_state.pending_question = prompt
+                    st.rerun()
 
 
 # ---------------------------------------------------------------------------
@@ -733,7 +1184,7 @@ st.write(
 for message_index, message in enumerate(
     st.session_state.messages
 ):
-    with st.chat_message(message["role"]):
+    with st.chat_message(message["role"], avatar=AVATARS[message["role"]]):
         if message["role"] == "assistant":
             render_response(
                 message["response"],
@@ -751,6 +1202,11 @@ question = st.chat_input(
     "Ask something about the course..."
 )
 
+# A starter button click behaves exactly like a typed question from here on.
+if st.session_state.pending_question:
+    question = st.session_state.pending_question
+    st.session_state.pending_question = None
+
 
 if question:
     # Save and immediately display the student's question.
@@ -761,11 +1217,20 @@ if question:
         }
     )
 
-    with st.chat_message("user"):
+    with st.chat_message("user", avatar=AVATARS["user"]):
         st.markdown(question)
 
+        scope_note = st.session_state.get("scope_lesson") or (
+            f"week {st.session_state.scope_week}"
+            if st.session_state.get("scope_week")
+            else ""
+        )
+
+        if scope_note:
+            st.caption(f"🔒 scoped to {scope_note}")
+
     # Ask the real RAG agent.
-    with st.chat_message("assistant"):
+    with st.chat_message("assistant", avatar=AVATARS["assistant"]):
         try:
             with st.spinner(
                 "Searching the course material..."
@@ -785,6 +1250,15 @@ if question:
                     )
                 else:
                     agent_question = question
+
+                # The scope is set on the agent, not written into the question. A
+                # prompt instruction only reaches whichever tool the model happens to
+                # pick; setting it here narrows every tool, so a quiz scoped to a week
+                # is written from that week's material too.
+                st.session_state.copilot.scope.set(
+                    lesson_id=st.session_state.get("scope_lesson", ""),
+                    week=st.session_state.get("scope_week"),
+                )
 
                 response = (
                     st.session_state.copilot.ask(agent_question)

@@ -14,6 +14,7 @@ from __future__ import annotations
 
 import functools
 import json
+import random
 from pathlib import Path
 
 from langchain_core.tools import StructuredTool
@@ -39,6 +40,19 @@ LESSONS_PATH = Path(__file__).resolve().parents[1] / "data" / "lessons.json"
 # Fitted to eleven queries, so treat it as a starting point. C6 should re-tune it against
 # the 25-question eval set, which includes three deliberately unanswerable ones.
 RELEVANCE_CUTOFF = 1.3
+
+# A scoped search needs a stricter bar. Unscoped, a chunk has to beat 5,000 others to
+# rank first, so a top hit under 1.3 really is about the topic. Scoped to one week or
+# one day that competition disappears and the "best" chunk can be merely the least bad
+# one. Measured for the query "RAG":
+#
+#   week 7 (genuinely covers RAG)   0.866
+#   week 2 (does not)               1.232   <- passed 1.3, produced a quiz about R-squared
+#   week 1 / week 3 (do not)        1.351 / 1.339
+#   w1d1   (does not)               1.465
+#
+# 1.15 sits in the gap: week 7 still passes, week 2 now refuses.
+SCOPED_RELEVANCE_CUTOFF = 1.15
 
 
 class CitationCollector:
@@ -99,8 +113,52 @@ def _load_lessons() -> dict:
     return json.loads(LESSONS_PATH.read_text())
 
 
+class SearchScope:
+    """How much of the course the tools are allowed to see this turn.
+
+    Set on the retrieval side rather than asked for in the prompt. Wording a scope into
+    the question only reaches whichever tool the model happens to pick, and it has to
+    remember to pass the argument. A student who scopes to week 7 and then asks to be
+    quizzed expects the *quiz* to come from week 7 — so the constraint belongs where
+    every tool shares it, not in an argument one tool might forget.
+
+    Empty means the whole course, which is the default.
+    """
+
+    def __init__(self) -> None:
+        self.lesson_id: str = ""
+        self.week: int | None = None
+
+    def set(self, lesson_id: str = "", week: int | None = None) -> None:
+        self.lesson_id = lesson_id or ""
+        self.week = week
+
+    def clear(self) -> None:
+        self.set()
+
+    @property
+    def active(self) -> bool:
+        return bool(self.lesson_id or self.week)
+
+    def label(self) -> str:
+        """How the scope is named back to the student."""
+        if self.lesson_id:
+            return self.lesson_id
+        if self.week:
+            return f"week {self.week}"
+        return ""
+
+    def kwargs(self) -> dict:
+        return {"lesson_id": self.lesson_id or None, "week": self.week}
+
+    def cutoff(self) -> float:
+        return SCOPED_RELEVANCE_CUTOFF if self.active else RELEVANCE_CUTOFF
+
+
 def make_tools(
-    collector: CitationCollector, llm: ChatOpenAI | None = None
+    collector: CitationCollector,
+    llm: ChatOpenAI | None = None,
+    scope: SearchScope | None = None,
 ) -> list[StructuredTool]:
     """Build the tool set, wired to one collector.
 
@@ -109,17 +167,30 @@ def make_tools(
     passed (agent.py does this) so a Copilot only opens one model client rather than two.
     """
     synth_llm = llm or ChatOpenAI(model=CHAT_MODEL, temperature=0)
+    scope = scope if scope is not None else SearchScope()
+
+    # The quiz gets its own client at a non-zero temperature. Everything else in this
+    # project wants determinism, but a study tool that returns the identical three
+    # questions every time you press the button is useless for revision — the second
+    # attempt tests memory of the quiz, not of the course.
+    quiz_llm = ChatOpenAI(model=CHAT_MODEL, temperature=0.8)
 
     def search_course_material(query: str, lesson_id: str = "") -> str:
         """Search the course recordings for what was actually said about something."""
-        scored = search_with_scores(query, k=5)
+        # lesson_id is applied inside the search, not after it. Retrieving the global
+        # top-5 and then dropping everything from other lessons almost always left
+        # nothing, because the five nearest chunks across 5,000+ rarely share one day.
+        # An explicit lesson_id argument from the model narrows further; the UI scope
+        # is always applied on top of it.
+        narrowed = dict(scope.kwargs())
+        if lesson_id:
+            narrowed["lesson_id"] = lesson_id
+        scored = search_with_scores(query, k=5, **narrowed)
         # Filter by distance, not just by rank. Similarity search always returns k
         # results, so an off-topic question ("train a model on Roman aqueducts") still
         # comes back with five confident-looking chunks. Without this the agent refuses
         # correctly but the UI renders five irrelevant videos underneath the refusal.
-        hits = [doc for doc, score in scored if score <= RELEVANCE_CUTOFF]
-        if lesson_id:
-            hits = [d for d in hits if d.metadata.get("lesson_id") == lesson_id]
+        hits = [doc for doc, score in scored if score <= scope.cutoff()]
         if not hits:
             return "NO_RESULTS: nothing in the course material matches that."
         for doc in hits:
@@ -128,8 +199,8 @@ def make_tools(
 
     def find_timestamp(topic: str) -> str:
         """Find which lessons cover a topic and at what point in the recording."""
-        scored = search_with_scores(topic, k=8)
-        relevant = [(d, s) for d, s in scored if s <= RELEVANCE_CUTOFF]
+        scored = search_with_scores(topic, k=8, **scope.kwargs())
+        relevant = [(d, s) for d, s in scored if s <= scope.cutoff()]
         if not relevant:
             return "NO_RESULTS: that topic does not appear in the course recordings."
 
@@ -149,8 +220,8 @@ def make_tools(
 
     def explain_concept(concept: str, style: str = "simple") -> str:
         """A pedagogical explanation, grounded in the recordings — not a raw excerpt dump."""
-        scored = search_with_scores(concept, k=5)
-        hits = [doc for doc, score in scored if score <= RELEVANCE_CUTOFF]
+        scored = search_with_scores(concept, k=5, **scope.kwargs())
+        hits = [doc for doc, score in scored if score <= scope.cutoff()]
         if not hits:
             return "NO_RESULTS: that concept does not appear in the course recordings."
         for doc in hits:
@@ -172,19 +243,24 @@ def make_tools(
     def generate_quiz(topic: str, num_questions: int = 3) -> str:
         """Multiple-choice questions grounded in the recordings, with answers."""
         num_questions = max(3, min(num_questions, 5))
-        scored = search_with_scores(topic, k=8)
-        hits = [doc for doc, score in scored if score <= RELEVANCE_CUTOFF]
+        # Retrieve wider than needed, then sample. With k=8 and a fixed cap of 6 the
+        # same six excerpts fed the model every time, so temperature alone would only
+        # reword one fixed quiz. A wider pool means genuinely different questions.
+        scored = search_with_scores(topic, k=20, **scope.kwargs())
+        hits = [doc for doc, score in scored if score <= scope.cutoff()]
         if not hits:
             return (
                 "NO_RESULTS: that topic does not appear in the course recordings, "
                 "so a quiz cannot be generated."
             )
-        for doc in hits:
+        # Six excerpts is the useful ceiling — more context does not make a better
+        # 3-question quiz, it just adds tokens and lets the model wander off-topic.
+        # Keep the closest two so the quiz stays on topic, then sample the rest from
+        # the remaining pool so a second attempt is not the same quiz again.
+        pool = hits[:2] + random.sample(hits[2:], min(4, max(0, len(hits) - 2)))
+        for doc in pool:
             collector.add(doc.metadata)
-
-        # Cap at 6 excerpts even when 8 were retrieved: more context does not make a
-        # better 3-question quiz, it just adds tokens and lets the model wander off-topic.
-        context = "\n\n".join(d.page_content.strip() for d in hits[:6])
+        context = "\n\n".join(d.page_content.strip() for d in pool)
         # QUIZ FORMAT CONTRACT:
         # Keep this output format aligned with the frozen contract in
         # para-leer/SCHEMA.md. app/app.py parses this text to build the
@@ -197,7 +273,7 @@ def make_tools(
             "as:\n\n<question>\nA) ...\nB) ...\nC) ...\nD) ...\nAnswer: <letter>\n\n"
             f"Course excerpts:\n{context}"
         )
-        return synth_llm.invoke(prompt).content
+        return quiz_llm.invoke(prompt).content
 
     def lesson_index(week: str = "") -> str:
         """The course calendar — no retrieval, no LLM call, just data/lessons.json."""

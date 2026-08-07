@@ -65,9 +65,35 @@ def search(
     return store.similarity_search(query, k=k, filter=where)
 
 
-def search_with_scores(query: str, k: int = 5, store: Chroma | None = None):
-    """Same, but with distances — useful when tuning k or judging a refusal threshold."""
-    return (store or get_store()).similarity_search_with_score(query, k=k)
+def search_with_scores(
+    query: str,
+    k: int = 5,
+    store: Chroma | None = None,
+    *,
+    lesson_id: str | None = None,
+    week: int | None = None,
+):
+    """Same, but with distances — useful when tuning k or judging a refusal threshold.
+
+    `lesson_id` and `week` filter **inside** the search rather than afterwards.
+    Post-filtering a global top-k is not the same thing: the five nearest chunks across
+    the whole corpus almost never all come from one lesson day, so filtering after the
+    fact usually returned nothing. Passing the clause to Chroma searches within the
+    lesson or week instead.
+    """
+    clauses = []
+    if lesson_id:
+        clauses.append({"lesson_id": lesson_id})
+    if week:
+        clauses.append({"week": week})
+
+    where = None
+    if len(clauses) == 1:
+        where = clauses[0]
+    elif clauses:
+        where = {"$and": clauses}
+
+    return (store or get_store()).similarity_search_with_score(query, k=k, filter=where)
 
 
 if __name__ == "__main__":

@@ -20,7 +20,7 @@ from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_openai import ChatOpenAI
 
 from schemas import CHAT_MODEL, REFUSAL_MARKERS, build_response
-from tools import CitationCollector, make_tools
+from tools import CitationCollector, SearchScope, make_tools
 
 load_dotenv(Path(__file__).resolve().parents[1] / ".env")
 
@@ -85,10 +85,13 @@ class Copilot:
 
     def __init__(self, model: str = MODEL, verbose: bool = False) -> None:
         self.collector = CitationCollector()
+        # The UI narrows this before a turn; empty means the whole course. Held on the
+        # Copilot so every tool built below shares the same instance.
+        self.scope = SearchScope()
         llm = ChatOpenAI(model=model, temperature=0)
         # Same llm instance reused inside explain_concept/generate_quiz — one model
         # client per Copilot, not two.
-        self.tools = make_tools(self.collector, llm=llm)
+        self.tools = make_tools(self.collector, llm=llm, scope=self.scope)
 
         prompt = ChatPromptTemplate.from_messages(
             [
@@ -137,7 +140,7 @@ class Copilot:
         lowered = answer.lower()
 
         if self._ITERATION_LIMIT_MESSAGE in lowered:
-            return build_response("That wasn't covered in the course.", [])
+            return build_response(self._not_covered(), [])
 
         # If the model says it wasn't covered, we show no sources — whatever the
         # retriever thought. A distance threshold alone cannot catch this: "quantum
@@ -155,9 +158,26 @@ class Copilot:
             # course."). Longer answers containing a refusal marker are partial
             # refusals and may still have valid course-grounded content.
             if len(short_answer.split()) <= 20:
+                # A refusal under a scope means "not in THIS lesson", which is a very
+                # different fact from "not in the course" — the student picked the
+                # filter and deserves to know the filter is why. Rewrite the model's
+                # generic wording rather than trying to prompt it into the distinction,
+                # which is unreliable and would also have to survive translation.
+                if self.scope.active:
+                    return build_response(self._not_covered(), [])
                 return build_response(answer, [])
 
         return build_response(answer, self.collector.metadatas)
+
+    def _not_covered(self) -> str:
+        """The refusal wording, which depends on whether a scope narrowed the search."""
+        if self.scope.active:
+            return (
+                f"That wasn't covered in {self.scope.label()}. "
+                f"It may still be covered elsewhere in the course — "
+                f"turn the lesson filter off to search all 8 weeks."
+            )
+        return "That wasn't covered in the course."
 
     def tools_used(self, result: dict | None = None) -> list[str]:
         """Names of the tools called on the last turn — used by the memory demo."""
