@@ -50,6 +50,9 @@ def evaluate_question(
 
     question = row["question"]
     expected = row["expected_lesson"]
+    expected_notebook = (
+        row.get("expected_notebook") or ""
+    ).strip()
 
     results = search_with_scores(
         question,
@@ -59,6 +62,44 @@ def evaluate_question(
     lessons = [
         doc.metadata["lesson_id"]
         for doc, _ in results
+    ]
+
+    # A hit is the expected LESSON or the expected NOTEBOOK FILE.
+    #
+    # golden_questions.csv has always carried an `expected_notebook` column; it was
+    # loaded but never used, and a result counted only when its lesson_id matched. That
+    # makes 30 of the 84 questions unwinnable by construction: their expected notebook
+    # is one of the 24 supplementary files, which carry lesson_id="extra" precisely
+    # because they belong to no taught day. Question 1 is the clean example — "What is
+    # Python?" expects `1_intro_to_python.ipynb`, retrieval returns exactly that file,
+    # and it was scored as a failure because the file reports "extra" rather than
+    # "w1d1".
+    #
+    # 30 of 84 unwinnable caps Top-1 at 64%, which is why the measured 63.1% looked like
+    # a retrieval collapse after the index rebuild. It was the metric.
+    #
+    #   before  Top-1 63.1%  Top-3 79.8%  Top-5 90.5%
+    #   after   Top-1 83.3%  Top-3 92.9%  Top-5 94.0%
+    #
+    # Nothing about retrieval changed to earn most of that; the questions were already
+    # being answered correctly.
+    def matches(index: int) -> bool:
+        metadata = results[index][0].metadata
+
+        if metadata.get("lesson_id") == expected:
+            return True
+
+        if not expected_notebook:
+            return False
+
+        return (
+            metadata.get("notebook", "").strip()
+            == expected_notebook
+        )
+
+    hits = [
+        matches(i)
+        for i in range(len(results))
     ]
 
 
@@ -107,17 +148,11 @@ def evaluate_question(
         retrieved_headings=headings,
         retrieved_distances=distances,
 
-        top1_correct=(
-            lessons[0] == expected
-        ),
+        top1_correct=hits[0],
 
-        top3_correct=(
-            expected in lessons[:3]
-        ),
+        top3_correct=any(hits[:3]),
 
-        top5_correct=(
-            expected in lessons
-        ),
+        top5_correct=any(hits),
     )
 
 
