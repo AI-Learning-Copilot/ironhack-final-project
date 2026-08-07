@@ -25,3 +25,4 @@ data/raw/audio/
 
 # Indexes
 index/dev/
+.claude/

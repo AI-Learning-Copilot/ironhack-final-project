@@ -79,15 +79,25 @@ def search(
 def search_with_scores(
     query: str,
     k: int = 5,
+    store: Chroma | None = None,
     *,
     source_type: str | None = None,
     lesson_id: str | None = None,
-    store: Chroma | None = None,
+    week: int | None = None,
 ):
     """Same as search(), but also returns Chroma distances.
 
-    Supports the same metadata filters as search(), allowing callers to
-    restrict retrieval to only videos, only notebooks, or a specific lesson.
+    Merge note (7 Aug): Felipe and Casilda both added filtering here on the same day —
+    `source_type` from one side, `week` from the other. This is the union; dropping
+    either breaks a caller. `source_type` lets a caller ask for only videos or only
+    notebooks; `week` and `lesson_id` are what the UI scope control sets.
+
+    All three filter **inside** the search rather than afterwards. Post-filtering a
+    global top-k is not the same thing: the five nearest chunks across the whole corpus
+    almost never share one lesson day, so filtering after the fact usually returned
+    nothing at all.
+
+    `store` stays positional — tools.py and the notebook pass it that way.
     """
     store = store or get_store()
 
@@ -98,6 +108,9 @@ def search_with_scores(
 
     if lesson_id:
         clauses.append({"lesson_id": lesson_id})
+
+    if week:
+        clauses.append({"week": week})
 
     where = None
 

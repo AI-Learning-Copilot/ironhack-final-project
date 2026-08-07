@@ -1,0 +1,19 @@
+# Vapor Chrome — iridescent pastels, Y2K-futurism.
+#
+# Source palette: #c4b5fd  #818cf8  #67e8f9  #a5f3fc
+#
+# All four are light pastels, so none of them can carry text on a light background.
+# They are used for accents, borders and the header gradient; the text colour is a deep
+# indigo from the same family so the page reads as one palette while staying legible.
+
+[theme]
+primaryColor = "#818cf8"             # indigo — buttons, focus rings, links
+backgroundColor = "#FBFAFF"          # near-white with a violet cast
+secondaryBackgroundColor = "#EEF0FE" # chat bubbles, sidebar, code blocks
+textColor = "#1E1B4B"                # deep indigo — 14:1 on the background
+font = "sans serif"                  # real families are loaded as CSS in app.py
+
+[server]
+# Loom embeds are third-party iframes; keep XSRF on but allow the app to be framed
+# by nothing else. Defaults are already correct — recorded here so nobody "fixes" it.
+enableXsrfProtection = true
