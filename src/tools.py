@@ -94,6 +94,15 @@ class TimestampInput(BaseModel):
     )
 
 
+class NotebookInput(BaseModel):
+    topic: str = Field(
+        description=(
+            "What the notebook should be about, as a phrase rather than a bare "
+            "acronym — 'a RAG pipeline in LangChain' retrieves better than 'RAG'."
+        )
+    )
+
+
 class ExplainInput(BaseModel):
     concept: str = Field(
         description=(
@@ -123,6 +132,13 @@ class LessonIndexInput(BaseModel):
 def _format_hit(index: int, doc) -> str:
     citation = build_citation(doc.metadata)
     return f"[{index}] {citation['label']}\n{doc.page_content.strip()}"
+
+
+# A whole-course listing is 32 days; citing every one of them buries the answer. Six is
+# the longest week in this course (weeks 1 and 5 have five taught days), so any
+# single-week or single-day query cites, and only the unfiltered "list everything" does
+# not.
+LESSON_INDEX_CITATION_LIMIT = 6
 
 
 @functools.lru_cache(maxsize=1)
@@ -283,9 +299,45 @@ def make_tools(
             collector.add(doc.metadata)
         return "\n\n".join(_format_hit(i, d) for i, d in enumerate(hits, 1))
 
+    def find_notebooks(topic: str) -> str:
+        """Which course notebooks cover a topic — file paths, no timestamps.
+
+        Exists because "where are the notebooks on RAG?" used to return three videos and
+        one notebook. The corpus is 5,090 video chunks against 947 notebook ones, so an
+        unfiltered search is won by video on almost any topic that was also taught out
+        loud — which is all of them. The filter goes into the query rather than being
+        applied to the results, for the same reason `lesson_id` does: post-filtering a
+        global top-8 usually leaves one notebook or none.
+
+        Deduplicated by file. A student asking for the notebook wants one link per
+        notebook, not the same file listed once per matching cell.
+        """
+        scored = search_with_scores(
+            topic, k=12, source_type="notebook", **scope.kwargs()
+        )
+        relevant = [(d, s) for d, s in scored if s <= scope.cutoff()]
+        if not relevant:
+            return "NO_RESULTS: no course notebook covers that topic."
+
+        lines, seen = [], set()
+        for doc, _ in relevant:
+            meta = doc.metadata
+            key = (meta.get("folder", ""), meta.get("notebook", ""))
+            if key in seen:
+                continue
+            seen.add(key)
+            collector.add(meta)
+            lines.append(f"- {build_citation(meta)['label']}")
+
+        return "Course notebooks:\n" + "\n".join(lines[:5])
+
     def find_timestamp(topic: str) -> str:
         """Find which lessons cover a topic and at what point in the recording."""
-        scored = search_with_scores(topic, k=8, **scope.kwargs())
+        # Video only. A notebook has no minute, so an unfiltered search here produced
+        # answers like "in the supplementary course notebook at 0:00 of the extra
+        # lesson" — a timestamp invented for a file that does not have one. Notebook
+        # questions belong to find_notebooks.
+        scored = search_with_scores(topic, k=8, source_type="video", **scope.kwargs())
         relevant = [(d, s) for d, s in scored if s <= scope.cutoff()]
         if not relevant:
             return "NO_RESULTS: that topic does not appear in the course recordings."
@@ -428,8 +480,33 @@ def make_tools(
             if not ids:
                 return f"NO_RESULTS: no lessons found matching '{week}'."
 
-        # Deliberately not added to the collector: this is a table of contents, not
-        # sourced content — it has no single moment worth citing.
+        # A full listing of all 32 days is a table of contents — nothing there is worth
+        # citing, and 32 citations would bury the answer.
+        #
+        # A *filtered* listing is different. "Where are the labs for week 7?" routes
+        # here, and the answer named w7d1, w7d3 and w7d4 with no sources at all, so the
+        # student was told where to look and given nothing to click. Below the cutoff,
+        # each listed day contributes its opening recording, which is a real link to the
+        # start of that lesson.
+        if len(ids) <= LESSON_INDEX_CITATION_LIMIT:
+            for lesson_id in ids:
+                recordings = lessons[lesson_id].get("recordings", [])
+                if not recordings:
+                    continue
+                first = recordings[0]
+                collector.add({
+                    "source_type": "video",
+                    "lesson_id": lesson_id,
+                    "loom_id": first.get("loom_id", ""),
+                    # build_citation reads `lesson_title`, not `title` — lessons.json
+                    # calls the same field `title`, and passing it through under that
+                    # name produced labels like "w7d1 ·  · 0:00".
+                    "lesson_title": first.get("title", ""),
+                    # 0, not the middle of the lesson: this tool knows which DAY matches,
+                    # never which minute. find_timestamp is the one that knows minutes.
+                    "start_seconds": 0,
+                })
+
         lines = [f"- {lesson_id}: {lessons[lesson_id]['title']}" for lesson_id in ids]
         return "Course lessons:\n" + "\n".join(lines)
 
@@ -443,6 +520,18 @@ def make_tools(
                 "Returns transcript excerpts with the lesson and timestamp they came from."
             ),
             args_schema=SearchInput,
+        ),
+        StructuredTool.from_function(
+            func=find_notebooks,
+            name="find_notebooks",
+            description=(
+                "Find WHICH COURSE NOTEBOOKS cover a topic, and link to them. Use this "
+                "whenever the student asks for a notebook, a demo file, the code, or "
+                "where to practise something — 'which notebook covers RAG', 'where is "
+                "the code for embeddings', 'send me the notebooks on pandas'. Returns "
+                "notebook paths, not recordings and not timestamps."
+            ),
+            args_schema=NotebookInput,
         ),
         StructuredTool.from_function(
             func=find_timestamp,
