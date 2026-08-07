@@ -109,18 +109,61 @@ st.markdown(
 
     /* Citations sit in a tinted card so sources read as one group, not loose text. */
     .stChatMessage [data-testid="stExpander"] details {
-        border: 1px solid #DCDDFB;
+        border: 1px solid #B9BEF5;
         border-radius: 12px;
-        background: #F7F6FF;
+        background: #EDEBFE;
+    }
+
+    /* The syllabus is reference material, not conversation, so it gets the violet end
+       of the palette — clear of the indigo answers and the cyan questions either side
+       of it. Streamlit tags every expander identically, so it is matched on the app's
+       own marker span. The nested week expanders inside are deliberately left alone:
+       tinting those too would flatten the panel back into one block of colour. */
+    .stExpander:has(.vc-syllabus) > details {
+        background: #EDE7FE !important;
+        border: 1px solid #A78BFA !important;
+        border-left: 4px solid #7C3AED !important;
+        border-radius: 14px !important;
+    }
+    .stExpander:has(.vc-syllabus) > details > summary {
+        font-weight: 700;
+        color: #3B1E7A;
+    }
+    .stExpander:has(.vc-syllabus) .stExpander > details {
+        background: #FFFFFF;
+        border: 1px solid #C4B5FD;
+        border-radius: 10px;
+    }
+    .vc-syllabus { display: none; }
+    .stElementContainer:has(.vc-syllabus) { display: none; }
+
+    /* The syllabus download. .stDownloadButton is a separate class from .stButton, so
+       it inherits none of the starter-question styling — without this it renders as a
+       plain grey pill on the violet panel. */
+    .stDownloadButton > button {
+        background: #FFFFFF;
+        border: 1px solid #A78BFA;
+        border-radius: 10px;
+        color: #3B1E7A;
+        font-weight: 600;
+        padding: 0.3rem 0.8rem;
+    }
+    .stDownloadButton > button:hover {
+        border-color: #7C3AED;
+        background: #F6F2FF;
+        color: #3B1E7A;
     }
 
     /* ---------------------------------------------------------------- sidebar */
 
-    /* The same iridescent wash as the hero, dialled right down so it reads as a
-       tinted panel rather than a second hero competing with the first. */
+    /* The same iridescent gradient as the hero, one step down in lightness. The
+       first version was washed out to near-white, which made the hero look like the
+       only coloured thing on the page. This keeps the hero dominant while the
+       sidebar still reads as the same palette rather than as grey furniture.
+       Stops chosen so text at #1E1B4B stays above 9:1 on every one of them. */
     section[data-testid="stSidebar"] {
-        background: linear-gradient(180deg, #EDE9FE 0%, #E7ECFE 45%, #E0F5FC 100%);
-        border-right: 1px solid #D7D9FA;
+        background: linear-gradient(180deg, #D6CEFD 0%, #C6CFFB 45%, #B2E7F6 100%);
+        border-right: 1px solid #9AA2F0;
     }
 
     /* Section titles: Sora, indigo, with a gradient rule underneath so
@@ -133,8 +176,8 @@ st.markdown(
         font-size: 1.02rem;
         letter-spacing: -0.01em;
         padding-bottom: 0.4rem;
-        border-bottom: 2px solid;
-        border-image: linear-gradient(90deg, #818cf8, #67e8f9) 1;
+        border-bottom: 3px solid;
+        border-image: linear-gradient(90deg, #6366F1, #22D3EE) 1;
     }
 
     /* Field labels — smaller, uppercase, so they stop competing with the titles. */
@@ -143,42 +186,107 @@ st.markdown(
         font-weight: 700 !important;
         letter-spacing: 0.06em;
         text-transform: uppercase;
-        color: #4C43A8 !important;
+        color: #322B7C !important;
     }
 
-    /* Dropdowns: white on the tinted panel so they read as controls, not text. */
-    section[data-testid="stSidebar"] [data-baseweb="select"] > div {
+    /* Dropdowns and text inputs: white on the tinted panel so they read as controls,
+       not as text. The deeper panel behind them does most of the separating now. */
+    section[data-testid="stSidebar"] [data-baseweb="select"] > div,
+    section[data-testid="stSidebar"] [data-baseweb="input"],
+    section[data-testid="stSidebar"] .stTextInput input {
         background: #FFFFFF;
-        border: 1px solid #C9CDF7;
+        border: 1px solid #8E97EE;
         border-radius: 10px;
     }
 
     /* The helper captions under each control. */
     section[data-testid="stSidebar"] [data-testid="stCaptionContainer"] p,
     section[data-testid="stSidebar"] small {
-        color: #5B54A6 !important;
+        color: #443C93 !important;
+    }
+
+    /* The credit line at the very bottom. Smaller than a caption on purpose — it has to
+       be readable but must not compete with the controls above it. */
+    section[data-testid="stSidebar"] .vc-credit {
+        font-size: 0.68rem;
+        line-height: 1.45;
+        color: #4C43A8;
+    }
+    section[data-testid="stSidebar"] .vc-credit b {
+        color: #322B7C;
     }
 
     /* Streamlit's default divider is a hard grey line; soften it into the palette. */
     section[data-testid="stSidebar"] hr {
-        border-color: #CFD3F7;
-        opacity: 0.8;
+        border-color: #9AA2F0;
+        opacity: 0.9;
+    }
+
+    /* "Generate quiz" is the one action the sidebar exists for, so it wears the hero
+       gradient. Everything else in there stays a white card — two loud buttons would
+       tell the student nothing about which one to press. Streamlit renamed the button
+       attribute across versions, so both selectors are listed. */
+    section[data-testid="stSidebar"] button[kind="primary"],
+    section[data-testid="stSidebar"] [data-testid="stBaseButton-primary"] {
+        background: linear-gradient(115deg, #c4b5fd 0%, #818cf8 55%, #67e8f9 100%) !important;
+        border: none !important;
+        color: #10102E !important;
+        font-weight: 700 !important;
+        text-align: center !important;
+        box-shadow: 0 6px 16px -8px rgba(79, 70, 229, 0.7);
+    }
+    section[data-testid="stSidebar"] button[kind="primary"]:hover,
+    section[data-testid="stSidebar"] [data-testid="stBaseButton-primary"]:hover {
+        filter: brightness(1.07);
+        color: #10102E !important;
     }
 
     /* ------------------------------------------------------------- chat + misc */
 
-    /* Assistant and user bubbles, tinted rather than Streamlit grey. */
+    /* Assistant bubble — the violet/indigo end of the palette, with an indigo bar
+       down the edge. The bar does more work than the fill: two pale fills a few
+       percent apart are hard to tell apart while scrolling, a 4px saturated edge
+       is not. */
     .stChatMessage {
-        background: #E8EAFE;
-        border: 1px solid #C9CDF7;
+        background: #DFE2FE;
+        border: 1px solid #A9AFF3;
+        border-left: 4px solid #6366F1;
         border-radius: 14px;
     }
 
-    /* The student's own turn gets the cyan end of the palette, so the two
-       speakers are told apart by colour and not only by avatar. */
-    .stChatMessage:has([data-testid="stChatMessageAvatarUser"]) {
-        background: #DDF3FB;
-        border-color: #A9DFF0;
+    /* The student's own turn gets the cyan end, so the two speakers are told apart
+       by colour and not only by avatar.
+
+       Matched on the app's own marker span, not on Streamlit's DOM. The obvious
+       selector — `:has([data-testid="stChatMessageAvatarUser"])` — matches nothing
+       here, because passing a custom `avatar=` replaces that element. It failed
+       silently: every bubble simply took the assistant fill. */
+    .vc-user-turn { display: none; }
+    .stChatMessage .stElementContainer:has(.vc-user-turn) { display: none; }
+
+    .stChatMessage:has(.vc-user-turn) {
+        background: #CBEDF9;
+        border-color: #6BC5DF;
+        border-left-color: #0E9BBE;
+    }
+
+    /* Text shade follows the bubble it sits in: deep indigo for the copilot's
+       answers, deep teal for the student's question. Both are dark enough to read
+       (11:1 and 10:1 on their own fills) — the difference is hue and weight, not
+       one of them being faded out. Streamlit paints markdown on inner nodes, so the
+       colour has to be set there; setting it on .stChatMessage alone does nothing. */
+    .stChatMessage [data-testid="stMarkdownContainer"],
+    .stChatMessage [data-testid="stMarkdownContainer"] p,
+    .stChatMessage [data-testid="stMarkdownContainer"] li,
+    .stChatMessage [data-testid="stMarkdownContainer"] strong {
+        color: #221C5E;
+    }
+    .stChatMessage:has(.vc-user-turn) [data-testid="stMarkdownContainer"],
+    .stChatMessage:has(.vc-user-turn) [data-testid="stMarkdownContainer"] p,
+    .stChatMessage:has(.vc-user-turn) [data-testid="stMarkdownContainer"] li,
+    .stChatMessage:has(.vc-user-turn) [data-testid="stMarkdownContainer"] strong {
+        color: #0A3D4C;
+        font-weight: 600;
     }
 
     /* Starter question buttons — white cards on the tinted page, indigo on hover. */
@@ -221,11 +329,33 @@ st.markdown(
 # screen that sit outside the palette.
 AVATARS = {"user": "🧑‍🎓", "assistant": "🎓"}
 
+# Streamlit puts no role on the chat message element — `data-testid` is `stChatMessage`
+# for both speakers, and passing `avatar=` removes the one testid that used to give the
+# user's turn away. The only real difference left in the DOM is a hashed emotion class,
+# which changes between Streamlit versions.
+#
+# So the app marks its own turns: an invisible span goes inside every student message and
+# the CSS styles the bubble around it with `:has()`. Its element container is hidden with
+# `display: none`, which removes it from the flex layout entirely — `visibility: hidden`
+# would leave the vertical block's gap behind as a blank line above the question.
+USER_TURN_MARKER = '<span class="vc-user-turn"></span>'
+
+# Same trick for the syllabus panel — see the CSS block for why it needs its own colour.
+SYLLABUS_MARKER = '<span class="vc-syllabus"></span>'
+
 LESSONS_PATH = ROOT_DIR / "data" / "lessons.json"
+
+# Built by scripts/build_syllabus_pdf.py and committed. The app only reads it — same
+# build-time / run-time split as the Chroma index, so reportlab is not a deploy
+# dependency and the download costs no CPU on Streamlit Cloud.
+SYLLABUS_PDF_PATH = ROOT_DIR / "app" / "assets" / "ironhack-ai-syllabus.pdf"
 
 # Loom's public watch URL. The agent emits /embed/ links for the inline players;
 # the syllabus links out instead, so it wants the share form.
 LOOM_SHARE = "https://www.loom.com/share"
+
+# The team repo, not a personal fork — this is what the sidebar credit links to.
+REPO_URL = "https://github.com/AI-Learning-Copilot/ironhack-final-project"
 
 
 @st.cache_data
@@ -235,7 +365,52 @@ def load_lessons() -> dict:
         return json.load(file)
 
 
+@st.cache_data
+def load_syllabus_pdf(mtime: float) -> bytes:
+    """Read once per server, not once per rerun — st.download_button wants the bytes in
+    hand on every render, and the file is static.
+
+    `mtime` is only there to key the cache: rebuilding the PDF while the dev server is
+    up otherwise keeps serving the previous bytes until a restart.
+    """
+    return SYLLABUS_PDF_PATH.read_bytes()
+
+
 SYLLABUS_LESSONS = load_lessons()
+
+# One theme per week. Hand-written, because nothing in data/lessons.json can produce it:
+# that file carries per-day titles, and a week's five titles concatenated run to several
+# hundred characters. "Week 4" alone tells a student nothing about whether their question
+# belongs there; "Week 4 · NLP & embeddings" does.
+#
+# Checked against every session title in lessons.json, not guessed from the week number.
+# Three of these were wrong on the first pass and are worth recording so they do not get
+# "simplified" back:
+#
+#   w3  "Deep learning" hid that half the week is computer vision — image preprocessing,
+#       feature extraction and CNNs are two of its four days.
+#   w5  "LLMs & APIs" dropped databases entirely. w5d1 is three SQLite sessions: CRUD,
+#       table relationships and joins. A student looking for SQL could not find the week
+#       it was taught in.
+#   w8  "Multimodal AI" covered one of the week's two days. The other is NLP evaluation
+#       metrics.
+WEEK_THEMES = {
+    1: "Python & data",
+    2: "Machine learning",
+    3: "Deep learning & vision",
+    4: "NLP & embeddings",
+    5: "Databases & LLM APIs",
+    6: "Deployment",
+    7: "LangChain & RAG",
+    8: "Multimodal & evaluation",
+}
+
+
+def week_label(week: int) -> str:
+    """"Week 4 · NLP & embeddings" — falls back to the bare number if a week is added
+    to the corpus before it gets a theme here."""
+    theme = WEEK_THEMES.get(week)
+    return f"Week {week} · {theme}" if theme else f"Week {week}"
 
 # Streamlit keeps session state across reruns, including a Copilot built by an older
 # version of the module. Bump this whenever Copilot gains state the app relies on, so a
@@ -323,6 +498,14 @@ def external_link(label: str, url: str) -> str:
 
     rel="noopener noreferrer" because target="_blank" otherwise hands the opened page a
     handle on this one via window.opener.
+
+    `target="_blank"` is the only lever available here, and it is genuinely in the DOM —
+    checked in the running app, with nothing calling preventDefault on the click. Do not
+    try to reinforce it with `onclick="window.open(...)"`: Streamlit's sanitizer strips
+    event-handler attributes out of `unsafe_allow_html` markup, so the attribute simply
+    never reaches the page. `st.link_button` is no stronger — it emits the same anchor.
+    The only way to run real JS is `st.components.v1.html`, which puts the content in
+    its own iframe.
     """
     return (
         f'<a href="{url}" target="_blank" rel="noopener noreferrer">{label}</a>'
@@ -339,7 +522,15 @@ def render_citation(citation: dict) -> None:
         st.markdown("**🎥 Lecture video**")
 
         if url:
-            st.markdown(external_link(label, url), unsafe_allow_html=True)
+            # The text link and the inline player want different Loom URLs. The backend
+            # emits /embed/, which is what the iframe below needs, but opening /embed/
+            # as a page of its own gives the bare player with none of Loom's chrome —
+            # no title, no transcript, no captions menu. /share/ is the watch page, and
+            # it honours the same ?t= timestamp.
+            st.markdown(
+                external_link(label, url.replace("/embed/", "/share/")),
+                unsafe_allow_html=True,
+            )
 
             # Loom URLs produced by the backend already use /embed/ and
             # include the timestamp query parameter, so the player opens
@@ -890,8 +1081,12 @@ def render_response(
                     url = citation.get("url", "")
 
                     if url:
+                        # Same /embed/ to /share/ swap as the cards above — these are
+                        # links only, never players, so they always want the watch page.
                         st.markdown(
-                            f"{icon} " + external_link(label, url),
+                            f"{icon} " + external_link(
+                                label, url.replace("/embed/", "/share/")
+                            ),
                             unsafe_allow_html=True,
                         )
                     else:
@@ -966,10 +1161,13 @@ with st.sidebar:
         selected_week = st.selectbox(
             "Week",
             weeks,
-            format_func=lambda week: f"Week {week}",
+            format_func=week_label,
             key="quiz_week",
         )
         scope_week = selected_week
+        # Number only. The theme is already on the dropdown right above the button, and
+        # repeating it here wrapped "Generate quiz · week 1 · Python & data" onto two
+        # lines in the sidebar's width.
         scope_words = f"week {selected_week}"
 
     if quiz_scope == "A specific day":
@@ -1008,6 +1206,7 @@ with st.sidebar:
         f"Generate quiz · {scope_words}",
         use_container_width=True,
         key="quiz_button",
+        type="primary",
     ):
         topic = quiz_topic.strip() or pick_quiz_topic(scope_lesson, scope_week)
 
@@ -1027,6 +1226,19 @@ with st.sidebar:
 
     st.divider()
 
+    if st.button(
+        "New conversation",
+        use_container_width=True,
+    ):
+        reset_conversation()
+        st.rerun()
+
+    st.divider()
+
+    # Language sits last on purpose. It is set once at the start of a session and then
+    # left alone, unlike the quiz controls above it, which are touched every time. A
+    # preference that is rarely changed should not sit between the student and the
+    # control they came for.
     st.subheader("🌐 Answer language")
 
     language = st.selectbox(
@@ -1045,12 +1257,19 @@ with st.sidebar:
 
     st.divider()
 
-    if st.button(
-        "New conversation",
-        use_container_width=True,
-    ):
-        reset_conversation()
-        st.rerun()
+    # Attribution, last thing in the sidebar. Two separate credits and they should not be
+    # confused: the teaching material is Ironhack's, the software around it is ours. The
+    # app answers only from that material, so saying whose it is belongs on the screen
+    # rather than in the README alone.
+    st.markdown(
+        f'<div class="vc-credit">'
+        f"The material in this app — recordings and notebooks — is from the "
+        f"<b>Ironhack AI Engineering bootcamp</b> and belongs to Ironhack. "
+        f"The copilot itself is our final project for that bootcamp; the code is on "
+        f"{external_link('GitHub', REPO_URL)}."
+        f"</div>",
+        unsafe_allow_html=True,
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -1065,7 +1284,10 @@ st.markdown(
       lessons and plays the video at the exact second it was explained.</p>
       <div class="vc-stats">
         <span>120 teaching recordings</span>
-        <span>91 hours</span>
+        <!-- 90, not 91. lessons.json totals 89.78 h across the 120 recordings; the
+             syllabus panel computes the same figure and printed 90 next to a hero
+             saying 91. -->
+        <span>90 hours</span>
         <span>32 lesson days</span>
         <span>English &amp; Español</span>
       </div>
@@ -1111,8 +1333,20 @@ def render_syllabus(lessons: dict) -> None:
         f"{total_hours:.0f} hours. Every one is searchable above."
     )
 
+    # Guarded: a fresh clone that has not run scripts/build_syllabus_pdf.py still starts,
+    # it just has no download button.
+    if SYLLABUS_PDF_PATH.exists():
+        st.download_button(
+            "⬇️  Syllabus PDF",
+            data=load_syllabus_pdf(SYLLABUS_PDF_PATH.stat().st_mtime),
+            file_name="ironhack-ai-syllabus.pdf",
+            mime="application/pdf",
+            help="One continuous page: the eight weeks, every lesson day, and a QR "
+                 "code back to this app.",
+        )
+
     for week in sorted(by_week):
-        with st.expander(f"Week {week}"):
+        with st.expander(week_label(week)):
             for lesson_id in by_week[week]:
                 lesson = lessons[lesson_id]
                 recordings = lesson.get("recordings", [])
@@ -1147,6 +1381,9 @@ def render_syllabus(lessons: dict) -> None:
 
 
 with st.expander("🗂️ Full course syllabus — all 8 weeks"):
+    # Same marker trick as the student's chat turn: Streamlit gives every expander the
+    # same testid, so the syllabus is told apart by a span the app puts inside it.
+    st.markdown(SYLLABUS_MARKER, unsafe_allow_html=True)
     render_syllabus(SYLLABUS_LESSONS)
 
 
@@ -1247,6 +1484,7 @@ for message_index, message in enumerate(
                         sources_expander=False,
                     )
         else:
+            st.markdown(USER_TURN_MARKER, unsafe_allow_html=True)
             st.markdown(message["content"])
 
             if message.get("scope_note"):
@@ -1315,6 +1553,9 @@ if question:
     )
 
     with st.chat_message("user", avatar=AVATARS["user"]):
+        # The marker goes first and separately: the question itself is rendered without
+        # unsafe_allow_html, so nothing a student types can inject markup.
+        st.markdown(USER_TURN_MARKER, unsafe_allow_html=True)
         st.markdown(question)
 
         if scope_note:

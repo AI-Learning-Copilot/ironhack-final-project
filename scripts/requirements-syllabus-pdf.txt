@@ -1,0 +1,15 @@
+# Build-time only — for scripts/build_syllabus_pdf.py.
+#
+# Deliberately NOT in requirements.txt. The PDF it produces is committed to the repo and
+# served by the app as a static file, so the deployed app never imports reportlab. Adding
+# it to requirements.txt would install 2 MB on Streamlit Cloud to generate a file that is
+# already in the repo.
+#
+# Regenerating the syllabus after a corpus change:
+#
+#   pip install -r scripts/requirements-syllabus-pdf.txt
+#   python scripts/build_syllabus_pdf.py
+#
+# Verified 2026-08-07 against the pinned set in requirements.txt: `pip check` stays clean.
+
+reportlab==4.4.4
