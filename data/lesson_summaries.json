@@ -1,0 +1,52 @@
+{
+  "_note": [
+    "One readable sentence per lesson day, for the syllabus PDF.",
+    "lessons.json carries the raw recording titles joined by ' · '. Six of those",
+    "joined together is accurate but unreadable — 'Intro from PMs · Intro from LT ·",
+    "Intro to AI Engineering · Python I · Python II · Git intro + how to work in labs'.",
+    "These sentences say the same thing in a form a student can scan.",
+    "",
+    "Written by hand from the titles in data/lessons.json, not generated. If a lesson",
+    "id is missing here, scripts/build_syllabus_pdf.py falls back to the raw title and",
+    "prints a warning, so a corpus change degrades rather than breaks."
+  ],
+  "w1d1": "Kickoff — program intro, first steps in Python, and setting up Git for lab work.",
+  "w1d2": "Python functions in depth — parameters, return values, scope, lambda functions, and list comprehensions.",
+  "w1d3": "Using LLMs to learn effectively, then error handling and functional tools — map, filter, and reduce.",
+  "w1d4": "Foundations for ML — tensors and linear algebra, NumPy, Pandas, and descriptive statistics.",
+  "w1d5": "Grouping and merging data in Pandas, AI coding assistants, data visualization, Agile/Scrum basics, and object-oriented programming.",
+
+  "w2d1": "Introduction to machine learning, with live demos of linear and logistic regression.",
+  "w2d2": "Evaluating models — regression and classification metrics — and an overview of ML algorithms.",
+  "w2d3": "A full supervised learning workflow — from problem definition and EDA through feature engineering to final evaluation.",
+  "w2d4": "Unsupervised learning — clustering and dimensionality reduction with PCA.",
+  "w2d5": "Kickoff for the IronKaggle competition.",
+
+  "w3d1": "Deep learning foundations — neurons, activation functions, backpropagation, and a first Keras model on MNIST.",
+  "w3d2": "Computer vision — image preprocessing and convolutional neural networks.",
+  "w3d3": "Kickoff for Project 1.",
+  "w3d4": "Deploying models with Gradio, and improving them with data augmentation and transfer learning.",
+
+  "w4d1": "Regular expressions and pseudocode.",
+  "w4d2": "NLP fundamentals — tokenization, stemming, TF-IDF, and a news-clustering example.",
+  "w4d3": "Word embeddings, including Word2Vec.",
+  "w4d4": "Kickoff for Project 2.",
+
+  "w5d1": "Databases — SQLite setup, CRUD operations, and table relationships.",
+  "w5d2": "Transformer architecture, APIs, and prompt engineering.",
+  "w5d3": "Using the OpenAI API, prompt injection, and tool calling.",
+  "w5d4": "Connecting to AI models, quantization, and the geopolitics of AI.",
+  "w5d5": "Mini-project demos, plus transfer learning with LoRA and QLoRA.",
+
+  "w6d1": "Building and deploying a full-stack AI app — a FastAPI backend on Render and a React frontend on Vercel.",
+  "w6d5": "Group project presentations.",
+
+  "w7d1": "Introduction to LangChain and chains.",
+  "w7d2": "Retrieval-augmented generation — indexing and retrieval.",
+  "w7d3": "LangChain memory, RAG pipelines, and retrieval agents.",
+  "w7d4": "Streaming responses, tool calling, and open models.",
+  "w7d5": "Week recap and the IronStore mini-project.",
+
+  "w8d1": "Multimodal search with CLIP and multimodal RAG.",
+  "w8d2": "NLP evaluation metrics."
+}
