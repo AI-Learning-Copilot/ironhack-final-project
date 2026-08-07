@@ -1,633 +1,2942 @@
 [
   {
-    "id": "f01",
-    "kind": "content",
-    "question": "What is RAG and why would I use it?",
-    "answer": "RAG, or Retrieval-Augmented Generation, is a technique used when you want to provide a model with information that it likely doesn't have in its training data. This is particularly useful for proprietary or private information. The main idea is to first retrieve relevant data from a vector database before sending a query to a large language model (LLM). This way, the model can generate more accurate responses based on the additional context provided.\n\nYou would use RAG when you have specific information that is not publicly available or when the model's training data is limited. For example, if you need to answer questions about a company's internal policies or recent developments that are not part of the model's training, RAG allows you to supplement the model's knowledge with this relevant data.\n\nIn summary, RAG enhances the model's ability to provide accurate answers by integrating external information that it wouldn't normally have access to.",
-    "cited": [
-      "w7d2",
-      "w7d4",
-      "w7d2",
-      "w7d2",
-      "w7d2"
+    "question": "What is Python?",
+    "expected_lesson": "w1d1",
+    "retrieved_lessons": [
+      "w1d1",
+      "w1d1",
+      "w1d1",
+      "w1d3",
+      "w4d1"
     ],
-    "latency": 4.844160795211792,
-    "passed": true,
-    "checks": {
-      "source_correct": true,
-      "has_citations": true,
-      "not_refused": true,
-      "mentions:retriev": true,
-      "mentions:context": true
-    },
-    "notes": []
+    "retrieved_sources": [
+      "Python I",
+      "Python I",
+      "Python I",
+      "Python Error Handling",
+      "Regular Expresions (Regex)"
+    ],
+    "retrieved_headings": [
+      "",
+      "",
+      "",
+      "",
+      ""
+    ],
+    "retrieved_distances": [
+      1.1313674449920654,
+      1.1946467161178589,
+      1.201707363128662,
+      1.2159717082977295,
+      1.2297714948654175
+    ],
+    "top1_correct": true,
+    "top3_correct": true,
+    "top5_correct": true
   },
   {
-    "id": "f02",
-    "kind": "content",
-    "question": "What is an embedding?",
-    "answer": "An embedding is a way of representing words, sentences, or other types of data as sequences of numbers in a multi-dimensional space. This representation allows for a more compact and dense form compared to traditional methods like one-hot encoding. For example, instead of needing a separate column for every word in a vocabulary, embeddings reduce the number of features while still capturing similarities between words. The core idea is to store related information together in this multi-dimensional space, which can also be applied to various modalities beyond text, such as images, audio, and even DNA.\n\nThis concept was introduced in week 4 day 3.",
-    "cited": [
-      "w4d3",
-      "w4d3",
-      "w4d3",
-      "w4d3",
-      "w4d3"
+    "question": "How do variables work in Python?",
+    "expected_lesson": "w1d1",
+    "retrieved_lessons": [
+      "w1d1",
+      "w1d4",
+      "w1d1",
+      "w1d1",
+      "w1d4"
     ],
-    "latency": 2.69378399848938,
-    "passed": true,
-    "checks": {
-      "source_correct": true,
-      "has_citations": true,
-      "not_refused": true,
-      "mentions:vector|numbers|numerical|dimensional": true,
-      "mentions:similar": true
-    },
-    "notes": []
+    "retrieved_sources": [
+      "Python I",
+      "Bonus session - Python variables and the memory model",
+      "Python I",
+      "Python I",
+      "Bonus session - Python variables and the memory model"
+    ],
+    "retrieved_headings": [
+      "",
+      "",
+      "",
+      "",
+      ""
+    ],
+    "retrieved_distances": [
+      0.8220370411872864,
+      0.831187903881073,
+      0.8448476791381836,
+      0.8533841371536255,
+      0.8668745756149292
+    ],
+    "top1_correct": true,
+    "top3_correct": true,
+    "top5_correct": true
   },
   {
-    "id": "f03",
-    "kind": "content",
-    "question": "How does CLIP work?",
-    "answer": "CLIP (Contrastive Language-Image Pretraining) is covered in the course, specifically in week 8 day 1, where it is discussed in the context of a multimodal search engine. You can find more details about how it works in that lesson.",
-    "cited": [
-      "w8d1",
-      "w7d3",
-      "w7d3",
-      "w7d3",
-      "w7d3",
-      "w7d3"
+    "question": "What are Python data types?",
+    "expected_lesson": "w1d1",
+    "retrieved_lessons": [
+      "w1d1",
+      "w1d4",
+      "w1d4",
+      "w1d4",
+      "w1d4"
     ],
-    "latency": 3.433049201965332,
-    "passed": true,
-    "checks": {
-      "source_correct": true,
-      "has_citations": true,
-      "not_refused": true,
-      "mentions:image": true,
-      "mentions:text": true
-    },
-    "notes": []
+    "retrieved_sources": [
+      "Python I",
+      "NumPy",
+      "NumPy",
+      "NumPy",
+      "NumPy"
+    ],
+    "retrieved_headings": [
+      "",
+      "",
+      "",
+      "",
+      ""
+    ],
+    "retrieved_distances": [
+      0.9390363693237305,
+      0.9850707054138184,
+      1.0479488372802734,
+      1.0530669689178467,
+      1.0656967163085938
+    ],
+    "top1_correct": true,
+    "top3_correct": true,
+    "top5_correct": true
   },
   {
-    "id": "f04",
-    "kind": "content",
-    "question": "What is the difference between precision and recall?",
-    "answer": "Precision and recall are two important metrics used to evaluate the performance of classification models.\n\n- **Precision** measures the accuracy of the positive predictions made by the model. It is defined as the ratio of true positives to the sum of true positives and false positives. In simpler terms, it tells you how many of the items flagged as positive are actually positive.\n\n- **Recall**, on the other hand, measures the ability of the model to identify all relevant instances. It is defined as the ratio of true positives to the sum of true positives and false negatives. This means it tells you how many of the actual positive cases were captured by the model.\n\nIn practice, you might prioritize one over the other depending on the context. For example, in a situation where missing a positive case is critical (like detecting a bomb or cancer), you would prioritize recall. Conversely, if false positives are more problematic (like marking a friend's email as spam), you would prioritize precision. \n\nThis trade-off between precision and recall is a key aspect of model evaluation.",
-    "cited": [
+    "question": "What is an if statement?",
+    "expected_lesson": "w1d1",
+    "retrieved_lessons": [
+      "w1d2",
+      "w1d2",
+      "w1d1",
+      "w1d1",
+      "w1d2"
+    ],
+    "retrieved_sources": [
+      "Functions II (Returns)",
+      "Functions II (Returns)",
+      "Python I",
+      "Python II",
+      "Functions II (Returns)"
+    ],
+    "retrieved_headings": [
+      "",
+      "",
+      "",
+      "",
+      ""
+    ],
+    "retrieved_distances": [
+      0.959723949432373,
+      1.045785665512085,
+      1.056164264678955,
+      1.0611331462860107,
+      1.1064565181732178
+    ],
+    "top1_correct": false,
+    "top3_correct": true,
+    "top5_correct": true
+  },
+  {
+    "question": "How do for loops work?",
+    "expected_lesson": "w1d1",
+    "retrieved_lessons": [
+      "w1d1",
+      "w4d1",
+      "w1d1",
+      "w1d2",
+      "w1d1"
+    ],
+    "retrieved_sources": [
+      "Python II",
+      "Understanding Pseudocode With Max Example",
+      "Python II",
+      "Python List Comprehensions Explained",
+      "Python II"
+    ],
+    "retrieved_headings": [
+      "",
+      "",
+      "",
+      "",
+      ""
+    ],
+    "retrieved_distances": [
+      0.9991033673286438,
+      1.006923794746399,
+      1.021415114402771,
+      1.02534818649292,
+      1.0258355140686035
+    ],
+    "top1_correct": true,
+    "top3_correct": true,
+    "top5_correct": true
+  },
+  {
+    "question": "What is a while loop?",
+    "expected_lesson": "w1d1",
+    "retrieved_lessons": [
+      "w5d3",
+      "w1d1",
+      "w1d1",
+      "w1d1",
+      "w1d1"
+    ],
+    "retrieved_sources": [
+      "Tool Calling",
+      "Python II",
+      "Python II",
+      "Python II",
+      "Python II"
+    ],
+    "retrieved_headings": [
+      "",
+      "",
+      "",
+      "",
+      ""
+    ],
+    "retrieved_distances": [
+      0.932109534740448,
+      0.9402446150779724,
+      1.0049896240234375,
+      1.0230441093444824,
+      1.0270828008651733
+    ],
+    "top1_correct": false,
+    "top3_correct": true,
+    "top5_correct": true
+  },
+  {
+    "question": "What is a Python function?",
+    "expected_lesson": "w1d2",
+    "retrieved_lessons": [
+      "w1d2",
+      "w1d2",
+      "w1d2",
+      "w1d2",
+      "w1d2"
+    ],
+    "retrieved_sources": [
+      "Python Functions I (intro + parameters, defaults parameters, positional and keyword params)",
+      "Python Functions I (intro + parameters, defaults parameters, positional and keyword params)",
+      "Python Functions IV (lambda functions)",
+      "Python Functions I (intro + parameters, defaults parameters, positional and keyword params)",
+      "Python Functions I (intro + parameters, defaults parameters, positional and keyword params)"
+    ],
+    "retrieved_headings": [
+      "",
+      "",
+      "",
+      "",
+      ""
+    ],
+    "retrieved_distances": [
+      0.8663427233695984,
+      0.8962833881378174,
+      0.9092555642127991,
+      0.9148533940315247,
+      0.9244341254234314
+    ],
+    "top1_correct": true,
+    "top3_correct": true,
+    "top5_correct": true
+  },
+  {
+    "question": "What is the difference between positional and keyword arguments?",
+    "expected_lesson": "w1d2",
+    "retrieved_lessons": [
+      "w1d2",
+      "w1d2",
+      "w1d2",
+      "w1d2",
+      "w1d2"
+    ],
+    "retrieved_sources": [
+      "Python Functions I (intro + parameters, defaults parameters, positional and keyword params)",
+      "Python Functions I (intro + parameters, defaults parameters, positional and keyword params)",
+      "Python Functions I (intro + parameters, defaults parameters, positional and keyword params)",
+      "Python Functions I (intro + parameters, defaults parameters, positional and keyword params)",
+      "Python Functions I (intro + parameters, defaults parameters, positional and keyword params)"
+    ],
+    "retrieved_headings": [
+      "",
+      "",
+      "",
+      "",
+      ""
+    ],
+    "retrieved_distances": [
+      0.7253212332725525,
+      0.8634837865829468,
+      0.8983911275863647,
+      0.9432402849197388,
+      0.970946192741394
+    ],
+    "top1_correct": true,
+    "top3_correct": true,
+    "top5_correct": true
+  },
+  {
+    "question": "What is variable scope?",
+    "expected_lesson": "w1d2",
+    "retrieved_lessons": [
+      "w1d2",
+      "w1d2",
+      "w1d2",
+      "w1d2",
+      "w1d2"
+    ],
+    "retrieved_sources": [
+      "Python Functions III (Scope)",
+      "Python Functions III (Scope)",
+      "Python Functions III (Scope)",
+      "Python Functions III (Scope)",
+      "Python Functions III (Scope)"
+    ],
+    "retrieved_headings": [
+      "",
+      "",
+      "",
+      "",
+      ""
+    ],
+    "retrieved_distances": [
+      0.7803429961204529,
+      0.7921515703201294,
+      0.811142086982727,
+      0.823982834815979,
+      0.8398084044456482
+    ],
+    "top1_correct": true,
+    "top3_correct": true,
+    "top5_correct": true
+  },
+  {
+    "question": "What is a lambda function?",
+    "expected_lesson": "w1d2",
+    "retrieved_lessons": [
+      "w1d2",
+      "w1d2",
+      "w1d2",
+      "w1d5",
+      "w1d2"
+    ],
+    "retrieved_sources": [
+      "Python Functions IV (lambda functions)",
+      "Python Functions IV (lambda functions)",
+      "Python Functions IV (lambda functions)",
+      "Pandas Groupby",
+      "Python Functions IV (lambda functions)"
+    ],
+    "retrieved_headings": [
+      "",
+      "",
+      "",
+      "",
+      ""
+    ],
+    "retrieved_distances": [
+      0.6591662764549255,
+      0.8149451017379761,
+      0.8526676893234253,
+      0.8772168159484863,
+      0.8806803226470947
+    ],
+    "top1_correct": true,
+    "top3_correct": true,
+    "top5_correct": true
+  },
+  {
+    "question": "What are list comprehensions?",
+    "expected_lesson": "w1d2",
+    "retrieved_lessons": [
+      "w1d2",
+      "w1d2",
+      "w1d2",
+      "w1d2",
+      "w1d2"
+    ],
+    "retrieved_sources": [
+      "Python List Comprehensions Explained",
+      "Python List Comprehensions Explained",
+      "Python List Comprehensions Explained",
+      "Python List Comprehensions Explained",
+      "Python List Comprehensions Explained"
+    ],
+    "retrieved_headings": [
+      "",
+      "",
+      "",
+      "",
+      ""
+    ],
+    "retrieved_distances": [
+      0.7273983955383301,
+      0.7574176788330078,
+      0.7610748410224915,
+      0.7624391317367554,
+      0.7653892636299133
+    ],
+    "top1_correct": true,
+    "top3_correct": true,
+    "top5_correct": true
+  },
+  {
+    "question": "How do list comprehensions improve Python code?",
+    "expected_lesson": "w1d2",
+    "retrieved_lessons": [
+      "w1d2",
+      "w1d2",
+      "w1d2",
+      "w1d2",
+      "w1d2"
+    ],
+    "retrieved_sources": [
+      "Python List Comprehensions Explained",
+      "Python List Comprehensions Explained",
+      "Python List Comprehensions Explained",
+      "Python List Comprehensions Explained",
+      "Python List Comprehensions Explained"
+    ],
+    "retrieved_headings": [
+      "",
+      "",
+      "",
+      "",
+      ""
+    ],
+    "retrieved_distances": [
+      0.6737393736839294,
+      0.7028633952140808,
+      0.7225319147109985,
+      0.7238987684249878,
+      0.7342554330825806
+    ],
+    "top1_correct": true,
+    "top3_correct": true,
+    "top5_correct": true
+  },
+  {
+    "question": "How do try and except work?",
+    "expected_lesson": "w1d3",
+    "retrieved_lessons": [
+      "w1d3",
+      "w1d3",
+      "w1d3",
+      "w1d3",
+      "w1d3"
+    ],
+    "retrieved_sources": [
+      "Python Error Handling",
+      "Python Error Handling",
+      "Python Error Handling",
+      "Python Error Handling",
+      "Python Error Handling"
+    ],
+    "retrieved_headings": [
+      "",
+      "",
+      "",
+      "",
+      ""
+    ],
+    "retrieved_distances": [
+      1.152381181716919,
+      1.182289719581604,
+      1.2215070724487305,
+      1.2247848510742188,
+      1.2288005352020264
+    ],
+    "top1_correct": true,
+    "top3_correct": true,
+    "top5_correct": true
+  },
+  {
+    "question": "Why is exception handling important?",
+    "expected_lesson": "w1d3",
+    "retrieved_lessons": [
+      "w1d3",
+      "w1d3",
+      "w1d3",
+      "w1d3",
+      "w1d3"
+    ],
+    "retrieved_sources": [
+      "Python Error Handling",
+      "Python Error Handling",
+      "Python Error Handling",
+      "Python Error Handling",
+      "Python Error Handling"
+    ],
+    "retrieved_headings": [
+      "",
+      "",
+      "",
+      "",
+      ""
+    ],
+    "retrieved_distances": [
+      0.9700924754142761,
+      0.9981050491333008,
+      1.0278939008712769,
+      1.0483973026275635,
+      1.064293384552002
+    ],
+    "top1_correct": true,
+    "top3_correct": true,
+    "top5_correct": true
+  },
+  {
+    "question": "What does map() do?",
+    "expected_lesson": "w1d3",
+    "retrieved_lessons": [
+      "w1d3",
+      "w1d3",
+      "w1d3",
+      "w1d3",
+      "w1d3"
+    ],
+    "retrieved_sources": [
+      "Python map(), filter(), reduce()",
+      "Python map(), filter(), reduce()",
+      "Python map(), filter(), reduce()",
+      "Python map(), filter(), reduce()",
+      "Python map(), filter(), reduce()"
+    ],
+    "retrieved_headings": [
+      "",
+      "",
+      "",
+      "",
+      ""
+    ],
+    "retrieved_distances": [
+      0.9929631352424622,
+      0.9977328777313232,
+      1.0362300872802734,
+      1.0504146814346313,
+      1.05095636844635
+    ],
+    "top1_correct": true,
+    "top3_correct": true,
+    "top5_correct": true
+  },
+  {
+    "question": "What is filter() used for?",
+    "expected_lesson": "w1d3",
+    "retrieved_lessons": [
+      "w3d2",
+      "w3d2",
+      "w3d2",
+      "w3d2",
+      "w3d2"
+    ],
+    "retrieved_sources": [
+      "Computer Vision Intro (Image Preprocessing, Filtering, and Feature Extraction)",
+      "Computer Vision Intro (Image Preprocessing, Filtering, and Feature Extraction)",
+      "Computer Vision Intro (Image Preprocessing, Filtering, and Feature Extraction)",
+      "Computer Vision Intro (Image Preprocessing, Filtering, and Feature Extraction)",
+      "Computer Vision Intro (Image Preprocessing, Filtering, and Feature Extraction)"
+    ],
+    "retrieved_headings": [
+      "",
+      "",
+      "",
+      "",
+      ""
+    ],
+    "retrieved_distances": [
+      1.0082777738571167,
+      1.0220763683319092,
+      1.0417803525924683,
+      1.0448956489562988,
+      1.0545217990875244
+    ],
+    "top1_correct": false,
+    "top3_correct": false,
+    "top5_correct": false
+  },
+  {
+    "question": "What is reduce() used for?",
+    "expected_lesson": "w1d3",
+    "retrieved_lessons": [
+      "w2d1",
+      "w2d1",
+      "w2d1",
+      "w2d4",
+      "w2d1"
+    ],
+    "retrieved_sources": [
+      "ML demo II (Logistic Regression)",
+      "ML demo II (Logistic Regression)",
+      "ML demo II (Logistic Regression)",
+      "Supervised End-to-end process (activity + QA)",
+      "ML demo II (Logistic Regression)"
+    ],
+    "retrieved_headings": [
+      "",
+      "",
+      "",
+      "",
+      ""
+    ],
+    "retrieved_distances": [
+      1.2370320558547974,
+      1.257340908050537,
+      1.299058437347412,
+      1.3342792987823486,
+      1.3378757238388062
+    ],
+    "top1_correct": false,
+    "top3_correct": false,
+    "top5_correct": false
+  },
+  {
+    "question": "What is NumPy?",
+    "expected_lesson": "w1d4",
+    "retrieved_lessons": [
+      "w1d4",
+      "w1d4",
+      "w1d4",
+      "w1d4",
+      "w1d4"
+    ],
+    "retrieved_sources": [
+      "NumPy",
+      "NumPy",
+      "NumPy",
+      "NumPy",
+      "NumPy"
+    ],
+    "retrieved_headings": [
+      "",
+      "",
+      "",
+      "",
+      ""
+    ],
+    "retrieved_distances": [
+      0.7360201478004456,
+      0.7641624808311462,
+      0.8007363677024841,
+      0.8244869709014893,
+      0.8546914458274841
+    ],
+    "top1_correct": true,
+    "top3_correct": true,
+    "top5_correct": true
+  },
+  {
+    "question": "Why do we use NumPy arrays?",
+    "expected_lesson": "w1d4",
+    "retrieved_lessons": [
+      "w1d4",
+      "w1d4",
+      "w1d4",
+      "w1d4",
+      "w1d4"
+    ],
+    "retrieved_sources": [
+      "NumPy",
+      "NumPy",
+      "NumPy",
+      "NumPy",
+      "NumPy"
+    ],
+    "retrieved_headings": [
+      "",
+      "",
+      "",
+      "",
+      ""
+    ],
+    "retrieved_distances": [
+      0.611121654510498,
+      0.6187167167663574,
+      0.7034804224967957,
+      0.7112761735916138,
+      0.7226292490959167
+    ],
+    "top1_correct": true,
+    "top3_correct": true,
+    "top5_correct": true
+  },
+  {
+    "question": "What is Pandas?",
+    "expected_lesson": "w1d4",
+    "retrieved_lessons": [
+      "w1d4",
+      "w1d4",
+      "w1d4",
+      "w1d4",
+      "w1d4"
+    ],
+    "retrieved_sources": [
+      "Pandas",
+      "Pandas",
+      "Pandas",
+      "Pandas",
+      "Pandas"
+    ],
+    "retrieved_headings": [
+      "",
+      "",
+      "",
+      "",
+      ""
+    ],
+    "retrieved_distances": [
+      0.7954432964324951,
+      0.8059196472167969,
+      0.8185603022575378,
+      0.8458353877067566,
+      0.848009467124939
+    ],
+    "top1_correct": true,
+    "top3_correct": true,
+    "top5_correct": true
+  },
+  {
+    "question": "How do you load a CSV using Pandas?",
+    "expected_lesson": "w1d4",
+    "retrieved_lessons": [
+      "w1d4",
+      "w1d4",
+      "w1d4",
+      "w1d4",
+      "w1d5"
+    ],
+    "retrieved_sources": [
+      "Pandas",
+      "Pandas",
+      "Pandas",
+      "Pandas",
+      "Pandas Groupby"
+    ],
+    "retrieved_headings": [
+      "",
+      "",
+      "",
+      "",
+      ""
+    ],
+    "retrieved_distances": [
+      0.7154808640480042,
+      0.7551966905593872,
+      0.790204644203186,
+      0.8182640671730042,
+      0.8272616267204285
+    ],
+    "top1_correct": true,
+    "top3_correct": true,
+    "top5_correct": true
+  },
+  {
+    "question": "What is groupby() in Pandas?",
+    "expected_lesson": "w1d5",
+    "retrieved_lessons": [
+      "w1d5",
+      "w1d5",
+      "w1d5",
+      "w1d5",
+      "w1d5"
+    ],
+    "retrieved_sources": [
+      "Pandas Groupby",
+      "Pandas Groupby",
+      "Pandas Groupby",
+      "Pandas Groupby",
+      "Pandas Groupby"
+    ],
+    "retrieved_headings": [
+      "",
+      "",
+      "",
+      "",
+      ""
+    ],
+    "retrieved_distances": [
+      0.8475204110145569,
+      0.8642435669898987,
+      0.8721218109130859,
+      0.9180176854133606,
+      0.9249742031097412
+    ],
+    "top1_correct": true,
+    "top3_correct": true,
+    "top5_correct": true
+  },
+  {
+    "question": "What is merge() in Pandas?",
+    "expected_lesson": "w1d5",
+    "retrieved_lessons": [
+      "w1d5",
+      "w1d5",
+      "w1d5",
+      "w1d5",
+      "w1d5"
+    ],
+    "retrieved_sources": [
+      "Pandas Concat and Merge",
+      "Pandas Concat and Merge",
+      "Pandas Concat and Merge",
+      "Pandas Concat and Merge",
+      "Pandas Concat and Merge"
+    ],
+    "retrieved_headings": [
+      "",
+      "",
+      "",
+      "",
+      ""
+    ],
+    "retrieved_distances": [
+      0.6144026517868042,
+      0.6836987733840942,
+      0.7136631608009338,
+      0.7182737588882446,
+      0.7652620673179626
+    ],
+    "top1_correct": true,
+    "top3_correct": true,
+    "top5_correct": true
+  },
+  {
+    "question": "What is concat() in Pandas?",
+    "expected_lesson": "w1d5",
+    "retrieved_lessons": [
+      "w1d5",
+      "w1d5",
+      "w1d5",
+      "w1d5",
+      "w1d5"
+    ],
+    "retrieved_sources": [
+      "Pandas Concat and Merge",
+      "Pandas Concat and Merge",
+      "Pandas Concat and Merge",
+      "Pandas Concat and Merge",
+      "Pandas Concat and Merge"
+    ],
+    "retrieved_headings": [
+      "",
+      "",
+      "",
+      "",
+      ""
+    ],
+    "retrieved_distances": [
+      0.5951111316680908,
+      0.6144524812698364,
+      0.6741901636123657,
+      0.6857367753982544,
+      0.6932091116905212
+    ],
+    "top1_correct": true,
+    "top3_correct": true,
+    "top5_correct": true
+  },
+  {
+    "question": "Why is data visualization important?",
+    "expected_lesson": "w1d5",
+    "retrieved_lessons": [
+      "w1d5",
+      "w1d5",
+      "w1d5",
+      "w1d5",
+      "w1d5"
+    ],
+    "retrieved_sources": [
+      "Data Visualization",
+      "Data Visualization",
+      "Data Visualization",
+      "Data Visualization",
+      "Data Visualization"
+    ],
+    "retrieved_headings": [
+      "",
+      "",
+      "",
+      "",
+      ""
+    ],
+    "retrieved_distances": [
+      0.7629734873771667,
+      0.8084977865219116,
+      0.8222370743751526,
+      0.857457160949707,
+      0.8707219958305359
+    ],
+    "top1_correct": true,
+    "top3_correct": true,
+    "top5_correct": true
+  },
+  {
+    "question": "What is Machine Learning?",
+    "expected_lesson": "w2d1",
+    "retrieved_lessons": [
+      "w2d1",
+      "w1d1",
+      "w1d1",
+      "w2d1",
+      "w2d1"
+    ],
+    "retrieved_sources": [
+      "Intro to AI and Machine Learning",
+      "Intro to AI Engineering",
+      "Intro to AI Engineering",
+      "Intro to AI and Machine Learning",
+      "Intro to AI and Machine Learning"
+    ],
+    "retrieved_headings": [
+      "",
+      "",
+      "",
+      "",
+      ""
+    ],
+    "retrieved_distances": [
+      0.904090166091919,
+      0.9170013666152954,
+      0.9441766738891602,
+      0.9661832451820374,
+      0.9707846641540527
+    ],
+    "top1_correct": true,
+    "top3_correct": true,
+    "top5_correct": true
+  },
+  {
+    "question": "What is Linear Regression?",
+    "expected_lesson": "w2d1",
+    "retrieved_lessons": [
+      "w2d1",
+      "w2d1",
+      "w1d4",
+      "w2d1",
+      "w2d1"
+    ],
+    "retrieved_sources": [
+      "ML demo I - Linear Regression (train-test split, train a model, overfitting...)",
+      "ML demo I - Linear Regression (train-test split, train a model, overfitting...)",
+      "Intro to the underlying concepts of ML (Tensors, Linear Algebra, etc.)",
+      "ML demo I - Linear Regression (train-test split, train a model, overfitting...)",
+      "ML demo I - Linear Regression (train-test split, train a model, overfitting...)"
+    ],
+    "retrieved_headings": [
+      "",
+      "",
+      "",
+      "",
+      ""
+    ],
+    "retrieved_distances": [
+      0.8731178045272827,
+      0.9603909254074097,
+      0.9674769043922424,
+      0.9771907329559326,
+      0.9985160827636719
+    ],
+    "top1_correct": true,
+    "top3_correct": true,
+    "top5_correct": true
+  },
+  {
+    "question": "What is train-test split?",
+    "expected_lesson": "w2d1",
+    "retrieved_lessons": [
+      "w2d3",
+      "w2d3",
+      "w2d3",
+      "w2d3",
+      "w2d1"
+    ],
+    "retrieved_sources": [
+      "II (data splitting)",
+      "II (data splitting)",
+      "II (data splitting)",
+      "II (data splitting)",
+      "ML demo I - Linear Regression (train-test split, train a model, overfitting...)"
+    ],
+    "retrieved_headings": [
+      "",
+      "",
+      "",
+      "",
+      ""
+    ],
+    "retrieved_distances": [
+      0.727716326713562,
+      0.7313535213470459,
+      0.7766680121421814,
+      0.835774838924408,
+      0.85013347864151
+    ],
+    "top1_correct": false,
+    "top3_correct": false,
+    "top5_correct": true
+  },
+  {
+    "question": "What is overfitting?",
+    "expected_lesson": "w2d1",
+    "retrieved_lessons": [
+      "w2d1",
+      "w2d1",
+      "w2d1",
+      "w2d1",
+      "w2d1"
+    ],
+    "retrieved_sources": [
+      "ML demo I - Linear Regression (train-test split, train a model, overfitting...)",
+      "ML demo I - Linear Regression (train-test split, train a model, overfitting...)",
+      "ML demo I - Linear Regression (train-test split, train a model, overfitting...)",
+      "ML demo I - Linear Regression (train-test split, train a model, overfitting...)",
+      "ML demo I - Linear Regression (train-test split, train a model, overfitting...)"
+    ],
+    "retrieved_headings": [
+      "",
+      "",
+      "",
+      "",
+      ""
+    ],
+    "retrieved_distances": [
+      0.7318342924118042,
+      0.7451111674308777,
+      0.7728955149650574,
+      0.8091433644294739,
+      0.8413860201835632
+    ],
+    "top1_correct": true,
+    "top3_correct": true,
+    "top5_correct": true
+  },
+  {
+    "question": "What is Logistic Regression?",
+    "expected_lesson": "w2d1",
+    "retrieved_lessons": [
+      "w2d1",
+      "w2d1",
+      "w2d1",
+      "w2d1",
+      "w2d1"
+    ],
+    "retrieved_sources": [
+      "ML demo II (Logistic Regression)",
+      "ML demo II (Logistic Regression)",
+      "ML demo II (Logistic Regression)",
+      "ML demo II (Logistic Regression)",
+      "ML demo II (Logistic Regression)"
+    ],
+    "retrieved_headings": [
+      "",
+      "",
+      "",
+      "",
+      ""
+    ],
+    "retrieved_distances": [
+      0.8287001252174377,
+      0.8874942660331726,
+      0.9213825464248657,
+      0.9214877486228943,
+      1.0090415477752686
+    ],
+    "top1_correct": true,
+    "top3_correct": true,
+    "top5_correct": true
+  },
+  {
+    "question": "What is MAE?",
+    "expected_lesson": "w2d2",
+    "retrieved_lessons": [
+      "w1d1",
+      "w1d1",
+      "w1d1",
+      "w5d3",
+      "w1d1"
+    ],
+    "retrieved_sources": [
+      "Intro to AI Engineering",
+      "Intro to AI Engineering",
+      "Intro to AI Engineering",
+      "AI Landscape 2026",
+      "Intro to AI Engineering"
+    ],
+    "retrieved_headings": [
+      "",
+      "",
+      "",
+      "",
+      ""
+    ],
+    "retrieved_distances": [
+      1.2179839611053467,
+      1.2486534118652344,
+      1.2698373794555664,
+      1.2762255668640137,
+      1.2935900688171387
+    ],
+    "top1_correct": false,
+    "top3_correct": false,
+    "top5_correct": false
+  },
+  {
+    "question": "What is RMSE?",
+    "expected_lesson": "w2d2",
+    "retrieved_lessons": [
       "w2d2",
       "w2d2",
       "w2d2",
       "w2d2",
       "w2d2"
     ],
-    "latency": 4.12757682800293,
-    "passed": true,
-    "checks": {
-      "source_correct": true,
-      "has_citations": true,
-      "not_refused": true,
-      "mentions:precision": true,
-      "mentions:recall": true
-    },
-    "notes": []
-  },
-  {
-    "id": "f05",
-    "kind": "content",
-    "question": "How do I deploy a model with FastAPI?",
-    "answer": "In the course, deploying a model with FastAPI was covered in several lessons. Here are the key points:\n\n1. **Introduction to FastAPI**: In week 6 day 1, the instructor introduced FastAPI as a framework for creating APIs. They discussed the organization of the code and how to implement an API using FastAPI, including running it locally and testing it with Postman.\n\n2. **Creating the API**: The same lesson also covered how to implement the API to allow users to send requests to the model, such as predicting outcomes based on input data.\n\n3. **Deployment**: The deployment process on Render.com was discussed, including how to make the API available online after testing it locally.\n\nFor more detailed steps, you might want to refer to the specific timestamps in week 6 day 1.",
-    "cited": [
-      "w6d1",
-      "w6d1",
-      "w6d1",
-      "w6d1",
-      "w6d1"
+    "retrieved_sources": [
+      "Regression Metrics (MAE, MSE, RMSE, R2)",
+      "Regression Metrics (MAE, MSE, RMSE, R2)",
+      "Regression Metrics (MAE, MSE, RMSE, R2)",
+      "Regression Metrics (MAE, MSE, RMSE, R2)",
+      "Regression Metrics (MAE, MSE, RMSE, R2)"
     ],
-    "latency": 3.278357982635498,
-    "passed": true,
-    "checks": {
-      "source_correct": true,
-      "has_citations": true,
-      "not_refused": true,
-      "mentions:api": true
-    },
-    "notes": []
-  },
-  {
-    "id": "f06",
-    "kind": "content",
-    "question": "What is quantization and why does it help?",
-    "answer": "Quantization is a technique used to reduce the precision of the numbers that represent the parameters and weights in a model. Instead of using a high precision format, like 32 bits, quantization allows you to use fewer bits, such as 16 or even 8 bits. This means that the model will store less information, which can lead to a loss of precision, but it also makes the model more efficient in terms of memory usage.\n\nThe core idea is that if you don't need all the precision for a specific application, you can round the numbers and store them with less precision. For example, if you were measuring temperature, you might store it with high precision for accuracy, but if you need to store a lot of temperature readings efficiently, you might choose to round and store them with less precision.\n\nQuantization helps by reducing the memory footprint of models, making them faster and more efficient to run, especially in environments with limited resources. However, it's important to balance the trade-off between precision and efficiency, as using too few bits can significantly affect the model's performance.",
-    "cited": [
-      "w5d4",
-      "w5d4",
-      "w5d5",
-      "w5d4",
-      "w5d4"
+    "retrieved_headings": [
+      "",
+      "",
+      "",
+      "",
+      ""
     ],
-    "latency": 4.549245119094849,
-    "passed": true,
-    "checks": {
-      "source_correct": true,
-      "has_citations": true,
-      "not_refused": true,
-      "mentions:model": true
-    },
-    "notes": []
+    "retrieved_distances": [
+      0.8413536548614502,
+      0.8655165433883667,
+      0.8710213303565979,
+      0.8847568035125732,
+      0.887514591217041
+    ],
+    "top1_correct": true,
+    "top3_correct": true,
+    "top5_correct": true
   },
   {
-    "id": "f07",
-    "kind": "content",
-    "question": "What is overfitting and how do I spot it?",
-    "answer": "Overfitting occurs when a model learns too much from the training data, including noise and details that do not generalize well to new, unseen data. A clear sign of overfitting is when the model has high performance on the training set but performs poorly on the test set. Specifically, if you see that the training scores are very high, but the performance drops significantly when you evaluate the model on new data, that's a strong indication of overfitting.\n\nIn summary, to spot overfitting, look for:\n- High training scores.\n- A significant drop in performance on the test set compared to the training set.\n\nThis means the model is likely learning the noise from the training data rather than the underlying patterns.",
-    "cited": [
+    "question": "What is R\u00b2?",
+    "expected_lesson": "w2d2",
+    "retrieved_lessons": [
+      "w2d2",
       "w2d1",
+      "w2d2",
       "w2d1",
+      "w2d2"
+    ],
+    "retrieved_sources": [
+      "Regression Metrics (MAE, MSE, RMSE, R2)",
+      "ML demo I - Linear Regression (train-test split, train a model, overfitting...)",
+      "Regression Metrics (MAE, MSE, RMSE, R2)",
+      "ML demo I - Linear Regression (train-test split, train a model, overfitting...)",
+      "Regression Metrics (MAE, MSE, RMSE, R2)"
+    ],
+    "retrieved_headings": [
+      "",
+      "",
+      "",
+      "",
+      ""
+    ],
+    "retrieved_distances": [
+      0.7465865612030029,
+      0.7775776386260986,
+      0.7981008291244507,
+      0.8912230730056763,
+      0.8919689655303955
+    ],
+    "top1_correct": true,
+    "top3_correct": true,
+    "top5_correct": true
+  },
+  {
+    "question": "What is a confusion matrix?",
+    "expected_lesson": "w2d2",
+    "retrieved_lessons": [
       "w2d1",
+      "w2d2",
+      "w2d2",
+      "w2d2",
+      "w2d2"
+    ],
+    "retrieved_sources": [
+      "ML demo II (Logistic Regression)",
+      "Classification Metrics (Confusion Matrix, Accuracy, Precision, Recall...)",
+      "Classification Metrics (Confusion Matrix, Accuracy, Precision, Recall...)",
+      "Classification Metrics (Confusion Matrix, Accuracy, Precision, Recall...)",
+      "Classification Metrics (Confusion Matrix, Accuracy, Precision, Recall...)"
+    ],
+    "retrieved_headings": [
+      "",
+      "",
+      "",
+      "",
+      ""
+    ],
+    "retrieved_distances": [
+      0.8688420057296753,
+      0.9543763399124146,
+      0.9562849402427673,
+      0.97914719581604,
+      0.9882670640945435
+    ],
+    "top1_correct": false,
+    "top3_correct": true,
+    "top5_correct": true
+  },
+  {
+    "question": "What is Precision?",
+    "expected_lesson": "w2d2",
+    "retrieved_lessons": [
+      "w2d2",
+      "w2d3",
+      "w2d2",
+      "w2d2",
+      "w2d2"
+    ],
+    "retrieved_sources": [
+      "Classification Metrics (Confusion Matrix, Accuracy, Precision, Recall...)",
+      "I (problem definition + load data + EDA)",
+      "Classification Metrics (Confusion Matrix, Accuracy, Precision, Recall...)",
+      "Classification Metrics (Confusion Matrix, Accuracy, Precision, Recall...)",
+      "Classification Metrics (Confusion Matrix, Accuracy, Precision, Recall...)"
+    ],
+    "retrieved_headings": [
+      "",
+      "",
+      "",
+      "",
+      ""
+    ],
+    "retrieved_distances": [
+      0.9705116748809814,
+      0.9870666265487671,
+      1.017714023590088,
+      1.0526152849197388,
+      1.0882034301757812
+    ],
+    "top1_correct": true,
+    "top3_correct": true,
+    "top5_correct": true
+  },
+  {
+    "question": "What is Recall?",
+    "expected_lesson": "w2d2",
+    "retrieved_lessons": [
+      "w7d3",
+      "w7d3",
+      "w7d3",
+      "w7d5",
+      "w7d3"
+    ],
+    "retrieved_sources": [
+      "Retrieval Agents",
+      "Retrieval Agents",
+      "Retrieval Agents",
+      "Recap Week 7",
+      "Retrieval Agents"
+    ],
+    "retrieved_headings": [
+      "",
+      "",
+      "",
+      "",
+      ""
+    ],
+    "retrieved_distances": [
+      1.1627734899520874,
+      1.1859240531921387,
+      1.2231885194778442,
+      1.2404674291610718,
+      1.2489564418792725
+    ],
+    "top1_correct": false,
+    "top3_correct": false,
+    "top5_correct": false
+  },
+  {
+    "question": "What is Accuracy?",
+    "expected_lesson": "w2d2",
+    "retrieved_lessons": [
       "w2d1",
+      "w2d2",
+      "w3d3",
+      "w2d2",
+      "w2d2"
+    ],
+    "retrieved_sources": [
+      "ML demo II (Logistic Regression)",
+      "Classification Metrics (Confusion Matrix, Accuracy, Precision, Recall...)",
+      "Project 1 Kick-off",
+      "Classification Metrics (Confusion Matrix, Accuracy, Precision, Recall...)",
+      "Classification Metrics (Confusion Matrix, Accuracy, Precision, Recall...)"
+    ],
+    "retrieved_headings": [
+      "",
+      "",
+      "",
+      "",
+      ""
+    ],
+    "retrieved_distances": [
+      0.867986261844635,
+      1.0502314567565918,
+      1.0511757135391235,
+      1.0688685178756714,
+      1.0710039138793945
+    ],
+    "top1_correct": false,
+    "top3_correct": true,
+    "top5_correct": true
+  },
+  {
+    "question": "What classification algorithms were covered?",
+    "expected_lesson": "w2d2",
+    "retrieved_lessons": [
+      "w2d2",
+      "w2d2",
+      "w2d2",
+      "w2d2",
       "w2d1"
     ],
-    "latency": 3.2293429374694824,
-    "passed": true,
-    "checks": {
-      "source_correct": true,
-      "has_citations": true,
-      "not_refused": true,
-      "mentions:train": true
-    },
-    "notes": []
-  },
-  {
-    "id": "f08",
-    "kind": "content",
-    "question": "How does tokenization work in NLP?",
-    "answer": "Tokenization in NLP is the process of breaking down text into smaller units called tokens, which can be words, phrases, or even characters. In the course, it was explained that typically, one word corresponds to one token, but this is not always the case. For example, certain tokenizers may split words into multiple tokens or keep punctuation as separate tokens.\n\nThe instructor mentioned using the `word_tokenize` function from the NLTK library to extract tokens from a corpus. After tokenization, a common next step is to clean the data by removing punctuation characters. This is important for preparing the input for machine learning models.\n\nAdditionally, it was noted that different tokenizers can behave differently. For instance, modern large language models (LLMs) like ChatGPT use specific tokenization methods, and it's common for a text with 100 words to translate into about 130 tokens. A rough rule of thumb provided was that one token is approximately equal to 0.75 words.\n\nThis information was covered in week 4 day 2 of the course.",
-    "cited": [
-      "w4d2",
-      "w4d2",
-      "w4d2",
-      "w4d2",
-      "w4d2"
+    "retrieved_sources": [
+      "ML Algorithms Classification",
+      "ML Algorithms Classification",
+      "ML Algorithms Classification",
+      "ML Algorithms Classification",
+      "Intro to AI and Machine Learning"
     ],
-    "latency": 4.005696058273315,
-    "passed": true,
-    "checks": {
-      "source_correct": true,
-      "has_citations": true,
-      "not_refused": true,
-      "mentions:token": true
-    },
-    "notes": []
-  },
-  {
-    "id": "f09",
-    "kind": "content",
-    "question": "What is LoRA and how does it relate to fine-tuning?",
-    "answer": "LoRA, or Low-Rank Adaptation, is a technique used in fine-tuning models. The core idea of LoRA is to avoid training all the weights of a model, which can be very large, by instead training two smaller matrices. The multiplication of these two smaller matrices results in a matrix that has the same size as the original weight matrix. This approach is more efficient and helps to mitigate issues like catastrophic forgetting, where the model might forget important information while learning new tasks.\n\nIn the context of fine-tuning, LoRA allows for parameter-efficient fine-tuning. Instead of retraining the entire model, you only adjust these smaller matrices, which reduces the computational load and the risk of forgetting previously learned information. This method is part of the broader process of transfer learning, where a pre-trained model is adapted to new tasks.\n\nThis was covered in week 5, day 5 of the course.",
-    "cited": [
-      "w5d5",
-      "w5d5",
-      "w5d5",
-      "w5d5",
-      "w5d5"
+    "retrieved_headings": [
+      "",
+      "",
+      "",
+      "",
+      ""
     ],
-    "latency": 3.9657390117645264,
-    "passed": true,
-    "checks": {
-      "source_correct": true,
-      "has_citations": true,
-      "not_refused": true,
-      "mentions:fine": true
-    },
-    "notes": []
-  },
-  {
-    "id": "f10",
-    "kind": "content",
-    "question": "What is a transformer architecture?",
-    "answer": "The transformer architecture is a type of neural network that consists of a sequence of many decoder blocks, allowing it to learn complex patterns effectively. It processes input data in parallel rather than sequentially, which means it can analyze all words in a sentence at once. This parallel processing significantly speeds up training. The architecture typically includes components like multi-attention mechanisms and feed-forward networks, which help the model understand relationships between tokens in the input data.\n\nThis was covered in week 5 day 2.",
-    "cited": [
-      "w5d2",
-      "w5d2",
-      "w5d2",
-      "w5d2",
-      "w5d2"
+    "retrieved_distances": [
+      0.6735655069351196,
+      0.6844507455825806,
+      0.7050996422767639,
+      0.7114606499671936,
+      0.743097722530365
     ],
-    "latency": 2.6065030097961426,
-    "passed": true,
-    "checks": {
-      "source_correct": true,
-      "has_citations": true,
-      "not_refused": true,
-      "mentions:attention": true
-    },
-    "notes": []
+    "top1_correct": true,
+    "top3_correct": true,
+    "top5_correct": true
   },
   {
-    "id": "f11",
-    "kind": "content",
-    "question": "How does backpropagation train a neural network?",
-    "answer": "Backpropagation trains a neural network through a process that involves two main steps: forward propagation and backward propagation. \n\n1. **Forward Propagation**: The input data flows through the network layers, and the model produces a prediction. For example, it might predict the price of a house or classify an image. After making a prediction, the network calculates the loss by comparing the predicted value with the actual label using a loss function.\n\n2. **Backpropagation**: Once the error (loss) is calculated, the algorithm identifies where the errors occurred and computes the adjustments needed for the weights in the network. This involves checking how much each weight contributed to the error and then updating those weights accordingly to minimize the loss in future predictions.\n\nThis process is repeated iteratively, allowing the network to learn and improve its predictions over time. \n\nThis explanation is based on the content from week 3 day 1.",
-    "cited": [
+    "question": "What regression algorithms were covered?",
+    "expected_lesson": "w2d2",
+    "retrieved_lessons": [
+      "w2d2",
+      "w2d2",
+      "w2d2",
+      "w2d2",
+      "w2d2"
+    ],
+    "retrieved_sources": [
+      "ML Algorithms Regression + labs intro",
+      "ML Algorithms Regression + labs intro",
+      "ML Algorithms Regression + labs intro",
+      "ML Algorithms Regression + labs intro",
+      "ML Algorithms Regression + labs intro"
+    ],
+    "retrieved_headings": [
+      "",
+      "",
+      "",
+      "",
+      ""
+    ],
+    "retrieved_distances": [
+      0.7093846201896667,
+      0.7177749276161194,
+      0.7585121989250183,
+      0.7702879905700684,
+      0.7749922871589661
+    ],
+    "top1_correct": true,
+    "top3_correct": true,
+    "top5_correct": true
+  },
+  {
+    "question": "Explain the complete supervised learning workflow.",
+    "expected_lesson": "w2d3",
+    "retrieved_lessons": [
+      "w2d3",
+      "w2d3",
+      "w2d3",
+      "w2d3",
+      "w2d3"
+    ],
+    "retrieved_sources": [
+      "End to End Supervised Learning Workflow \ud83d\udccc",
+      "End to End Supervised Learning Workflow \ud83d\udccc",
+      "End to End Supervised Learning Workflow \ud83d\udccc",
+      "End to End Supervised Learning Workflow \ud83d\udccc",
+      "End to End Supervised Learning Workflow \ud83d\udccc"
+    ],
+    "retrieved_headings": [
+      "",
+      "",
+      "",
+      "",
+      ""
+    ],
+    "retrieved_distances": [
+      0.7073915004730225,
+      0.7802409529685974,
+      0.7861185073852539,
+      0.7879692316055298,
+      0.7896836400032043
+    ],
+    "top1_correct": true,
+    "top3_correct": true,
+    "top5_correct": true
+  },
+  {
+    "question": "What is clustering?",
+    "expected_lesson": "w2d4",
+    "retrieved_lessons": [
+      "w2d4",
+      "w2d4",
+      "w2d4",
+      "w2d4",
+      "w2d4"
+    ],
+    "retrieved_sources": [
+      "Unsupervised I - Clustering",
+      "Unsupervised I - Clustering",
+      "Unsupervised I - Clustering",
+      "Unsupervised I - Clustering",
+      "Unsupervised I - Clustering"
+    ],
+    "retrieved_headings": [
+      "",
+      "",
+      "",
+      "",
+      ""
+    ],
+    "retrieved_distances": [
+      0.8494455814361572,
+      0.8745658993721008,
+      0.8935967683792114,
+      0.9338750243186951,
+      0.9370946288108826
+    ],
+    "top1_correct": true,
+    "top3_correct": true,
+    "top5_correct": true
+  },
+  {
+    "question": "What is PCA?",
+    "expected_lesson": "w2d4",
+    "retrieved_lessons": [
+      "w2d4",
+      "w2d4",
+      "w2d4",
+      "w2d4",
+      "w2d4"
+    ],
+    "retrieved_sources": [
+      "Unsupervised II - Dimensionality Reduction with PCA",
+      "Unsupervised II - Dimensionality Reduction with PCA",
+      "Unsupervised II - Dimensionality Reduction with PCA",
+      "Unsupervised II - Dimensionality Reduction with PCA",
+      "Unsupervised II - Dimensionality Reduction with PCA"
+    ],
+    "retrieved_headings": [
+      "",
+      "",
+      "",
+      "",
+      ""
+    ],
+    "retrieved_distances": [
+      0.9621089696884155,
+      1.025602102279663,
+      1.0436335802078247,
+      1.055068016052246,
+      1.0645618438720703
+    ],
+    "top1_correct": true,
+    "top3_correct": true,
+    "top5_correct": true
+  },
+  {
+    "question": "What is Deep Learning?",
+    "expected_lesson": "w3d1",
+    "retrieved_lessons": [
       "w3d1",
       "w3d1",
       "w3d1",
       "w3d1",
       "w3d1"
     ],
-    "latency": 3.7642297744750977,
-    "passed": true,
-    "checks": {
-      "source_correct": true,
-      "has_citations": true,
-      "not_refused": true,
-      "mentions:gradient|descent|derivative|slope|error": true,
-      "mentions:weight|parameter": true
-    },
-    "notes": []
-  },
-  {
-    "id": "f12",
-    "kind": "content",
-    "question": "What is prompt injection?",
-    "answer": "Prompt injection is a concept discussed in the course, particularly in week 5, day 2. It refers to a situation where a model receives instructions that can override its expected behavior. There are two types of prompt injection: \n\n1. **Direct prompt injection**: This occurs when the model directly receives instructions that contain the task of the model or attempts to change its expected behavior.\n2. **Indirect prompt injection**: This is more complex and happens when the model is given external content, such as emails or PDF files, which may contain unexpected instructions. \n\nThe instructor emphasizes the importance of treating any external content as untrusted and suggests using delimiters to clearly define the boundaries of user input to prevent such injections.",
-    "cited": [
-      "w5d2",
-      "w5d3",
-      "w5d2",
-      "w5d2",
-      "w5d3"
+    "retrieved_sources": [
+      "Deep Learning intro I (intro, neurons, activation functions, etc)",
+      "Deep Learning intro I (intro, neurons, activation functions, etc)",
+      "Deep Learning intro I (intro, neurons, activation functions, etc)",
+      "Deep Learning intro I (intro, neurons, activation functions, etc)",
+      "Deep Learning intro I (intro, neurons, activation functions, etc)"
     ],
-    "latency": 3.0131728649139404,
-    "passed": true,
-    "checks": {
-      "source_correct": true,
-      "has_citations": true,
-      "not_refused": true,
-      "mentions:prompt": true
-    },
-    "notes": []
+    "retrieved_headings": [
+      "",
+      "",
+      "",
+      "",
+      ""
+    ],
+    "retrieved_distances": [
+      0.7202329635620117,
+      0.7831021547317505,
+      0.7861481308937073,
+      0.7871481776237488,
+      0.7893167734146118
+    ],
+    "top1_correct": true,
+    "top3_correct": true,
+    "top5_correct": true
   },
   {
-    "id": "f13",
-    "kind": "content",
-    "question": "How does chunking work when indexing documents?",
-    "answer": "Chunking in the context of indexing documents involves splitting larger documents into smaller, manageable pieces, or \"chunks,\" to improve the efficiency and effectiveness of information retrieval. Here are the key points covered in the course:\n\n1. **Purpose of Chunking**: Instead of processing an entire document, which can be lengthy, chunking allows for the calculation of embeddings for smaller sections, like paragraphs. This makes it easier to retrieve relevant information when queries are made, as the system can focus on these smaller, relevant chunks rather than the whole document.\n\n2. **Chunk Size and Overlap**: If a paragraph is too long (over 400 tokens), it will be split into smaller chunks. Additionally, there may be some overlap between chunks to maintain context. For example, a chunk might include a bit of text from the end of the previous chunk and the beginning of the next one.\n\n3. **Metadata and Tracking**: Each chunk can be assigned an ID, allowing the system to keep track of which chunk corresponds to which part of the original document. This is useful for referencing and retrieving specific information later.\n\n4. **Embedding Representation**: After chunking, the text chunks are converted into numerical representations (embeddings). This allows for the organization of similar chunks in a vector space, where related information is positioned closer together.\n\nThese points were discussed in week 7 day 2 of the course.",
-    "cited": [
-      "w7d2",
-      "w7d2",
-      "w7d2",
-      "w7d2",
+    "question": "What is backpropagation?",
+    "expected_lesson": "w3d1",
+    "retrieved_lessons": [
+      "w3d1",
+      "w3d1",
+      "w3d1",
+      "w3d1",
+      "w3d1"
+    ],
+    "retrieved_sources": [
+      "Deep Learning intro II (backpropagation, gradient descent, challenges, types of neural networks)",
+      "Deep Learning intro II (backpropagation, gradient descent, challenges, types of neural networks)",
+      "Deep Learning intro II (backpropagation, gradient descent, challenges, types of neural networks)",
+      "Deep Learning intro II (backpropagation, gradient descent, challenges, types of neural networks)",
+      "Deep Learning intro II (backpropagation, gradient descent, challenges, types of neural networks)"
+    ],
+    "retrieved_headings": [
+      "",
+      "",
+      "",
+      "",
+      ""
+    ],
+    "retrieved_distances": [
+      0.6704821586608887,
+      0.7180180549621582,
+      0.7822784185409546,
+      0.7994492053985596,
+      0.8264282941818237
+    ],
+    "top1_correct": true,
+    "top3_correct": true,
+    "top5_correct": true
+  },
+  {
+    "question": "What is gradient descent?",
+    "expected_lesson": "w3d1",
+    "retrieved_lessons": [
+      "w3d1",
+      "w3d1",
+      "w3d1",
+      "w3d1",
+      "w3d1"
+    ],
+    "retrieved_sources": [
+      "End-of-day summary",
+      "Deep Learning intro II (backpropagation, gradient descent, challenges, types of neural networks)",
+      "End-of-day summary",
+      "Deep Learning intro II (backpropagation, gradient descent, challenges, types of neural networks)",
+      "Deep Learning intro II (backpropagation, gradient descent, challenges, types of neural networks)"
+    ],
+    "retrieved_headings": [
+      "",
+      "",
+      "",
+      "",
+      ""
+    ],
+    "retrieved_distances": [
+      0.6427431702613831,
+      0.7876904606819153,
+      0.7902642488479614,
+      0.8008185625076294,
+      0.8622649312019348
+    ],
+    "top1_correct": true,
+    "top3_correct": true,
+    "top5_correct": true
+  },
+  {
+    "question": "What is Computer Vision?",
+    "expected_lesson": "w3d2",
+    "retrieved_lessons": [
+      "w3d2",
+      "w3d2",
+      "w3d2",
+      "w3d2",
+      "w3d2"
+    ],
+    "retrieved_sources": [
+      "Intro to Computer Vision",
+      "Intro to Computer Vision",
+      "Intro to Computer Vision",
+      "Intro to Computer Vision",
+      "Intro to Computer Vision"
+    ],
+    "retrieved_headings": [
+      "",
+      "",
+      "",
+      "",
+      ""
+    ],
+    "retrieved_distances": [
+      0.8751129508018494,
+      0.8761826157569885,
+      0.8831003904342651,
+      0.8993135690689087,
+      0.8993673920631409
+    ],
+    "top1_correct": true,
+    "top3_correct": true,
+    "top5_correct": true
+  },
+  {
+    "question": "What is a CNN?",
+    "expected_lesson": "w3d2",
+    "retrieved_lessons": [
+      "w3d2",
+      "w3d2",
+      "w3d2",
+      "w3d2",
+      "w3d2"
+    ],
+    "retrieved_sources": [
+      "Convolutional Neural Networks (CNNs)",
+      "Convolutional Neural Networks (CNNs)",
+      "Convolutional Neural Networks (CNNs)",
+      "Convolutional Neural Networks (CNNs)",
+      "Convolutional Neural Networks (CNNs)"
+    ],
+    "retrieved_headings": [
+      "",
+      "",
+      "",
+      "",
+      ""
+    ],
+    "retrieved_distances": [
+      0.828281044960022,
+      0.8352288007736206,
+      0.842397928237915,
+      0.8558716773986816,
+      0.8621121048927307
+    ],
+    "top1_correct": true,
+    "top3_correct": true,
+    "top5_correct": true
+  },
+  {
+    "question": "What is NLP?",
+    "expected_lesson": "w4d2",
+    "retrieved_lessons": [
+      "w4d2",
+      "w4d2",
+      "w4d2",
+      "w4d2",
+      "w4d2"
+    ],
+    "retrieved_sources": [
+      "NLP I (Intro)",
+      "NLP I (Intro)",
+      "NLP I (Intro)",
+      "NLP I (Intro)",
+      "NLP I (Intro)"
+    ],
+    "retrieved_headings": [
+      "",
+      "",
+      "",
+      "",
+      ""
+    ],
+    "retrieved_distances": [
+      0.7317025661468506,
+      0.8324680328369141,
+      0.9139597415924072,
+      0.9241026043891907,
+      0.9777219891548157
+    ],
+    "top1_correct": true,
+    "top3_correct": true,
+    "top5_correct": true
+  },
+  {
+    "question": "What is tokenization?",
+    "expected_lesson": "w4d2",
+    "retrieved_lessons": [
+      "w4d2",
+      "w4d2",
+      "w4d2",
+      "w4d2",
       "w7d2"
     ],
-    "latency": 4.049718856811523,
-    "passed": true,
-    "checks": {
-      "source_correct": true,
-      "has_citations": true,
-      "not_refused": true,
-      "mentions:chunk": true
-    },
-    "notes": []
+    "retrieved_sources": [
+      "NLP II (tokenization, remove punctuation, stemmers and lemmatizers)",
+      "NLP II (tokenization, remove punctuation, stemmers and lemmatizers)",
+      "NLP II (tokenization, remove punctuation, stemmers and lemmatizers)",
+      "NLP II (tokenization, remove punctuation, stemmers and lemmatizers)",
+      "RAG II - Indexing"
+    ],
+    "retrieved_headings": [
+      "",
+      "",
+      "",
+      "",
+      ""
+    ],
+    "retrieved_distances": [
+      1.0156091451644897,
+      1.0391236543655396,
+      1.057767391204834,
+      1.063991665840149,
+      1.0698261260986328
+    ],
+    "top1_correct": true,
+    "top3_correct": true,
+    "top5_correct": true
   },
   {
-    "id": "f14",
-    "kind": "content",
-    "question": "What is a JOIN in SQL?",
-    "answer": "In SQL, a JOIN is used to combine rows from two or more tables based on a related column between them. There are four main types of JOINs:\n\n1. **Inner Join**: This returns only the rows that have matching values in both tables. For example, if you join a customers table with an orders table on customer ID, only the customers who have placed orders will be included in the result.\n\n2. **Left Join**: This returns all the rows from the left table and the matching rows from the right table. If there is no match, the result will contain NULL for columns from the right table.\n\n3. **Right Join**: This is similar to the left join, but it returns all the rows from the right table and the matching rows from the left table.\n\n4. **Full Outer Join**: This returns all rows when there is a match in either left or right table records. If there is no match, the result will contain NULL for the columns of the table that does not have a match.\n\nThese concepts were covered in week 5 day 1.",
-    "cited": [
+    "question": "What is stemming?",
+    "expected_lesson": "w4d2",
+    "retrieved_lessons": [
+      "w4d2",
+      "w4d2",
+      "w4d2",
+      "w4d2",
+      "w4d2"
+    ],
+    "retrieved_sources": [
+      "NLP II (tokenization, remove punctuation, stemmers and lemmatizers)",
+      "NLP II (tokenization, remove punctuation, stemmers and lemmatizers)",
+      "NLP II (tokenization, remove punctuation, stemmers and lemmatizers)",
+      "NLP II (tokenization, remove punctuation, stemmers and lemmatizers)",
+      "NLP II (tokenization, remove punctuation, stemmers and lemmatizers)"
+    ],
+    "retrieved_headings": [
+      "",
+      "",
+      "",
+      "",
+      ""
+    ],
+    "retrieved_distances": [
+      0.756317138671875,
+      0.7821105122566223,
+      0.7831473350524902,
+      0.8304550647735596,
+      0.851071298122406
+    ],
+    "top1_correct": true,
+    "top3_correct": true,
+    "top5_correct": true
+  },
+  {
+    "question": "What is lemmatization?",
+    "expected_lesson": "w4d2",
+    "retrieved_lessons": [
+      "w4d2",
+      "w4d2",
+      "w4d2",
+      "w4d2",
+      "w4d2"
+    ],
+    "retrieved_sources": [
+      "Example of NLP + unsupervised learning (News Clustering)",
+      "NLP II (tokenization, remove punctuation, stemmers and lemmatizers)",
+      "Example of NLP + unsupervised learning (News Clustering)",
+      "NLP II (tokenization, remove punctuation, stemmers and lemmatizers)",
+      "Example of NLP + unsupervised learning (News Clustering)"
+    ],
+    "retrieved_headings": [
+      "",
+      "",
+      "",
+      "",
+      ""
+    ],
+    "retrieved_distances": [
+      0.8426223397254944,
+      0.8434188961982727,
+      0.8949041962623596,
+      0.9147335886955261,
+      0.9165827631950378
+    ],
+    "top1_correct": true,
+    "top3_correct": true,
+    "top5_correct": true
+  },
+  {
+    "question": "What is TF-IDF?",
+    "expected_lesson": "w4d2",
+    "retrieved_lessons": [
+      "w4d2",
+      "w4d2",
+      "w4d2",
+      "w4d2",
+      "w4d2"
+    ],
+    "retrieved_sources": [
+      "NLP III (TF-IDF, stopwords, BoW, n-grams)",
+      "NLP III (TF-IDF, stopwords, BoW, n-grams)",
+      "NLP III (TF-IDF, stopwords, BoW, n-grams)",
+      "NLP III (TF-IDF, stopwords, BoW, n-grams)",
+      "NLP III (TF-IDF, stopwords, BoW, n-grams)"
+    ],
+    "retrieved_headings": [
+      "",
+      "",
+      "",
+      "",
+      ""
+    ],
+    "retrieved_distances": [
+      0.7998402714729309,
+      0.9091724753379822,
+      0.9439034461975098,
+      0.9664328694343567,
+      0.9775999784469604
+    ],
+    "top1_correct": true,
+    "top3_correct": true,
+    "top5_correct": true
+  },
+  {
+    "question": "What are n-grams?",
+    "expected_lesson": "w4d2",
+    "retrieved_lessons": [
+      "w4d2",
+      "w4d2",
+      "w4d3",
+      "w4d3",
+      "w4d2"
+    ],
+    "retrieved_sources": [
+      "NLP III (TF-IDF, stopwords, BoW, n-grams)",
+      "NLP III (TF-IDF, stopwords, BoW, n-grams)",
+      "Embeddings Intro",
+      "Embeddings Intro",
+      "NLP III (TF-IDF, stopwords, BoW, n-grams)"
+    ],
+    "retrieved_headings": [
+      "",
+      "",
+      "",
+      "",
+      ""
+    ],
+    "retrieved_distances": [
+      0.8762182593345642,
+      0.9010744690895081,
+      0.952372670173645,
+      0.9753983616828918,
+      0.9880672097206116
+    ],
+    "top1_correct": true,
+    "top3_correct": true,
+    "top5_correct": true
+  },
+  {
+    "question": "What is Bag of Words?",
+    "expected_lesson": "w4d2",
+    "retrieved_lessons": [
+      "w4d2",
+      "w4d2",
+      "w4d2",
+      "w4d2",
+      "w4d3"
+    ],
+    "retrieved_sources": [
+      "NLP III (TF-IDF, stopwords, BoW, n-grams)",
+      "NLP III (TF-IDF, stopwords, BoW, n-grams)",
+      "NLP III (TF-IDF, stopwords, BoW, n-grams)",
+      "NLP III (TF-IDF, stopwords, BoW, n-grams)",
+      "Word2Vec Explained"
+    ],
+    "retrieved_headings": [
+      "",
+      "",
+      "",
+      "",
+      ""
+    ],
+    "retrieved_distances": [
+      0.6719793677330017,
+      0.826202929019928,
+      0.8971656560897827,
+      0.8975351452827454,
+      0.9108386635780334
+    ],
+    "top1_correct": true,
+    "top3_correct": true,
+    "top5_correct": true
+  },
+  {
+    "question": "What are embeddings?",
+    "expected_lesson": "w4d3",
+    "retrieved_lessons": [
+      "w4d3",
+      "w4d3",
+      "w4d3",
+      "w4d3",
+      "w4d3"
+    ],
+    "retrieved_sources": [
+      "Embeddings Intro",
+      "Embeddings Intro",
+      "Embeddings Intro",
+      "Embeddings Intro",
+      "Embeddings Intro"
+    ],
+    "retrieved_headings": [
+      "",
+      "",
+      "",
+      "",
+      ""
+    ],
+    "retrieved_distances": [
+      0.6196314096450806,
+      0.6300678849220276,
+      0.6324125528335571,
+      0.6579445600509644,
+      0.6627237200737
+    ],
+    "top1_correct": true,
+    "top3_correct": true,
+    "top5_correct": true
+  },
+  {
+    "question": "What is Word2Vec?",
+    "expected_lesson": "w4d3",
+    "retrieved_lessons": [
+      "w4d3",
+      "w4d3",
+      "w4d3",
+      "w4d3",
+      "w4d3"
+    ],
+    "retrieved_sources": [
+      "Word2Vec Explained",
+      "Word2Vec Explained",
+      "Word2Vec Explained",
+      "Word2Vec Explained",
+      "Word2Vec Explained"
+    ],
+    "retrieved_headings": [
+      "",
+      "",
+      "",
+      "",
+      ""
+    ],
+    "retrieved_distances": [
+      0.6360642910003662,
+      0.6665046215057373,
+      0.6768561601638794,
+      0.6975569128990173,
+      0.704717755317688
+    ],
+    "top1_correct": true,
+    "top3_correct": true,
+    "top5_correct": true
+  },
+  {
+    "question": "What is SQLite?",
+    "expected_lesson": "w5d1",
+    "retrieved_lessons": [
       "w5d1",
       "w5d1",
       "w5d1",
       "w5d1",
       "w5d1"
     ],
-    "latency": 4.061999082565308,
-    "passed": true,
-    "checks": {
-      "source_correct": true,
-      "has_citations": true,
-      "not_refused": true,
-      "mentions:table": true
-    },
-    "notes": []
-  },
-  {
-    "id": "l01",
-    "kind": "location",
-    "question": "Where was cosine similarity covered?",
-    "answer": "Cosine similarity was covered in the following lessons:\n\n- In week 4 day 3 during the \"Embeddings Demo\" at 11:05 and 29:45.\n- In week 8 day 1 during the \"Multimodal Search Engine with CLIP\" at 0:00, 12:28, and 47:51.",
-    "cited": [
-      "w4d3",
-      "w8d1",
-      "w8d1",
-      "w8d1",
-      "w4d3",
-      "w4d3"
+    "retrieved_sources": [
+      "SQLite I - Intro and CRUD operations",
+      "SQLite I - Intro and CRUD operations",
+      "SQLite I - Intro and CRUD operations",
+      "SQLite I - Intro and CRUD operations",
+      "SQLite I - Intro and CRUD operations"
     ],
-    "latency": 2.2886691093444824,
-    "passed": true,
-    "checks": {
-      "source_correct": true,
-      "has_citations": true,
-      "not_refused": true
-    },
-    "notes": []
+    "retrieved_headings": [
+      "",
+      "",
+      "",
+      "",
+      ""
+    ],
+    "retrieved_distances": [
+      0.7155230641365051,
+      0.7643218040466309,
+      0.803081750869751,
+      0.8201043605804443,
+      0.8484686613082886
+    ],
+    "top1_correct": true,
+    "top3_correct": true,
+    "top5_correct": true
   },
   {
-    "id": "l02",
-    "kind": "location",
-    "question": "Which lesson explained LangChain memory?",
-    "answer": "LangChain memory was explained in the following lessons:\n\n- In week 7 day 1 at 8:17 during the \"Langchain intro + setup with virtual environments.\"\n- In week 7 day 3 during the recap at 0:00 and again at 1:24.\n- In week 7 day 1 during \"LangChain Chains II\" at 15:25 and 41:04.",
-    "cited": [
+    "question": "What is an API?",
+    "expected_lesson": "w5d2",
+    "retrieved_lessons": [
+      "w5d2",
+      "w5d2",
+      "w5d2",
+      "w5d2",
+      "w5d2"
+    ],
+    "retrieved_sources": [
+      "What's an API",
+      "What's an API",
+      "What's an API",
+      "What's an API",
+      "What's an API"
+    ],
+    "retrieved_headings": [
+      "",
+      "",
+      "",
+      "",
+      ""
+    ],
+    "retrieved_distances": [
+      0.6400248408317566,
+      0.6887574791908264,
+      0.7152643799781799,
+      0.7594665884971619,
+      0.7820378541946411
+    ],
+    "top1_correct": true,
+    "top3_correct": true,
+    "top5_correct": true
+  },
+  {
+    "question": "How do you use the OpenAI API?",
+    "expected_lesson": "w5d2",
+    "retrieved_lessons": [
+      "w5d2",
+      "w5d2",
+      "w5d2",
+      "w5d2",
+      "w5d2"
+    ],
+    "retrieved_sources": [
+      "OpenAI API example I",
+      "OpenAI API example I",
+      "OpenAI API example I",
+      "What's an API",
+      "OpenAI API example I"
+    ],
+    "retrieved_headings": [
+      "",
+      "",
+      "",
+      "",
+      ""
+    ],
+    "retrieved_distances": [
+      0.6257587671279907,
+      0.6547755002975464,
+      0.684999406337738,
+      0.7043492794036865,
+      0.720906674861908
+    ],
+    "top1_correct": true,
+    "top3_correct": true,
+    "top5_correct": true
+  },
+  {
+    "question": "What is Prompt Engineering?",
+    "expected_lesson": "w5d2",
+    "retrieved_lessons": [
+      "w5d2",
       "w7d1",
-      "w7d3",
+      "w7d5",
       "w7d1",
+      "w7d1"
+    ],
+    "retrieved_sources": [
+      "Prompt Engineering",
+      "1_langchain-intro.ipynb",
+      "Recap Core AI Engineering Techniques & Patterns",
+      "1_langchain-intro.ipynb",
+      "1_langchain-intro.ipynb"
+    ],
+    "retrieved_headings": [
+      "",
+      "Structure of a Prompt",
+      "",
+      "Structure of a Prompt",
+      "Prompts and Prompt templates \u270f\ufe0f"
+    ],
+    "retrieved_distances": [
+      0.9254173636436462,
+      1.07699716091156,
+      0.9842332005500793,
+      1.086122989654541,
+      1.0909371376037598
+    ],
+    "top1_correct": true,
+    "top3_correct": true,
+    "top5_correct": true
+  },
+  {
+    "question": "What is Prompt Injection?",
+    "expected_lesson": "w5d3",
+    "retrieved_lessons": [
+      "w5d3",
+      "w5d2",
+      "w5d3",
+      "w5d3",
+      "w5d3"
+    ],
+    "retrieved_sources": [
+      "OpenAI API Usage + example of prompt injection",
+      "Prompt Engineering",
+      "OpenAI API Usage + example of prompt injection",
+      "OpenAI API Usage + example of prompt injection",
+      "OpenAI API Usage + example of prompt injection"
+    ],
+    "retrieved_headings": [
+      "",
+      "",
+      "",
+      "",
+      ""
+    ],
+    "retrieved_distances": [
+      0.6781257390975952,
+      0.6809631586074829,
+      0.7902885675430298,
+      0.8189764618873596,
+      0.8500650525093079
+    ],
+    "top1_correct": true,
+    "top3_correct": true,
+    "top5_correct": true
+  },
+  {
+    "question": "What is Tool Calling?",
+    "expected_lesson": "w5d3",
+    "retrieved_lessons": [
+      "w5d3",
+      "w5d3",
+      "w5d3",
+      "w5d3",
+      "w5d3"
+    ],
+    "retrieved_sources": [
+      "Tool Calling",
+      "Tool Calling",
+      "Tool Calling",
+      "Tool Calling",
+      "Tool Calling"
+    ],
+    "retrieved_headings": [
+      "",
+      "",
+      "",
+      "",
+      ""
+    ],
+    "retrieved_distances": [
+      0.6125254034996033,
+      0.6260021924972534,
+      0.7149942517280579,
+      0.7591254115104675,
+      0.7629651427268982
+    ],
+    "top1_correct": true,
+    "top3_correct": true,
+    "top5_correct": true
+  },
+  {
+    "question": "What is Quantization?",
+    "expected_lesson": "w5d4",
+    "retrieved_lessons": [
+      "w5d4",
+      "w5d5",
+      "w5d4",
+      "w5d4",
+      "w5d4"
+    ],
+    "retrieved_sources": [
+      "Quantization + Labs intro",
+      "QLoRA + Labs intro",
+      "Quantization + Labs intro",
+      "Quantization + Labs intro",
+      "Quantization + Labs intro"
+    ],
+    "retrieved_headings": [
+      "",
+      "",
+      "",
+      "",
+      ""
+    ],
+    "retrieved_distances": [
+      0.6794439554214478,
+      0.6883798837661743,
+      0.7015595436096191,
+      0.7091257572174072,
+      0.7167774438858032
+    ],
+    "top1_correct": true,
+    "top3_correct": true,
+    "top5_correct": true
+  },
+  {
+    "question": "What is Transfer Learning?",
+    "expected_lesson": "w5d5",
+    "retrieved_lessons": [
+      "w3d4",
+      "w5d5",
+      "w5d5",
+      "w5d5",
+      "w5d5"
+    ],
+    "retrieved_sources": [
+      "Data Augmentation and Transfer Learning",
+      "Transfer Learning + LoRA",
+      "Transfer Learning + LoRA",
+      "Transfer Learning + LoRA",
+      "Transfer Learning + LoRA"
+    ],
+    "retrieved_headings": [
+      "",
+      "",
+      "",
+      "",
+      ""
+    ],
+    "retrieved_distances": [
+      0.7751928567886353,
+      0.7885894179344177,
+      0.8478692173957825,
+      0.8654893636703491,
+      0.8831578493118286
+    ],
+    "top1_correct": false,
+    "top3_correct": true,
+    "top5_correct": true
+  },
+  {
+    "question": "What is LoRA?",
+    "expected_lesson": "w5d5",
+    "retrieved_lessons": [
+      "w5d5",
+      "w5d5",
+      "w5d5",
+      "w5d5",
+      "w5d5"
+    ],
+    "retrieved_sources": [
+      "Transfer Learning + LoRA",
+      "Transfer Learning + LoRA",
+      "Transfer Learning + LoRA",
+      "Transfer Learning + LoRA",
+      "QLoRA + Labs intro"
+    ],
+    "retrieved_headings": [
+      "",
+      "",
+      "",
+      "",
+      ""
+    ],
+    "retrieved_distances": [
+      0.9069209098815918,
+      0.9314160346984863,
+      0.939144492149353,
+      0.9507906436920166,
+      0.9526770710945129
+    ],
+    "top1_correct": true,
+    "top3_correct": true,
+    "top5_correct": true
+  },
+  {
+    "question": "What is QLoRA?",
+    "expected_lesson": "w5d5",
+    "retrieved_lessons": [
+      "w5d5",
+      "w5d5",
+      "w5d5",
+      "w5d5",
+      "w5d5"
+    ],
+    "retrieved_sources": [
+      "QLoRA + Labs intro",
+      "QLoRA + Labs intro",
+      "Transfer Learning + LoRA",
+      "Transfer Learning + LoRA",
+      "QLoRA + Labs intro"
+    ],
+    "retrieved_headings": [
+      "",
+      "",
+      "",
+      "",
+      ""
+    ],
+    "retrieved_distances": [
+      0.8518179655075073,
+      0.8820080757141113,
+      0.9206336140632629,
+      0.9385526180267334,
+      0.9677514433860779
+    ],
+    "top1_correct": true,
+    "top3_correct": true,
+    "top5_correct": true
+  },
+  {
+    "question": "How do you build an API with FastAPI?",
+    "expected_lesson": "w6d1",
+    "retrieved_lessons": [
+      "w6d1",
+      "w6d1",
+      "w6d1",
+      "w6d1",
+      "w6d1"
+    ],
+    "retrieved_sources": [
+      "Creating an API with FastAPI (+ a few advanced git concepts)",
+      "Creating an API with FastAPI (+ a few advanced git concepts)",
+      "Creating an API with FastAPI (+ a few advanced git concepts)",
+      "Creating an API with FastAPI (+ a few advanced git concepts)",
+      "Creating an API with FastAPI (+ a few advanced git concepts)"
+    ],
+    "retrieved_headings": [
+      "",
+      "",
+      "",
+      "",
+      ""
+    ],
+    "retrieved_distances": [
+      0.6019856929779053,
+      0.6117802858352661,
+      0.62797611951828,
+      0.6487337350845337,
+      0.6987103819847107
+    ],
+    "top1_correct": true,
+    "top3_correct": true,
+    "top5_correct": true
+  },
+  {
+    "question": "What is CORS?",
+    "expected_lesson": "w6d1",
+    "retrieved_lessons": [
+      "w6d1",
+      "w6d1",
+      "w6d1",
+      "w6d1",
+      "w6d1"
+    ],
+    "retrieved_sources": [
+      "Create a frontend App (html, React) + fix CORS error",
+      "Create a frontend App (html, React) + fix CORS error",
+      "Create a frontend App (html, React) + fix CORS error",
+      "Create a frontend App (html, React) + fix CORS error",
+      "Create a frontend App (html, React) + fix CORS error"
+    ],
+    "retrieved_headings": [
+      "",
+      "",
+      "",
+      "",
+      ""
+    ],
+    "retrieved_distances": [
+      1.0364933013916016,
+      1.094835877418518,
+      1.1632241010665894,
+      1.2159638404846191,
+      1.2262330055236816
+    ],
+    "top1_correct": true,
+    "top3_correct": true,
+    "top5_correct": true
+  },
+  {
+    "question": "How do you deploy on Render?",
+    "expected_lesson": "w6d1",
+    "retrieved_lessons": [
+      "w6d1",
+      "w6d1",
+      "w6d1",
+      "w6d1",
+      "w6d1"
+    ],
+    "retrieved_sources": [
+      "Deploy our API on Render.com",
+      "Deploy our API on Render.com",
+      "Deploy our API on Render.com",
+      "Deployment Summary",
+      "Deploy our API on Render.com"
+    ],
+    "retrieved_headings": [
+      "",
+      "",
+      "",
+      "",
+      ""
+    ],
+    "retrieved_distances": [
+      0.5966077446937561,
+      0.6044066548347473,
+      0.615680456161499,
+      0.6659865379333496,
+      0.6674532890319824
+    ],
+    "top1_correct": true,
+    "top3_correct": true,
+    "top5_correct": true
+  },
+  {
+    "question": "What is LangChain?",
+    "expected_lesson": "w7d1",
+    "retrieved_lessons": [
       "w7d1",
-      "w7d3"
-    ],
-    "latency": 2.639941930770874,
-    "passed": true,
-    "checks": {
-      "source_correct": true,
-      "has_citations": true,
-      "not_refused": true
-    },
-    "notes": []
-  },
-  {
-    "id": "l03",
-    "kind": "location",
-    "question": "When did we cover data augmentation?",
-    "answer": "We covered data augmentation in week 3 day 4 at the following times:\n\n- 0:58\n- 6:43\n- 13:58\n- 43:16",
-    "cited": [
-      "w3d4",
-      "w3d4",
-      "w3d4",
-      "w3d4"
-    ],
-    "latency": 2.0429317951202393,
-    "passed": true,
-    "checks": {
-      "source_correct": true,
-      "has_citations": true,
-      "not_refused": true
-    },
-    "notes": []
-  },
-  {
-    "id": "l04",
-    "kind": "location",
-    "question": "Where was regular expressions taught?",
-    "answer": "Regular expressions were taught in week 4 day 1.",
-    "cited": [
-      "w4d1",
-      "w4d1",
-      "w4d1",
-      "w4d1"
-    ],
-    "latency": 1.5902440547943115,
-    "passed": true,
-    "checks": {
-      "source_correct": true,
-      "has_citations": true,
-      "not_refused": true
-    },
-    "notes": []
-  },
-  {
-    "id": "l05",
-    "kind": "location",
-    "question": "Which day covered pandas groupby?",
-    "answer": "Pandas groupby was covered on week 1, day 5 at the following times: 8:44, 22:10, and 45:16.",
-    "cited": [
-      "w1d5",
-      "w1d5",
-      "w1d5"
-    ],
-    "latency": 1.8928906917572021,
-    "passed": true,
-    "checks": {
-      "source_correct": true,
-      "has_citations": true,
-      "not_refused": true
-    },
-    "notes": []
-  },
-  {
-    "id": "e01",
-    "kind": "spanish",
-    "question": "¿Qué es un embedding y para qué sirve?",
-    "answer": "Un embedding es una representación de palabras, frases, o incluso imágenes en un espacio multidimensional, donde cada elemento se convierte en un vector denso. Esto permite que palabras o conceptos relacionados estén más cerca unos de otros en este espacio. Por ejemplo, en lugar de usar una representación dispersa que requeriría muchas columnas para cada palabra, los embeddings condensan esta información en un número menor de dimensiones, facilitando el almacenamiento de similitudes entre palabras.\n\nLos embeddings se pueden aplicar no solo a texto, sino también a otros tipos de datos como imágenes, audio, documentos, y más. Esto los hace muy útiles en diversas aplicaciones de aprendizaje automático. \n\nEsto fue cubierto en la lección de \"Embeddings Intro\" en la semana 4, día 3.",
-    "cited": [
-      "w4d3",
-      "w4d3",
-      "w4d3",
-      "w4d3",
-      "w4d3"
-    ],
-    "latency": 10.045462131500244,
-    "passed": true,
-    "checks": {
-      "source_correct": true,
-      "has_citations": true,
-      "not_refused": true,
-      "answered_in_spanish": true
-    },
-    "notes": []
-  },
-  {
-    "id": "e02",
-    "kind": "spanish",
-    "question": "¿Cómo funciona RAG?",
-    "answer": "RAG, o \"Retrieval-Augmented Generation\", funciona como un método para mejorar las respuestas de un modelo de lenguaje al proporcionarle información adicional que puede no estar en sus datos de entrenamiento. La idea central es que, antes de enviar una consulta a un modelo de lenguaje, se puede buscar información relevante en una base de datos vectorial. Esto es útil porque los modelos de lenguaje pueden no tener toda la información necesaria, especialmente si se trata de datos propietarios o información reciente.\n\nEl proceso implica dos pasos principales:\n\n1. **Indexación de datos**: Se recopila información de diversas fuentes, como documentos, bases de datos o archivos, y se prepara para ser consultada.\n2. **Consulta al modelo**: Se envía la consulta del usuario junto con la información relevante obtenida de la base de datos al modelo de lenguaje, lo que le permite generar una respuesta más informada.\n\nEste enfoque es especialmente útil cuando se necesita información que no es pública o que no está incluida en los datos de entrenamiento del modelo.",
-    "cited": [
-      "w7d2",
-      "w7d4",
-      "w7d2",
-      "w7d2",
-      "w7d2"
-    ],
-    "latency": 3.9581940174102783,
-    "passed": true,
-    "checks": {
-      "source_correct": true,
-      "has_citations": true,
-      "not_refused": true,
-      "answered_in_spanish": true
-    },
-    "notes": []
-  },
-  {
-    "id": "e03",
-    "kind": "spanish",
-    "question": "¿Dónde se explicó el overfitting?",
-    "answer": "El overfitting se explicó en las siguientes lecciones:\n\n- En la semana 2, día 1, durante la demostración de ML I - Regresión Lineal, a las 1:48:12, 1:43:52 y 1:55:20.\n- En la semana 2, día 3, en la lección sobre IV (desbalance de clases, entrenar y comparar, ajuste de hiperparámetros, evaluación final) a las 22:43.\n- En la semana 2, día 2, en la lección sobre Algoritmos de ML Clasificación a las 17:40.",
-    "cited": [
-      "w2d1",
-      "w2d1",
-      "w2d1",
-      "w2d3",
-      "w2d2",
-      "w2d1"
-    ],
-    "latency": 2.9907000064849854,
-    "passed": true,
-    "checks": {
-      "source_correct": true,
-      "has_citations": true,
-      "not_refused": true,
-      "answered_in_spanish": true
-    },
-    "notes": []
-  },
-  {
-    "id": "u01",
-    "kind": "unanswerable",
-    "question": "What is the capital of France?",
-    "answer": "That wasn't covered in the course.",
-    "cited": [],
-    "latency": 0.8452370166778564,
-    "passed": true,
-    "checks": {
-      "refused": true,
-      "no_citations": true
-    },
-    "notes": []
-  },
-  {
-    "id": "u02",
-    "kind": "unanswerable",
-    "question": "Which Kubernetes operator should I use for autoscaling?",
-    "answer": "That wasn't covered in the course.",
-    "cited": [],
-    "latency": 1.7482209205627441,
-    "passed": true,
-    "checks": {
-      "refused": true,
-      "no_citations": true
-    },
-    "notes": []
-  },
-  {
-    "id": "u03",
-    "kind": "unanswerable",
-    "question": "What did the instructor say about quantum error correction?",
-    "answer": "That wasn't covered in the course.",
-    "cited": [],
-    "latency": 4.077188014984131,
-    "passed": true,
-    "checks": {
-      "refused": true,
-      "no_citations": true
-    },
-    "notes": []
-  },
-  {
-    "id": "m01",
-    "kind": "followup",
-    "question": "What is RAG?",
-    "answer": "RAG stands for Retrieval-Augmented Generation. It is a technique used when you want to provide a model with information that it likely doesn't have in its training data, particularly proprietary or private information. The core idea is that before sending a query to a Large Language Model (LLM), you can retrieve relevant information from a vector database. This is important because LLMs may not have all the necessary information, especially if it is new or not publicly available.\n\nIn practice, RAG involves two main steps: first, preparing the data (which can come from various sources like documents or databases), and then gathering relevant information to send along with the user's query to the LLM. This way, the model has the necessary context to generate a more accurate response.",
-    "cited": [
-      "w7d2",
-      "w7d4",
-      "w7d2",
-      "w7d2",
-      "w7d2"
-    ],
-    "latency": 5.240806579589844,
-    "passed": true,
-    "checks": {
-      "source_correct": true,
-      "has_citations": true,
-      "not_refused": true,
-      "followup_used_memory": true
-    },
-    "notes": []
-  },
-  {
-    "id": "m02",
-    "kind": "followup",
-    "question": "What is an embedding?",
-    "answer": "An embedding is a way of representing words, sentences, or other types of data as sequences of numbers in a multi-dimensional space. This representation allows for a more compact and dense form compared to traditional methods like one-hot encoding. For example, instead of needing a separate column for every word in a vocabulary, embeddings reduce the number of features while still capturing similarities between words. The core idea is to store related information together in this multi-dimensional space, which can also be applied to various modalities beyond text, such as images, audio, and even DNA.\n\nThis concept was introduced in week 4 day 3 of the course.",
-    "cited": [
-      "w4d3",
-      "w4d3",
-      "w4d3",
-      "w4d3",
-      "w4d3"
-    ],
-    "latency": 5.143499851226807,
-    "passed": true,
-    "checks": {
-      "source_correct": true,
-      "has_citations": true,
-      "not_refused": true,
-      "followup_answered": true
-    },
-    "notes": []
-  },
-  {
-    "id": "n01",
-    "kind": "content",
-    "question": "Show me the code for splitting documents into chunks with LangChain.",
-    "answer": "In the course, the code for splitting documents into chunks using LangChain is demonstrated as part of the `MapReduceDocumentsChain`. Here’s an excerpt from the lesson:\n\n```python\nfrom langchain.chains import MapReduceDocumentsChain, ReduceDocumentsChain\nfrom langchain.chains.combine_documents.stuff import StuffDocumentsChain\nfrom langchain.chains.llm import LLMChain\nfrom langchain_core.prompts import ChatPromptTemplate\nfrom langchain_text_splitters import CharacterTextSplitter\nfrom langchain_core.documents import Document\nfrom langchain.chat_models import init_chat_model\n\ndocuments = [\n Document(page_content=\"Apples are red\", metadata={\"title\": \"apple_book\"}),\n Document(page_content=\"Blueberries are blue\", metadata={\"title\": \"blueberry_book\"}),\n Document(page_content=\"Bananas are yellow\", metadata={\"title\": \"banana_book\"}),\n]\n\nllm = init_chat_model(\"gpt-4o-mini\", model_provider=\"openai\")\n\n# Map\nmap_template = \"Write a concise summary of the following: {docs}.\"\nmap_prompt = ChatPromptTemplate([(\"human\", map_template)])\nmap_chain = LLMChain(llm=llm, prompt=map_prompt)\n```\n\nThis code sets up a process where documents are split and summarized using a language model, which is part of the MapReduce approach discussed in week 7 day 1.",
-    "cited": [
       "w7d1",
       "w7d1",
       "w7d1",
       "w7d1"
     ],
-    "latency": 3.958444833755493,
-    "passed": true,
-    "checks": {
-      "source_correct": true,
-      "has_citations": true,
-      "not_refused": true,
-      "cites:notebook": true
-    },
-    "notes": []
+    "retrieved_sources": [
+      "Langchain intro + setup with virtual environments",
+      "Langchain intro + setup with virtual environments",
+      "LangChain Chains II",
+      "Langchain intro + setup with virtual environments",
+      "LangChain Chains II"
+    ],
+    "retrieved_headings": [
+      "",
+      "",
+      "",
+      "",
+      ""
+    ],
+    "retrieved_distances": [
+      0.5817266702651978,
+      0.6714766025543213,
+      0.672691285610199,
+      0.6899950504302979,
+      0.7398210763931274
+    ],
+    "top1_correct": true,
+    "top3_correct": true,
+    "top5_correct": true
   },
   {
-    "id": "n02",
-    "kind": "content",
-    "question": "Which notebook demonstrates the RAG pipeline?",
-    "answer": "The notebook that demonstrates the RAG pipeline is \"notebook 3\" in the directory \"14_LangChain\". This notebook covers how a RAG pipeline works, including the phases of data preparation and retrieval.",
-    "cited": [
+    "question": "What is LCEL?",
+    "expected_lesson": "w7d1",
+    "retrieved_lessons": [
+      "w7d1",
+      "w7d1",
+      "w7d1",
+      "w7d1",
+      "w7d1"
+    ],
+    "retrieved_sources": [
+      "2_langchain-expression-language.ipynb",
+      "2_langchain-expression-language.ipynb",
+      "2_langchain-expression-language.ipynb",
+      "2_langchain-expression-language.ipynb",
+      "2_langchain-expression-language.ipynb"
+    ],
+    "retrieved_headings": [
+      "Intro to LCEL",
+      "LangChain Expression Language (LCEL)",
+      "LCEL Deep Dive",
+      "LCEL Syntax",
+      "Runnable Lambdas"
+    ],
+    "retrieved_distances": [
+      0.859930157661438,
+      0.9075063467025757,
+      0.9765560030937195,
+      1.0235178470611572,
+      1.0489039421081543
+    ],
+    "top1_correct": true,
+    "top3_correct": true,
+    "top5_correct": true
+  },
+  {
+    "question": "What is RAG?",
+    "expected_lesson": "w7d2",
+    "retrieved_lessons": [
       "w7d2",
       "w7d2",
       "w7d2",
+      "w7d2",
+      "w7d4"
+    ],
+    "retrieved_sources": [
+      "3_langchain-RAG.ipynb",
+      "3_langchain-RAG.ipynb",
+      "3_langchain-RAG.ipynb",
+      "RAG I - Intro",
+      "Labs intro + Q&A"
+    ],
+    "retrieved_headings": [
+      "Intro to RAG",
+      "Intro to RAG",
+      "How a RAG Pipeline Works",
+      "",
+      ""
+    ],
+    "retrieved_distances": [
+      0.8783036470413208,
+      0.9226993322372437,
+      0.9277093410491943,
+      0.8318990468978882,
+      0.8373850584030151
+    ],
+    "top1_correct": true,
+    "top3_correct": true,
+    "top5_correct": true
+  },
+  {
+    "question": "Why do we need RAG?",
+    "expected_lesson": "w7d2",
+    "retrieved_lessons": [
+      "w7d2",
+      "w7d4",
+      "w7d2",
+      "w7d2",
+      "w7d2"
+    ],
+    "retrieved_sources": [
+      "3_langchain-RAG.ipynb",
+      "Labs intro + Q&A",
+      "RAG I - Intro",
+      "3_langchain-RAG.ipynb",
+      "3_langchain-RAG.ipynb"
+    ],
+    "retrieved_headings": [
+      "Intro to RAG",
+      "",
+      "",
+      "Intro to RAG",
+      "How a RAG Pipeline Works"
+    ],
+    "retrieved_distances": [
+      0.8115004897117615,
+      0.7494884133338928,
+      0.7983644604682922,
+      0.9118961095809937,
+      0.9157100915908813
+    ],
+    "top1_correct": true,
+    "top3_correct": true,
+    "top5_correct": true
+  },
+  {
+    "question": "What is chunking?",
+    "expected_lesson": "w7d2",
+    "retrieved_lessons": [
+      "w7d2",
+      "w7d2",
+      "w7d2",
+      "w7d2",
+      "w7d2"
+    ],
+    "retrieved_sources": [
+      "RAG II - Indexing",
+      "RAG II - Indexing",
+      "RAG II - Indexing",
+      "RAG II - Indexing",
+      "RAG II - Indexing"
+    ],
+    "retrieved_headings": [
+      "",
+      "",
+      "",
+      "",
+      ""
+    ],
+    "retrieved_distances": [
+      0.9762111306190491,
+      0.9823733568191528,
+      1.0026943683624268,
+      1.0174951553344727,
+      1.0414724349975586
+    ],
+    "top1_correct": true,
+    "top3_correct": true,
+    "top5_correct": true
+  },
+  {
+    "question": "What is retrieval?",
+    "expected_lesson": "w7d2",
+    "retrieved_lessons": [
+      "w7d5",
+      "w7d3",
+      "w7d3",
+      "w7d3",
+      "w7d3"
+    ],
+    "retrieved_sources": [
+      "Recap Week 7",
+      "Retrieval Agents",
+      "Retrieval Agents",
+      "Retrieval Agents",
+      "Retrieval Agents"
+    ],
+    "retrieved_headings": [
+      "",
+      "",
+      "",
+      "",
+      ""
+    ],
+    "retrieved_distances": [
+      0.8451255559921265,
+      0.8518407344818115,
+      0.9020745754241943,
+      0.9251325726509094,
+      0.9283527731895447
+    ],
+    "top1_correct": false,
+    "top3_correct": false,
+    "top5_correct": false
+  },
+  {
+    "question": "What is LangChain Memory?",
+    "expected_lesson": "w7d3",
+    "retrieved_lessons": [
+      "w7d3",
+      "w7d3",
+      "w7d3",
+      "w7d3",
+      "w7d1"
+    ],
+    "retrieved_sources": [
+      "4_langchain-memory.ipynb",
+      "4_langchain-memory.ipynb",
+      "4_langchain-memory.ipynb",
+      "4_langchain-memory.ipynb",
+      "Langchain intro + setup with virtual environments"
+    ],
+    "retrieved_headings": [
+      "LangChain Memory",
+      "Intro to Memory",
+      "Types of Memory",
+      "Other Memory Types",
+      ""
+    ],
+    "retrieved_distances": [
+      0.5736064314842224,
+      0.5774199962615967,
+      0.5920370817184448,
+      0.6398798227310181,
+      0.5543028712272644
+    ],
+    "top1_correct": true,
+    "top3_correct": true,
+    "top5_correct": true
+  },
+  {
+    "question": "What are Retrieval Agents?",
+    "expected_lesson": "w7d3",
+    "retrieved_lessons": [
+      "w7d3",
+      "w7d3",
+      "w7d3",
+      "w7d3",
+      "w7d5"
+    ],
+    "retrieved_sources": [
+      "Retrieval Agents",
+      "Retrieval Agents",
+      "Retrieval Agents",
+      "Retrieval Agents",
+      "Recap Week 7"
+    ],
+    "retrieved_headings": [
+      "",
+      "",
+      "",
+      "",
+      ""
+    ],
+    "retrieved_distances": [
+      0.6614428162574768,
+      0.6993039846420288,
+      0.7383938431739807,
+      0.7628448009490967,
+      0.7979742288589478
+    ],
+    "top1_correct": true,
+    "top3_correct": true,
+    "top5_correct": true
+  },
+  {
+    "question": "How do LangChain agents work?",
+    "expected_lesson": "w7d3",
+    "retrieved_lessons": [
+      "w7d1",
+      "w7d1",
+      "w7d1",
       "w7d3",
       "w7d4"
     ],
-    "latency": 2.47719407081604,
-    "passed": true,
-    "checks": {
-      "source_correct": true,
-      "has_citations": true,
-      "not_refused": true,
-      "cites:notebook": true
-    },
-    "notes": []
+    "retrieved_sources": [
+      "Langchain intro + setup with virtual environments",
+      "Langchain intro + setup with virtual environments",
+      "Langchain intro + setup with virtual environments",
+      "Retrieval Agents",
+      "Streaming"
+    ],
+    "retrieved_headings": [
+      "",
+      "",
+      "",
+      "",
+      ""
+    ],
+    "retrieved_distances": [
+      0.5998966693878174,
+      0.6717166304588318,
+      0.7067515850067139,
+      0.7099109292030334,
+      0.7269883155822754
+    ],
+    "top1_correct": false,
+    "top3_correct": false,
+    "top5_correct": true
   },
   {
-    "id": "n03",
-    "kind": "content",
-    "question": "How is conversation memory implemented in LangChain?",
-    "answer": "Conversational memory in LangChain is implemented using various methods built on top of the `ConversationChain`. Here are the key points:\n\n1. **Purpose**: Conversational memory allows systems, like chatbots, to remember previous interactions, which is crucial for maintaining context in conversations.\n\n2. **Types of Memory**: Some popular memory methods in LangChain include:\n   - `ConversationBufferMemory`\n   - `ConversationBufferWindowMemory`\n   - `ConversationTokenBufferMemory`\n   - `ConversationSummaryMemory`\n\n3. **Implementation**: For example, `ConversationBufferMemory` stores every chat interaction directly in a buffer. While it provides good results, it has drawbacks such as increased data sent to the API, which can lead to higher costs and slower responses, and it may exceed input context limits.\n\n4. **Integration**: LangChain also allows for integration with databases and the use of multiple types of memory within the same chain, enabling more complex memory management.\n\nThese concepts were discussed in detail in the course, particularly in the lesson on memory in LangChain.",
-    "cited": [
-      "w7d3",
-      "w7d1"
+    "question": "What is streaming?",
+    "expected_lesson": "w7d4",
+    "retrieved_lessons": [
+      "w7d4",
+      "w7d4",
+      "w7d4",
+      "w7d4",
+      "w7d4"
     ],
-    "latency": 3.7801589965820312,
-    "passed": true,
-    "checks": {
-      "source_correct": true,
-      "has_citations": true,
-      "not_refused": true,
-      "cites:notebook": true
-    },
-    "notes": []
+    "retrieved_sources": [
+      "Streaming",
+      "Streaming",
+      "9_langchain-streaming.ipynb",
+      "Streaming",
+      "Streaming"
+    ],
+    "retrieved_headings": [
+      "",
+      "",
+      "Intro",
+      "",
+      ""
+    ],
+    "retrieved_distances": [
+      0.7498958110809326,
+      0.8006367683410645,
+      0.8606607913970947,
+      0.8126140236854553,
+      0.8367062211036682
+    ],
+    "top1_correct": true,
+    "top3_correct": true,
+    "top5_correct": true
+  },
+  {
+    "question": "What is CLIP?",
+    "expected_lesson": "w8d1",
+    "retrieved_lessons": [
+      "w8d1",
+      "w8d1",
+      "w8d1",
+      "w8d1",
+      "w8d1"
+    ],
+    "retrieved_sources": [
+      "Multimodal Search Engine with CLIP",
+      "12_clip-text-image-search.ipynb",
+      "Multimodal Search Engine with CLIP",
+      "Multimodal Search Engine with CLIP",
+      "Multimodal Search Engine with CLIP"
+    ],
+    "retrieved_headings": [
+      "",
+      "Text-to-Image and Image-to-image search Using\u00a0CLIP",
+      "",
+      "",
+      ""
+    ],
+    "retrieved_distances": [
+      0.835471510887146,
+      1.0564341454389599,
+      0.9955981969833374,
+      1.0046558380126953,
+      1.0437122583389282
+    ],
+    "top1_correct": true,
+    "top3_correct": true,
+    "top5_correct": true
+  },
+  {
+    "question": "What is Multi-modal RAG?",
+    "expected_lesson": "w8d1",
+    "retrieved_lessons": [
+      "w8d1",
+      "w8d1",
+      "w8d1",
+      "w8d1",
+      "w8d1"
+    ],
+    "retrieved_sources": [
+      "13_multi-modal-rag.ipynb",
+      "13_multi-modal-rag.ipynb",
+      "13_multi-modal-rag.ipynb",
+      "13_multi-modal-rag.ipynb",
+      "13_multi-modal-rag.ipynb"
+    ],
+    "retrieved_headings": [
+      "Multi-modal RAG",
+      "RAG",
+      "From Text-Only to Multimodal RAG",
+      "RAG",
+      "RAG"
+    ],
+    "retrieved_distances": [
+      0.5757589827104752,
+      0.6025882000466467,
+      0.7028287750564672,
+      0.7672161002846211,
+      0.8511890161838451
+    ],
+    "top1_correct": true,
+    "top3_correct": true,
+    "top5_correct": true
+  },
+  {
+    "question": "What is BLEU?",
+    "expected_lesson": "w8d2",
+    "retrieved_lessons": [
+      "w8d2",
+      "w8d2",
+      "w8d2",
+      "w8d2",
+      "w8d2"
+    ],
+    "retrieved_sources": [
+      "NLP Evaluation Metrics",
+      "NLP Evaluation Metrics",
+      "NLP Evaluation Metrics",
+      "NLP Evaluation Metrics",
+      "NLP Evaluation Metrics"
+    ],
+    "retrieved_headings": [
+      "",
+      "",
+      "",
+      "",
+      ""
+    ],
+    "retrieved_distances": [
+      0.8710207343101501,
+      0.8723821043968201,
+      1.0354335308074951,
+      1.0522152185440063,
+      1.0700541734695435
+    ],
+    "top1_correct": true,
+    "top3_correct": true,
+    "top5_correct": true
+  },
+  {
+    "question": "What is ROUGE?",
+    "expected_lesson": "w8d2",
+    "retrieved_lessons": [
+      "w7d2",
+      "w7d2",
+      "w7d4",
+      "w7d2",
+      "w7d2"
+    ],
+    "retrieved_sources": [
+      "3_langchain-RAG.ipynb",
+      "3_langchain-RAG.ipynb",
+      "Labs intro + Q&A",
+      "RAG I - Intro",
+      "RAG I - Intro"
+    ],
+    "retrieved_headings": [
+      "How a RAG Pipeline Works",
+      "How a RAG Pipeline Works",
+      "",
+      "",
+      ""
+    ],
+    "retrieved_distances": [
+      1.1949812173843384,
+      1.2140440940856934,
+      1.1864039897918701,
+      1.1974215507507324,
+      1.20022451877594
+    ],
+    "top1_correct": false,
+    "top3_correct": false,
+    "top5_correct": false
+  },
+  {
+    "question": "How do you evaluate a RAG system?",
+    "expected_lesson": "w8d2",
+    "retrieved_lessons": [
+      "w7d4",
+      "w7d2",
+      "w7d4",
+      "w7d2",
+      "w7d2"
+    ],
+    "retrieved_sources": [
+      "Labs intro + Q&A",
+      "3_langchain-RAG.ipynb",
+      "Labs intro + Q&A",
+      "RAG II - Indexing",
+      "RAG I - Intro"
+    ],
+    "retrieved_headings": [
+      "",
+      "Intro to RAG",
+      "",
+      "",
+      ""
+    ],
+    "retrieved_distances": [
+      0.7799866795539856,
+      1.0340834856033325,
+      0.941368579864502,
+      0.945276141166687,
+      0.9876270890235901
+    ],
+    "top1_correct": false,
+    "top3_correct": false,
+    "top5_correct": false
   }
 ]

@@ -14,14 +14,15 @@ from langchain_core.documents import Document
 
 from embeddings import DEV_INDEX, FULL_INDEX, get_embeddings
 from schemas import COLLECTION_NAME
+from reranking import rerank_results
 
 
 def get_store(persist_dir: Path | None = None) -> Chroma:
     """Open an index for reading.
 
-    Defaults to the full index, falling back to the dev index — so agent work runs
-    against whatever exists locally without a code change.
+    Defaults to the full index, falling back to the dev index.
     """
+
     if persist_dir is None:
         persist_dir = FULL_INDEX if FULL_INDEX.exists() else DEV_INDEX
 
@@ -46,12 +47,8 @@ def search(
     lesson_id: str | None = None,
     store: Chroma | None = None,
 ) -> list[Document]:
-    """Top-k chunks for a query, optionally filtered.
+    """Top-k chunks for a query, optionally filtered."""
 
-    `source_type` and `lesson_id` are what let one collection behave like
-    several—the reason we did not split video and notebook chunks into
-    separate collections.
-    """
     store = store or get_store()
 
     clauses = []
@@ -87,18 +84,12 @@ def search_with_scores(
 ):
     """Same as search(), but also returns Chroma distances.
 
-    Merge note (7 Aug): Felipe and Casilda both added filtering here on the same day —
-    `source_type` from one side, `week` from the other. This is the union; dropping
-    either breaks a caller. `source_type` lets a caller ask for only videos or only
-    notebooks; `week` and `lesson_id` are what the UI scope control sets.
+    Supports filtering by source type, lesson and week.
 
-    All three filter **inside** the search rather than afterwards. Post-filtering a
-    global top-k is not the same thing: the five nearest chunks across the whole corpus
-    almost never share one lesson day, so filtering after the fact usually returned
-    nothing at all.
-
-    `store` stays positional — tools.py and the notebook pass it that way.
+    Retrieval fetches extra candidates, applies a lightweight reranker,
+    and returns the final Top-k results.
     """
+
     store = store or get_store()
 
     clauses = []
@@ -109,7 +100,7 @@ def search_with_scores(
     if lesson_id:
         clauses.append({"lesson_id": lesson_id})
 
-    if week:
+    if week is not None:
         clauses.append({"week": week})
 
     where = None
@@ -119,11 +110,21 @@ def search_with_scores(
     elif clauses:
         where = {"$and": clauses}
 
-    return store.similarity_search_with_score(
+    # Retrieve more candidates than requested
+    results = store.similarity_search_with_score(
         query,
-        k=k,
+        k=max(k * 2, 10),
         filter=where,
     )
+
+    # Apply reranking
+    results = rerank_results(
+        question=query,
+        results=results,
+    )
+
+    # Return only the requested number of results
+    return results[:k]
 
 
 if __name__ == "__main__":
@@ -131,13 +132,19 @@ if __name__ == "__main__":
 
     from schemas import build_citation
 
-    query = " ".join(sys.argv[1:]) or "what is RAG and why do we need it"
+    query = (
+        " ".join(sys.argv[1:])
+        or "what is RAG and why do we need it"
+    )
 
     print(f"query: {query!r}\n")
 
-    for doc, score in search_with_scores(query, k=5):
+    for doc, score in search_with_scores(
+        query,
+        k=5,
+    ):
         citation = build_citation(doc.metadata)
 
-        print(f"  [{score:.3f}] {citation['label']}")
-        print(f"          {citation['url']}")
-        print(f"          {doc.page_content[:120].strip()}...\n")
+        print(f"[{score:.3f}] {citation['label']}")
+        print(f"    {citation['url']}")
+        print(f"    {doc.page_content[:120].strip()}...\n")
