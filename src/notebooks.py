@@ -10,9 +10,12 @@ Large sections are split to NOTEBOOK_MAX_CHARS.
 
 from __future__ import annotations
 
+import csv
 import json
 import re
 from pathlib import Path
+
+from notebook_utils import normalize_notebook_path
 
 from schemas import NOTEBOOK_MAX_CHARS, notebook_chunk
 
@@ -48,16 +51,58 @@ DEMOS_DIR = _find_demos_dir()
 
 # Explicit mapping is intentional. Notebook filenames and lesson days do not have a
 # guaranteed one-to-one relationship, so silently guessing lesson IDs is unsafe.
-NOTEBOOK_LESSONS: dict[str, str] = {
-    "14_LangChain/1_langchain-intro.ipynb": "w7d1",
-    "14_LangChain/2_langchain-expression-language.ipynb": "w7d1",
-    "14_LangChain/3_langchain-RAG.ipynb": "w7d2",
-    "14_LangChain/4_langchain-memory.ipynb": "w7d3",
-    "14_LangChain/5_langchain-retrieval-agents.ipynb": "w7d3",
-    "14_LangChain/9_langchain-streaming.ipynb": "w7d4",
-    "14_LangChain/12_clip-text-image-search.ipynb": "w8d1",
-    "14_LangChain/13_multi-modal-rag.ipynb": "w8d1",
-}
+
+
+COURSE_RESOURCES = (
+    Path(__file__).resolve().parents[1]
+    / "evaluation"
+    / "course_resources.csv"
+)
+
+
+def load_notebook_lessons() -> dict[str, str]:
+    """
+    Load the official notebook → lesson mapping generated from the Slack export.
+
+    Only notebooks classified as official resources are included.
+    """
+
+    mapping: dict[str, str] = {}
+
+    if not COURSE_RESOURCES.exists():
+        raise FileNotFoundError(
+            f"{COURSE_RESOURCES} not found. "
+            "Run scripts/parse_slack_resources.py first."
+        )
+
+    with COURSE_RESOURCES.open(
+        newline="",
+        encoding="utf-8",
+    ) as f:
+
+        reader = csv.DictReader(f)
+
+        for row in reader:
+
+            # Only official notebooks
+            if row["type"] != "notebook":
+                continue
+
+            # Ignore malformed rows
+            if not row["lesson"]:
+                continue
+
+            mapping[
+                normalize_notebook_path(row["resource"])
+            ] = row["lesson"]
+
+
+        print(f"Loaded {len(mapping)} notebook mappings.")
+
+        return mapping
+
+
+NOTEBOOK_LESSONS = load_notebook_lessons()
 
 
 _HEADING = re.compile(r"^\s*(#{1,6})\s+(.+?)\s*$", re.MULTILINE)

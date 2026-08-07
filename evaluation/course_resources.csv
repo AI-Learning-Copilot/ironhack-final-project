@@ -1,0 +1,228 @@
+lesson,section,type,title,resource,url
+w1d1,,slides,Slides Intro to AI Engineering:,,https://docs.google.com/presentation/d/1TsigMp5RSonWgSiehjOu8Bqfwc115I_f1DRFAK5OR-o/edit?usp=sharing
+w1d1,,github,Unix Command Line Cheatsheet:,,https://gist.github.com/luisjunco/1e55df896eb6581a34682dde82de1638
+w1d1,,github,VS Code Shortcuts:,,https://gist.github.com/luisjunco/2c57a9f514a5773242afe8f96b342cbd
+w1d1,,github,Repo with the code from today:,,https://github.com/ironhack-ai-eng-june2026/demos_ai_eng
+w1d1,recordings,recording,a - Intro from PMs:,,https://www.loom.com/share/549feb884e1a4f3c9844aab6a8cd5018
+w1d1,recordings,recording,b - Intro from LT:,,https://www.loom.com/share/5dd02a9dd4f64a52a0b2da2507386226
+w1d1,recordings,recording,c - Intro to AI Engineering:,,https://www.loom.com/share/33a9cf56663c4245ada5c58b4608a5c0
+w1d1,recordings,recording,d - Python I:,,https://www.loom.com/share/717f012106b248f9a683001ced597ad5
+w1d1,recordings,recording,e - Python II:,,https://www.loom.com/share/39e2d345d60b4bd1b3f954618aec2adf
+w1d1,recordings,recording,f - Git intro + how to work in labs:,,https://www.loom.com/share/cc0733a08cc74b33bc695083c4eb00ec
+w1d1,some python online editors,link,,,https://pyfiddle.net/
+w1d1,some python online editors,link,,,https://playcode.io/python-template
+w1d2,,github,Repo with the code from today (same as yesterday):,,https://github.com/ironhack-ai-eng-june2026/demos_ai_eng
+w1d2,recordings,recording,"a - Python Functions I (intro + parameters, defaults parameters, positional and keyword params):",,https://www.loom.com/share/e11b5615e0224dffae4418f392ebb717
+w1d2,recordings,recording,b - Functions II (Returns):,,https://www.loom.com/share/9263f3f321d64c5fa864776d75f94c5b
+w1d2,recordings,recording,c - Python Functions III (Scope):,,https://www.loom.com/share/ba688557b07442d294c3ec9bd98497a8
+w1d2,recordings,recording,d - Python Functions IV (lambda functions):,,https://www.loom.com/share/beb35ec5d63947a78312d1159ce1551c
+w1d2,recordings,recording,e - Python List Comprehensions Explained:,,https://www.loom.com/share/01c021315ce94beda20ba78498af7c3d
+w1d2,codewars: an excellent resource to practice programming,link,,,https://www.codewars.com
+w1d3,,github,Repo with the code from today (same as yesterday):,,https://github.com/ironhack-ai-eng-june2026/demos_ai_eng
+w1d3,recordings,recording,"a - Discussion on LLMs (how we can use them to learn, tips, etc) + Graduation requirements:",,https://www.loom.com/share/61911d42634a473b8fcc690bd6ccaea0
+w1d3,recordings,recording,b - Python Error Handling:,,https://www.loom.com/share/7da7d326eb8d40b79a78bdd38ce595fa
+w1d3,recordings,recording,"c - Activity Python functions (map, filter, reduce):",,https://www.loom.com/share/1ce1a4a713e34cfa90c9a607b175d400
+w1d3,recordings,recording,"d - Python map(), filter(), reduce():",,https://www.loom.com/share/d5a9cc44a7ec42a79b11c7724c241e9b
+w1d4,,github,Repo with the code from today (same as yesterday):,,https://github.com/ironhack-ai-eng-june2026/demos_ai_eng
+w1d4,recordings,recording,"a - Intro to the underlying concepts of ML (Tensors, Linear Algebra, etc.):",,https://www.loom.com/share/c003aca7aad34eadbd44b5da9011e7e8
+w1d4,recordings,recording,b - NumPy:,,https://www.loom.com/share/bf79fc62f4d64bb29110d8df3060d702
+w1d4,recordings,recording,c - Pandas:,,https://www.loom.com/share/7d4870aa77a940a6a0237ee35988d3ad
+w1d4,recordings,recording,d - Labs intro:,,https://www.loom.com/share/097b2489792049c2bbc35a110ff89257
+w1d4,recordings,recording,"e - Descriptive Statistics (mean, mode, median, standard deviation, quartiles):",,https://www.loom.com/share/8c9fa8d0007e490f9db05d133841f91a
+w1d4,recordings,recording,f - Bonus session - Python variables and the memory model:,,https://www.loom.com/share/ae50a7e357ce4920a78b91eadce466d4
+w1d5,,github,Repo with the code from today (same as yesterday):,,https://github.com/ironhack-ai-eng-june2026/demos_ai_eng
+w1d5,recordings,recording,a - Panda groupby:,,https://www.loom.com/share/f58a195e73da424c8ae694048689a7c1
+w1d5,recordings,recording,b - Pandas concat + merge:,,https://www.loom.com/share/fa5a7359104e4f978530b8af4cb25fb6
+w1d5,recordings,recording,c - AI Coding assistants I:,,https://www.loom.com/share/38c144a3f3e64eea81809dd372457498
+w1d5,recordings,recording,d - Data Visualization:,,https://www.loom.com/share/2334d6a834ba465b8543a54c1076651e
+w1d5,recordings,recording,"e - Agile, Scrum, retrospective:",,https://www.loom.com/share/c613dbe9a70d4996ac27707c3b16ef35
+w1d5,recordings,recording,f - NotebookLM intro + labs intro:,,https://www.loom.com/share/866650d294a841ada8f9a5bfc2acc9de
+w1d5,recordings,recording,g - bonus session - OOP:,,https://www.loom.com/share/9aa3002bdab04b0b8427ec555321faf7
+w2d1,,slides,Slides - Intro to AI and Machine Learning:,,https://docs.google.com/presentation/d/1dMhtYwDRZQ8FfLM1t9gyjg5rJ0xNtewgv_-RvS7iPWs/edit?usp=sharing
+w2d1,,github,Repo with the code from today (same as yesterday):,,https://github.com/ironhack-ai-eng-june2026/demos_ai_eng
+w2d1,files,notebook,1_supervised_demo_i_linear_regression.ipynb,05_Machine_Learning/1_supervised_demo_i_linear_regression.ipynb,
+w2d1,files,notebook,2_supervised_demo_iI_logistic_reg.ipynb,05_Machine_Learning/2_supervised_demo_iI_logistic_reg.ipynb,
+w2d1,recordings,recording,a - Intro to AI and Machine Learning:,,https://www.loom.com/share/82e88b325874425f80bc108b41fbd885
+w2d1,recordings,recording,"b - ML demo I - Linear Regression (train-test split, train a model, overfitting...):",,https://www.loom.com/share/c4e08646207b450394450aabf7c42d1d
+w2d1,recordings,recording,c - ML demo II (Logistic Regression):,,https://www.loom.com/share/a44f97419e804317b07738b716bf1aee
+w2d1,recordings,recording,d - Labs intro:,,https://www.loom.com/share/179705525eba472daa45912cf420c2a7
+w2d2,,github,Repo with the code from today:,,https://github.com/ironhack-ai-eng-june2026/demos_ai_eng
+w2d2,metrics,notebook,3_supervised_metrics_regression.ipynb,05_Machine_Learning/3_supervised_metrics_regression.ipynb,
+w2d2,metrics,notebook,4_supervised_metrics_classification.ipynb,05_Machine_Learning/4_supervised_metrics_classification.ipynb,
+w2d2,algorithms,notebook,5_supervised_algorithms_regression.ipynb,05_Machine_Learning/5_supervised_algorithms_regression.ipynb,
+w2d2,algorithms,notebook,6_supervised_algorithms_classification.ipynb,05_Machine_Learning/6_supervised_algorithms_classification.ipynb,
+w2d2,recordings,recording,a - Day intro + week planning:,,https://www.loom.com/share/633b7ba2c7594f259f8f51880968a257
+w2d2,recordings,recording,"b - Regression Metrics (MAE, MSE, RMSE, R2):",,https://www.loom.com/share/6ab711dc70364bdaacd53e8c2a4c8743
+w2d2,recordings,recording,"c - Classification Metrics (Confusion Matrix, Accuracy, Precision, Recall...):",,https://www.loom.com/share/40067a5fd6f04e448b117f96dcdd2c69
+w2d2,recordings,recording,d - ML Algorithms Classification:,,https://www.loom.com/share/2fada4284b5b4ffcb0e50a587e0acd70
+w2d2,recordings,recording,e - ML Algorithms Regression + labs intro:,,https://www.loom.com/share/9b611991946240f28b21c3afb476b9f3
+w2d3,,github,:pushpin: (Cheatsheet) The Supervised Learning Workflow: Beginner-friendly End-to-End Playbook:,,https://github.com/luisjunco/The-Supervised-Learning-Workflow--Beginner-friendlyEnd-to-End-Playbook
+w2d3,,link,Some rules of thumb on the minimum data to train a classic ML model:,,https://chatgpt.com/share/6a3baaa1-fbf4-83ed-9d90-b293d5825e80
+w2d3,,github,Repo with the code from today:,,https://github.com/ironhack-ai-eng-june2026/demos_ai_eng
+w2d3,,notebook,7_supervised_end_to_end_demo.ipynb,05_Machine_Learning/7_supervised_end_to_end_demo.ipynb,
+w2d3,recordings,recording,a - Day intro (discuss metrics and overfitting + repos we'll use today + git concepts):,,https://www.loom.com/share/57751f3c74f844d68707b981b3c0a6b5
+w2d3,recordings,recording,b - End to End Supervised Learning Workflow :pushpin::,,https://www.loom.com/share/e393640d4b164c01b8ce2b9f7519da6d
+w2d3,recordings,recording,c - I (problem definition + load data + EDA):,,https://www.loom.com/share/9d8e992977de49ea819fd31973c1be52
+w2d3,recordings,recording,d - II (data splitting):,,https://www.loom.com/share/39e4c950211f47be897a2c4096329910
+w2d3,recordings,recording,e - III (data cleaning + baseline model + feature engineering + feature selection):,,https://www.loom.com/share/e423efd912814342a0ae46bcaab4ed98
+w2d3,recordings,recording,"f - IV (class imbalance, train and compare, hyperparameter tuning, final evaluation):",,https://www.loom.com/share/a7e22e1d702a4f04bb987d5f65009268
+w2d4,,github,Repo with the code from today:,,https://github.com/ironhack-ai-eng-june2026/demos_ai_eng
+w2d4,files,notebook,1_clustering.ipynb,06_Machine_Learning_Unsupervised/1_clustering.ipynb,
+w2d4,files,notebook,2_dimensionality_reduction.ipynb,06_Machine_Learning_Unsupervised/2_dimensionality_reduction.ipynb,
+w2d4,recordings,recording,a - Supervised End-to-end process (activity + QA):,,https://www.loom.com/share/b9e38769a8d44d3b9012e2e157819575
+w2d4,recordings,recording,b - Unsupervised I - Clustering:,,https://www.loom.com/share/13a83468e94d4877a5174deac9f3c184
+w2d4,recordings,recording,c - Unsupervised II - Dimensionality Reduction with PCA:,,https://www.loom.com/share/b45a92df59744d4f9a94c1f5fb090581
+w2d5,recordings,recording,IronKaggle Intro:,,https://www.loom.com/share/1cbb900670f04e33a3c4fb5792ccccba
+w3d1,,slides,Slides - Intro to Deep Learning:,,https://docs.google.com/presentation/d/1nSL29SsfHAN3_PmKTFc1kJkpPwk75aaDGOY5rwAud_8/edit?usp=sharing
+w3d1,,github,Repo with the code from today:,,https://github.com/ironhack-ai-eng-june2026/demos_ai_eng
+w3d1,file,notebook,1. Deep_Learning_demo_i.ipynb,07_Deep_Learning/1. Deep_Learning_demo_i.ipynb,
+w3d1,recordings,recording,"a - Deep Learning intro I (intro, neurons, activation functions, etc):",,https://www.loom.com/share/2d44cff729714477a0d9da39b1d27f0a
+w3d1,recordings,recording,"b - Deep Learning intro II (backpropagation, gradient descent, challenges, types of neural networks):",,https://www.loom.com/share/ab9f5c0aecd5420894ab8196772c88b6
+w3d1,recordings,recording,c - Deep Learning with Keras: MNIST Demo:,,https://www.loom.com/share/02f6515636e04e078827c8fe24e1f9d4
+w3d1,recordings,recording,d - Setting Up Google Colab for Deep Learning:,,https://www.loom.com/share/3bae0f80835f49deb9379c232c4fbbf4
+w3d1,recordings,recording,e - Labs intro:,,https://www.loom.com/share/14d025b3ef8d4ccc9c30a48b7a694737
+w3d1,recordings,recording,f - End-of-day summary:,,https://www.loom.com/share/4ae4fab0f64946d481d675ae22bc09cc
+w3d2,,slides,Slides - Computer Vision and Image Processing:,,https://docs.google.com/presentation/d/1dSUiBez0QthEvrpKn1vppSHe6sP3UZgB7d9V5LbiSvw/edit?usp=sharing
+w3d2,,github,Repo with the code from today:,,https://github.com/ironhack-ai-eng-june2026/demos_ai_eng
+w3d2,files,notebook,3. Computer Vision Intro.ipynb,07_Deep_Learning/3. Computer Vision Intro.ipynb,
+w3d2,files,notebook,4. Deep_Learning_demo_ii_CNNs.ipynb,07_Deep_Learning/4. Deep_Learning_demo_ii_CNNs.ipynb,
+w3d2,recordings,recording,a - Intro to Computer Vision:,,https://www.loom.com/share/4d11c9d5abea4883a2b1150e31b8e4eb
+w3d2,recordings,recording,"b - Computer Vision Intro (Image Preprocessing, Filtering, and Feature Extraction):",,https://www.loom.com/share/7a2e2cb8f3d64583b402ba250fa40afb
+w3d2,recordings,recording,c - Convolutional Neural Networks (CNNs):,,https://www.loom.com/share/f33065895265433b993bca094ddca069
+w3d2,recordings,recording,d - Labs intro + End-of-day summary:,,https://www.loom.com/share/fca3aa0a1dfe4393b25570553c099e6d
+w3d2,recordings,link,check google drive space:,,https://one.google.com/storage/management
+w3d3,project-1 kick-off,slides,Slides:,,https://docs.google.com/presentation/d/15Pih0_m3ylcUeydPV_ce0jDB14mRyAwh/edit?usp=sharing&ouid=106273086606823902877&rtpof=true&sd=true
+w3d3,project-1 kick-off,github,Project brief:,,https://github.com/ironhack-rmt-AI-student-materials/project-1-brief-CNN
+w3d3,recordings,recording,a - Project 1 Kick-off:,,https://www.loom.com/share/a1e4453eb61543a085a689ad14454f3c
+w3d3,recordings,link,This page lets you download the CIFAR10 dataset in 5sec instead of 1 hour+ :,,https://data.mendeley.com/datasets/kfjcsbhhss/1
+w3d3,recordings,github,I’ve been running my CNN project (karimamzghi/cifar10-cnn-classification-project) with this workflow and wanted to share in case it’s useful for your projects too. Repo here:,,https://github.com/karimamzghi/cifar10-cnn-classification-project/tree/main/src
+w3d3,there are two ways to do that,link,3. Open  in your browser — Colab loads it straight from GitHub.,,https://colab.research.google.com/github/<user>/<repo>/blob/main/<notebook>.ipynb
+w3d4,deployment with gradio,link,Documentation:,,https://gradio.app/
+w3d4,deployment with gradio,link,Some notes + a code example:,,https://claude.ai/share/1eb600e7-b359-42d6-9cbc-2cc3e45d3370
+w3d4,data augmentation,link,Example with Keras:,,https://claude.ai/share/a07c8b32-184b-4f63-9d03-69d962b1e1ab
+w3d4,data augmentation,slides,,,https://docs.google.com/presentation/d/1fH_sfUFkiif0ctSrBTWrfQArsKhuKt9J5EpszHjJbbE/edit?usp=sharing
+w3d4,recordings,recording,a - Deployment I (Gradio):,,https://www.loom.com/share/d578c789371e474cbff265ba5b4862e7
+w3d4,recordings,recording,b - Data Augmentation:,,https://www.loom.com/share/262ff9c7c3b646a7b15187ab3634410c
+w3d4,recordings,recording,c - Transfer Learning:,,https://www.loom.com/share/8acc91b6712742f8964195b12d768e73
+w3d4,recordings,recording,d - Intro to Standup Meetings:,,https://www.loom.com/share/2ad0795394cb4a218143f7bc00c349e8
+w3d5,,slides,Guidelines for your README file:,,https://docs.google.com/document/d/1ayD-BNcyx_-i0G0BASZYkTgPYKj058S6742EY7Ehr7Y/edit?usp=sharing
+w3d5,,slides,Guidelines for the presentation:,,https://docs.google.com/document/d/1ulmztYNDkpQ7PJsJ53l7cIsUELUN6gygWRZwlJWnt1k/edit?usp=sharing
+w4d1,,github,Repo with the code from today:,,https://github.com/ironhack-ai-eng-june2026/demos_ai_eng
+w4d1,file,notebook,7_regex.ipynb,01_python/7_regex.ipynb,
+w4d1,file,link,(a useful site for regular expressions),,https://regex101.com/
+w4d1,recordings,recording,a - Regular Expresions (Regex):,,https://www.loom.com/share/ba1371588ab54a19a42d7e3331ff79d7
+w4d1,recordings,recording,b - Understanding Pseudocode With Max Example:,,https://www.loom.com/share/4428c4ecb313407094ea6d1431ded85b
+w4d1,recordings,recording,c - labs intro:,,https://www.loom.com/share/65dd5c7aeb0c4c2f912b11e0408fb260
+w4d2,,github,Repo with the code from today:,,https://github.com/ironhack-ai-eng-june2026/demos_ai_eng
+w4d2,files,notebook,NLP_1.ipynb,08_NLP/NLP_1.ipynb,
+w4d2,files,notebook,NLP_2.ipynb,08_NLP/NLP_2.ipynb,
+w4d2,files,notebook,NLP_3.ipynb,08_NLP/NLP_3.ipynb,
+w4d2,files,notebook,NLP_4.ipynb,08_NLP/NLP_4.ipynb,
+w4d2,recordings,recording,a - NLP I (Intro):,,https://www.loom.com/share/863204a6faf74fb09c60656e99347834
+w4d2,recordings,recording,"b - NLP II (tokenization, remove punctuation, stemmers and lemmatizers):",,https://www.loom.com/share/2a2892bf7af141569b992fa23e1f0d40
+w4d2,recordings,recording,"c - NLP III (TF-IDF, stopwords, BoW, n-grams):",,https://www.loom.com/share/8a7d5232d9614a938bb2f03b20311088
+w4d2,recordings,recording,d - Example of NLP + unsupervised learning (News Clustering):,,https://www.loom.com/share/6eb59660ca4c43269d6d1d20678dbf60
+w4d3,,github,Repo with the code from today:,,https://github.com/ironhack-ai-eng-june2026/demos_ai_eng
+w4d3,files,notebook,1_Embeddings_Intro.ipynb,09_Embeddings/1_Embeddings_Intro.ipynb,
+w4d3,files,notebook,2_Embeddings_Demo.ipynb,09_Embeddings/2_Embeddings_Demo.ipynb,
+w4d3,recordings,recording,a - Embeddings Intro:,,https://www.loom.com/share/69e38182df3b47579eb5b9b3e856f5d8
+w4d3,recordings,recording,b - Word2Vec Explained:,,https://www.loom.com/share/d4b835f40d214b99af9318b423f8e0fe
+w4d3,recordings,recording,c - Embeddings Demo:,,https://www.loom.com/share/f3fec59ed3734d4a9e68316d54916575
+w4d3,recordings,recording,d - Labs intro:,,https://www.loom.com/share/79fa87beb98f4c57a76848e4ee35e60e
+w4d4,,github,Project-2 Brief:,,https://github.com/ironhack-labs/project-nlp-challenge
+w4d4,,github,Project-2 Recommendations:,,https://gist.github.com/luisjunco/85da9e2bd6a7eb992bb58345bb929670
+w4d4,recordings,recording,a - Project-2 Kick-off:,,https://www.loom.com/share/e152967eb29d4796a04ba5f47777633c
+w5d1,,slides,"Slides ""Intro to Relational Databases"":",,https://docs.google.com/presentation/d/17KO1Tn7X7m4k7ld-IH6MmDJ9qJrgm6h3n1JS4gS72XY/edit?usp=sharing
+w5d1,,github,Repo with the code from today:,,https://github.com/ironhack-ai-eng-june2026/demos_ai_eng
+w5d1,files,markdown,1_SQLite_intro_and_CRUD_operations.md,10_SQL/1_SQLite_intro_and_CRUD_operations.md,
+w5d1,files,markdown,2_SQLite_table_relationships_and_joins.md,10_SQL/2_SQLite_table_relationships_and_joins.md,
+w5d1,files,notebook,3_Demo_SQLite_and_Python.ipynb,10_SQL/3_Demo_SQLite_and_Python.ipynb,
+w5d1,recordings,recording,a - Intro to Databases + SQLite setup:,,https://www.loom.com/share/afa7e79120ad435cbb3d984dd0c4017d
+w5d1,recordings,recording,b - SQLite I - Intro and CRUD operations:,,https://www.loom.com/share/2e866df4f4c549c5a9f77cdd64d65b09
+w5d1,recordings,recording,c - SQLite II - Table Relationships and Joins:,,https://www.loom.com/share/d6cfb17516164afebebca414b646598b
+w5d1,recordings,recording,d - Labs intro:,,https://www.loom.com/share/cba2da0810b9481daf83af3f78865335
+w5d2,,github,Repo with the code from today:,,https://github.com/ironhack-ai-eng-june2026/demos_ai_eng
+w5d2,files,notebook,1_whats_an_api.ipynb,11_LLM_APIs/1_whats_an_api.ipynb,
+w5d2,files,notebook,2_openai_api_demo.ipynb,11_LLM_APIs/2_openai_api_demo.ipynb,
+w5d2,files,notebook,3_prompt_engineering_recommendations.ipynb,11_LLM_APIs/3_prompt_engineering_recommendations.ipynb,
+w5d2,files,notebook,4_guidelines-for-prompting.ipynb,11_LLM_APIs/4_guidelines-for-prompting.ipynb,
+w5d2,files,notebook,5_iterative-prompt-development.ipynb,11_LLM_APIs/5_iterative-prompt-development.ipynb,
+w5d2,recordings,recording,a - Transformer Architecture - Core Ideas:,,https://www.loom.com/share/059276793085495eb45ce18236344362
+w5d2,recordings,recording,b - What's an API:,,https://www.loom.com/share/89969c97b32546689cdaf63b38089f8c
+w5d2,recordings,recording,c - OpenAI API example I:,,https://www.loom.com/share/f646a48673404560becf92e7797064e3
+w5d2,recordings,recording,d - Prompt Engineering:,,https://www.loom.com/share/f6f552868ec5421e9091ee3c4409046a
+w5d3,,slides,Slides - AI Landscape 2026:,,https://docs.google.com/presentation/d/1D3EKSOTdVh6nRKFFJ2_4SXuPJfgDTjScs2fJQrUu0-w/edit?usp=sharing
+w5d3,,github,Repo with the code from today:,,https://github.com/ironhack-ai-eng-june2026/demos_ai_eng
+w5d3,files,notebook,6_prompt_injection_example.ipynb,11_LLM_APIs/6_prompt_injection_example.ipynb,
+w5d3,files,notebook,7_tool_calling.ipynb,11_LLM_APIs/7_tool_calling.ipynb,
+w5d3,recordings,recording,a - OpenAI API Usage + example of prompt injection:,,https://www.loom.com/share/b93ec78bc6dc435f958c552cda18fe82
+w5d3,recordings,recording,b - AI Landscape 2026:,,https://www.loom.com/share/3364d60f194743b29a197d7d85dbc0f7
+w5d3,recordings,recording,c - Tool Calling:,,https://www.loom.com/share/94d128e399a247c4a84af0b09b3606a3
+w5d4,,slides,Slides - Common Ways to Connect to AI Models:,,https://docs.google.com/presentation/d/1bTyCjtO9N7pElnGWnl3DxVvg4YNnLpuA-ns7yw-rHQA/edit?usp=sharing
+w5d4,,github,Repo with the code from today:,,https://github.com/ironhack-ai-eng-june2026/demos_ai_eng
+w5d4,files,notebook,1_quantization.ipynb,12_Model_Optimization/1_quantization.ipynb,
+w5d4,recordings,recording,a - Day intro + Common Ways to Connect to AI Models:,,https://www.loom.com/share/b00d2a6306c04e8d86b1557370302a46
+w5d4,recordings,recording,b - Quantization + Labs intro:,,https://www.loom.com/share/692c98f09ac54736ac95aa99027d8b90
+w5d4,recordings,recording,"c - The Global AI Race: power, competition, and safety:",,https://www.loom.com/share/6b5913fb5df2458a854e4ecdaa5068c6
+w5d5,recordings,recording,a - Mini-project demos + discuss a few ideas on AI-powered apps & LLMs:,,https://www.loom.com/share/e21573faeaf34d3eaae0f0340f9fa880
+w5d5,recordings,recording,b - Transfer Learning + LoRA:,,https://www.loom.com/share/3a13f5ee3c5b4ed0bdb3f638f810361f
+w5d5,recordings,recording,c - QLoRA + Labs intro:,,https://www.loom.com/share/1df7075fd46c455280259f4cc076f850
+w6d1,,github,Steps that we'll follow today (model deployment):,,https://gist.github.com/luisjunco/24a87def7fdde66a62e1a6cbdf74e7a6
+w6d1,initial code,github,,,https://github.com/ironhack-rmt-AI-student-materials/model-deployment-demo-i
+w6d1,final code,github,,,https://github.com/ironhack-ai-eng-june2026/model-deployment-demo-i
+w6d1,some useful vibe coding tools,link,,,https://lovable.dev/
+w6d1,some useful vibe coding tools,link,,,https://bolt.new/
+w6d1,recordings,recording,a - Deployment a (intro + understand initial code):,,https://www.loom.com/share/ba3f248b0b5b43fd8d38ff15e35937e3
+w6d1,recordings,recording,b - Creating an API with FastAPI (+ a few advanced git concepts):,,https://www.loom.com/share/635136c6e3974f6da0bf717490047a41
+w6d1,recordings,recording,c - Deploy our API on Render:,,https://www.loom.com/share/ac9f82d58dc84751ad39c5fca752429a
+w6d1,recordings,recording,"d - Create a frontend App (html, React) + fix CORS error:",,https://www.loom.com/share/32ea41010af84c0f91b9aa460182386e
+w6d1,recordings,recording,e - Deploy our Frontend in Vercel:,,https://www.loom.com/share/6af5564cb6cb403da4ab1dfb69ff25f3
+w6d2,project-3 brief,github,,,https://github.com/ironhack-rmt-AI-student-materials/project-3-brief-NLP-automated-customers-reviews
+w6d2,recordings,recording,a - Project-3 Kick-off:,,https://www.loom.com/share/beeed8a2a1c7475e910034775d05d67b
+w6d5,presentations group 1,link,,,https://ironhack.zoom.us/rec/play/OWAMt1Qa5Ame4QVNNzI9kK_-M_lZa2uQlCnZWupcTTl5gvZrt9MnhrQfo1d_Hm1SZZV7rpp1Ql6c5oaa.l_gE3mS01scb8VtI?accessLevel=meeting&canPlayFromShare=true&from=share_recording_detail&continueMode=true&oldStyle=true&componentName=rec-play&originRequestUrl=https%3A%2F%2Fironhack.zoom.us%2Frec%2Fshare%2FS-izq93itQGeocm_qH-Lv0M8oHr-ZwHtZ2Z0kyWEIIltyEsZWNccdhFbhYpGjOkO.fNE38f3X8ZsEGirX&autoplay=true&startTime=1784878166000
+w6d5,presentations group 2,recording,A:,,https://www.loom.com/share/7fe534b68a374a1b961b0828ec941518
+w6d5,presentations group 2,recording,B:,,https://www.loom.com/share/1a15cd091b114ca19a9000188605e2ff
+w7d1,,github,Repo with the code from today:,,https://github.com/ironhack-ai-eng-june2026/demos_ai_eng
+w7d1,files,notebook,1_langchain-intro.ipynb,14_LangChain/1_langchain-intro.ipynb,
+w7d1,files,notebook,2_langchain-expression-language.ipynb,14_LangChain/2_langchain-expression-language.ipynb,
+w7d1,recordings,recording,a - LangChain intro + setup with virtual environments:,,https://www.loom.com/share/16f7f29719e542feb0b97b1f546d83a1
+w7d1,recordings,recording,b - LangChain Chains I:,,https://www.loom.com/share/61acc22eba654899beb377aed5d782f9
+w7d1,recordings,recording,c - LangChain Chains II:,,https://www.loom.com/share/aa368e0b655948038f25111582b26d73
+w7d1,recordings,recording,d - Labs Intro:,,https://www.loom.com/share/f0ab9fd1e0364a319b7ae3e028c33509
+w7d2,,github,Repo with the code from today:,,https://github.com/ironhack-ai-eng-june2026/demos_ai_eng
+w7d2,files,notebook,3_langchain-RAG.ipynb,14_LangChain/3_langchain-RAG.ipynb,
+w7d2,files,notebook,4_langchain-memory.ipynb,14_LangChain/4_langchain-memory.ipynb,
+w7d2,recordings,recording,a - RAG I - Intro:,,https://www.loom.com/share/4421b00033f74db7afa16c9f874a7487
+w7d2,recordings,recording,b - RAG II - Indexing:,,https://www.loom.com/share/9adc63fbe9f84e93a7334a8c80c20569
+w7d2,recordings,recording,c - RAG III - Retrieval and Generation:,,https://www.loom.com/share/e49da4da75fc497cbd4cd7458dd1b1ab
+w7d2,bonus,github,I've created this gist with a few ideas about the different versions of LangChain:,,https://gist.github.com/luisjunco/8f190ef4f7665ec00239adc5a8e3c2b8
+w7d3,,github,Repo with the code from today:,,https://github.com/ironhack-ai-eng-june2026/demos_ai_eng
+w7d3,files,notebook,5_langchain-retrieval-agents.ipynb,14_LangChain/5_langchain-retrieval-agents.ipynb,
+w7d3,recordings,recording,a - Recap (LanChain Memory + RAG Pipeline):,,https://www.loom.com/share/f8e3c125cc974d64ac85f94c1ea78e47
+w7d3,recordings,recording,b - Retrieval Agents:,,https://www.loom.com/share/d06ccfb467d34e8ea0566a5ebc33a2f0
+w7d3,recordings,recording,c - Labs intro + Q&A I:,,https://www.loom.com/share/b58fe8e72f8d4a95a6eb2ad68332baae
+w7d3,recordings,recording,d - Q&A II (how to read a pdf file + a question on today's lab):,,https://www.loom.com/share/d50842fa86e346a2acab2461b49e29fc
+w7d4,open models vs. closed models,github,,,https://gist.github.com/luisjunco/65fe6907730b7e79ec4f2712d7ff690c
+w7d4,open models vs. closed models,github,Repo with the code from today:,,https://github.com/ironhack-ai-eng-june2026/demos_ai_eng
+w7d4,files,notebook,9_langchain-streaming.ipynb,14_LangChain/9_langchain-streaming.ipynb,
+w7d4,files,notebook,10_langchain-building-tools.ipynb,14_LangChain/10_langchain-building-tools.ipynb,
+w7d4,files,notebook,11_langchain-multi-query.ipynb,14_LangChain/11_langchain-multi-query.ipynb,
+w7d4,recordings,recording,a - Streaming:,,https://www.loom.com/share/c19efb60a8d842ca8a4742c3009f3732
+w7d4,recordings,recording,b - Tool Calling + Open Models:,,https://www.loom.com/share/b915e3a2bf8b4562a42947b06bf7f1e7
+w7d4,recordings,recording,c - How to cancel Colab:,,https://www.loom.com/share/7dedfeac2517416a9ba8ce916fd0a999
+w7d4,recordings,recording,d - Labs intro + Q&A:,,https://www.loom.com/share/809b47d3d7a94d26981ce5bfc0570bf1
+w7d5,core ai engineering techniques & patterns :pushpin::pushpin::pushpin::pushpin::pushpin,github,,,https://gist.github.com/luisjunco/25d321d55a6a309e0e2206c0d3497206
+w7d5,b - recap core ai engineering techniques & patterns: https://www.loom.com/share/bed68b76e30f46d28227761cb10ffc17 :pushpin,recording,c - Mini-Project (IronStore Enterprise AI Assistant):,,https://www.loom.com/share/c5c4523b57a344928282928970c31a5c
+w8d1,,github,Repo with the code from today:,,https://github.com/ironhack-ai-eng-june2026/demos_ai_eng
+w8d1,files,notebook,12_clip-text-image-search.ipynb,14_LangChain/12_clip-text-image-search.ipynb,
+w8d1,files,notebook,13_multi-modal-rag.ipynb,14_LangChain/13_multi-modal-rag.ipynb,
+w8d1,recordings,recording,a - Multimodal Search Engine with CLIP:,,https://www.loom.com/share/8aff6921f849489ca18682c03346c1ce
+w8d1,recordings,recording,b - Multi-modal RAG:,,https://www.loom.com/share/81ef2b0df98246c58ba1deffcb8f77c9
+w8d2,,github,Repo with the code from today:,,https://github.com/ironhack-ai-eng-june2026/demos_ai_eng
+w8d2,files,notebook,1_bleu-evaluation.ipynb,15_Evaluation/1_bleu-evaluation.ipynb,
+w8d2,files,notebook,2_rouge-evaluation-untrained-vs-trained-llm.ipynb,15_Evaluation/2_rouge-evaluation-untrained-vs-trained-llm.ipynb,
+w8d2,files,link,,,https://docs.langchain.com/langsmith/evaluate-rag-tutorial
+w8d2,recordings,recording,a - NLP Evaluation Metrics:,,https://www.loom.com/share/13050308a5924f0a9e8deead0383d3e9
+w8d2,recordings,recording,b - Labs intro + Q&A:,,https://www.loom.com/share/14a28df8dc2640d6a9b35ba0939d5488
+w8d3,recordings,recording,a - Project-4 Kick-off:,,https://www.loom.com/share/f7b96bc8141d4c3286ed771833cbdba4
+w8d3,recordings,recording,b - Project-4 Planning Session (discuss project ideas):,,https://www.loom.com/share/7a62c0d971c24e299ba559cd03bc8f94

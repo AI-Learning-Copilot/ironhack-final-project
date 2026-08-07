@@ -24,10 +24,13 @@ def get_store(persist_dir: Path | None = None) -> Chroma:
     """
     if persist_dir is None:
         persist_dir = FULL_INDEX if FULL_INDEX.exists() else DEV_INDEX
+
     if not Path(persist_dir).exists():
         raise FileNotFoundError(
-            f"no index at {persist_dir}. Build one: python src/embeddings.py --dev"
+            f"no index at {persist_dir}. "
+            "Build one: python src/embeddings.py --dev"
         )
+
     return Chroma(
         collection_name=COLLECTION_NAME,
         embedding_function=get_embeddings(),
@@ -45,24 +48,32 @@ def search(
 ) -> list[Document]:
     """Top-k chunks for a query, optionally filtered.
 
-    `source_type` and `lesson_id` are what let one collection behave like several —
-    the reason we did not split video and notebook chunks into separate collections.
+    `source_type` and `lesson_id` are what let one collection behave like
+    several—the reason we did not split video and notebook chunks into
+    separate collections.
     """
     store = store or get_store()
 
     clauses = []
+
     if source_type:
         clauses.append({"source_type": source_type})
+
     if lesson_id:
         clauses.append({"lesson_id": lesson_id})
 
     where = None
+
     if len(clauses) == 1:
         where = clauses[0]
     elif clauses:
         where = {"$and": clauses}
 
-    return store.similarity_search(query, k=k, filter=where)
+    return store.similarity_search(
+        query,
+        k=k,
+        filter=where,
+    )
 
 
 def search_with_scores(
@@ -70,30 +81,49 @@ def search_with_scores(
     k: int = 5,
     store: Chroma | None = None,
     *,
+    source_type: str | None = None,
     lesson_id: str | None = None,
     week: int | None = None,
 ):
-    """Same, but with distances — useful when tuning k or judging a refusal threshold.
+    """Same as search(), but also returns Chroma distances.
 
-    `lesson_id` and `week` filter **inside** the search rather than afterwards.
-    Post-filtering a global top-k is not the same thing: the five nearest chunks across
-    the whole corpus almost never all come from one lesson day, so filtering after the
-    fact usually returned nothing. Passing the clause to Chroma searches within the
-    lesson or week instead.
+    Merge note (7 Aug): Felipe and Casilda both added filtering here on the same day —
+    `source_type` from one side, `week` from the other. This is the union; dropping
+    either breaks a caller. `source_type` lets a caller ask for only videos or only
+    notebooks; `week` and `lesson_id` are what the UI scope control sets.
+
+    All three filter **inside** the search rather than afterwards. Post-filtering a
+    global top-k is not the same thing: the five nearest chunks across the whole corpus
+    almost never share one lesson day, so filtering after the fact usually returned
+    nothing at all.
+
+    `store` stays positional — tools.py and the notebook pass it that way.
     """
+    store = store or get_store()
+
     clauses = []
+
+    if source_type:
+        clauses.append({"source_type": source_type})
+
     if lesson_id:
         clauses.append({"lesson_id": lesson_id})
+
     if week:
         clauses.append({"week": week})
 
     where = None
+
     if len(clauses) == 1:
         where = clauses[0]
     elif clauses:
         where = {"$and": clauses}
 
-    return (store or get_store()).similarity_search_with_score(query, k=k, filter=where)
+    return store.similarity_search_with_score(
+        query,
+        k=k,
+        filter=where,
+    )
 
 
 if __name__ == "__main__":
@@ -102,9 +132,12 @@ if __name__ == "__main__":
     from schemas import build_citation
 
     query = " ".join(sys.argv[1:]) or "what is RAG and why do we need it"
+
     print(f"query: {query!r}\n")
+
     for doc, score in search_with_scores(query, k=5):
         citation = build_citation(doc.metadata)
+
         print(f"  [{score:.3f}] {citation['label']}")
         print(f"          {citation['url']}")
         print(f"          {doc.page_content[:120].strip()}...\n")
