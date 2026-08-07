@@ -15,6 +15,7 @@ from __future__ import annotations
 import functools
 import json
 import random
+import re
 from pathlib import Path
 
 from langchain_core.tools import StructuredTool
@@ -69,7 +70,15 @@ class CitationCollector:
 
 
 class SearchInput(BaseModel):
-    query: str = Field(description="What to look for, in the student's own words.")
+    query: str = Field(
+        description=(
+            "The student's FULL question, close to verbatim. Do NOT reduce it to a "
+            "keyword or acronym. This is embedded and compared against lecture "
+            "transcripts, so a bare term retrieves badly: 'CLIP' scores 1.193 and "
+            "returns the LangChain recap, while 'How does CLIP work?' scores 0.725 "
+            "and returns the CLIP lesson. Send the sentence, not the noun."
+        )
+    )
     lesson_id: str = Field(
         default="",
         description="Optional lesson filter such as 'w7d2'. Leave empty to search everything.",
@@ -77,11 +86,21 @@ class SearchInput(BaseModel):
 
 
 class TimestampInput(BaseModel):
-    topic: str = Field(description="The concept to locate, e.g. 'cosine similarity'.")
+    topic: str = Field(
+        description=(
+            "The concept to locate, as a phrase rather than a bare acronym — "
+            "'how CLIP works' retrieves far better than 'CLIP'."
+        )
+    )
 
 
 class ExplainInput(BaseModel):
-    concept: str = Field(description="The concept to explain, in the student's words.")
+    concept: str = Field(
+        description=(
+            "The concept to explain, in the student's words and as a phrase rather "
+            "than a bare acronym. Single terms embed poorly against transcripts."
+        )
+    )
     style: str = Field(
         default="simple",
         description="'simple' for a beginner explanation with an analogy, "
@@ -155,6 +174,70 @@ class SearchScope:
         return SCOPED_RELEVANCE_CUTOFF if self.active else RELEVANCE_CUTOFF
 
 
+_OPTION_LINE = re.compile(r"^\s*\**\s*([A-D])\s*[\)\.\:]\s*(.+?)\s*\**\s*$")
+_ANSWER_LINE = re.compile(r"^\s*\**\s*answer\s*:\s*([A-D])\s*\**\s*$", re.IGNORECASE)
+
+
+def shuffle_quiz_answers(quiz: str) -> str:
+    """Redistribute which letter is correct, preserving the frozen quiz format.
+
+    Prompting alone does not fix this. Told explicitly to vary the position, the model
+    still produced A×7 B×7 C×2 D×0 over sixteen questions — a student who always
+    guesses B beats one who has not studied, and D is safe to ignore entirely.
+
+    So the options are shuffled after generation and the Answer line rewritten to match.
+    The output format is the contract in para-leer/SCHEMA.md that app.py parses, so this
+    re-emits exactly that shape. Any question that does not parse cleanly is passed
+    through untouched rather than risking a mangled quiz.
+    """
+    lines = quiz.splitlines()
+    out: list[str] = []
+    block: list[tuple[str, str]] = []
+    block_start = 0
+
+    def flush(answer_line_index: int | None, answer_letter: str | None) -> None:
+        """Emit the pending option block, shuffled, with its answer line."""
+        nonlocal block
+        if len(block) != 4 or answer_letter is None:
+            block = []
+            return
+
+        letters = [letter for letter, _ in block]
+        texts = [text for _, text in block]
+        correct_text = dict(block).get(answer_letter)
+
+        order = list(range(4))
+        random.shuffle(order)
+        shuffled = [texts[i] for i in order]
+
+        indent = " " * (len(out[block_start]) - len(out[block_start].lstrip()))
+        for position, text in enumerate(shuffled):
+            out[block_start + position] = f"{indent}{letters[position]}) {text}"
+
+        new_letter = "ABCD"[shuffled.index(correct_text)]
+        if answer_line_index is not None:
+            out[answer_line_index] = f"{indent}Answer: {new_letter}"
+
+        block = []
+
+    for line in lines:
+        option = _OPTION_LINE.match(line)
+        answer = _ANSWER_LINE.match(line)
+
+        out.append(line)
+
+        if option:
+            if not block:
+                block_start = len(out) - 1
+            block.append((option.group(1).upper(), option.group(2)))
+        elif answer:
+            flush(len(out) - 1, answer.group(1).upper())
+        elif line.strip():
+            block = []
+
+    return "\n".join(out)
+
+
 def make_tools(
     collector: CitationCollector,
     llm: ChatOpenAI | None = None,
@@ -173,7 +256,10 @@ def make_tools(
     # project wants determinism, but a study tool that returns the identical three
     # questions every time you press the button is useless for revision — the second
     # attempt tests memory of the quiz, not of the course.
-    quiz_llm = ChatOpenAI(model=CHAT_MODEL, temperature=0.8)
+    # 0.5, not 0.8. Variety now comes from sampling a wider pool of excerpts rather
+    # than from the sampler, and a hotter model was more willing to state a number it
+    # half-remembered from the transcript as though it were a taught fact.
+    quiz_llm = ChatOpenAI(model=CHAT_MODEL, temperature=0.5)
 
     def search_course_material(query: str, lesson_id: str = "") -> str:
         """Search the course recordings for what was actually said about something."""
@@ -265,15 +351,69 @@ def make_tools(
         # Keep this output format aligned with the frozen contract in
         # para-leer/SCHEMA.md. app/app.py parses this text to build the
         # interactive quiz and calculate the student's score.
+        # The rules below exist because the first version produced technically-correct
+        # but weak questions. Two failures in particular:
+        #
+        #   "What differentiates a router chain from a sequential chain?"
+        #     A) Router chains can only handle one input at a time
+        #     B) Router chains are used for making decisions based on conditions
+        #     ...
+        #   Every option describes router chains only, so the comparison the stem
+        #   promises is never actually tested.
+        #
+        #   "What is the primary focus of the course excerpt regarding R-squared?"
+        #   A question about the excerpt rather than about the subject.
+        #
+        #   "How many chains can theoretically be concatenated in LangChain?"  -> "100"
+        #   A number said in passing, turned into a fact. "Unlimited" is arguably the
+        #   better answer, and the student learns nothing either way.
+        #
+        #   "What happens when you run a sequential chain with the topic 'tennis'?"
+        #   Tests whether you watched the demo that happened to use the word tennis.
+        #   The mechanism is the point; the example topic is noise.
         prompt = (
             f"Using ONLY the course excerpts below, write {num_questions} multiple-choice "
-            f"quiz questions about '{topic}'. Each question needs 4 options labelled A-D "
-            "and exactly one correct answer. Base every question and answer strictly on "
-            "the excerpts — never invent a fact that is not in them. Format each question "
-            "as:\n\n<question>\nA) ...\nB) ...\nC) ...\nD) ...\nAnswer: <letter>\n\n"
+            f"quiz questions about '{topic}'.\n\n"
+            "Rules for the questions:\n"
+            "- Ask about the SUBJECT, never about the material. Never write 'according "
+            "to the excerpt', 'in this lesson', or 'what does the course say about'. The "
+            "student is being tested on the concept, not on the transcript.\n"
+            "- If a question compares two things, the options MUST distinguish between "
+            "them — each option should say something about both, or contrast them "
+            "directly. An option that only describes one of the two cannot test the "
+            "comparison, which makes the question answerable without understanding it.\n"
+            "- Vary what you ask: what something is, what it is for, when to choose it "
+            "over an alternative, what happens if it is missing or misused.\n"
+            "- Ask about the CONCEPT, never about the incidental details of a demo. "
+            "The excerpts are lecture transcripts, so they are full of specifics that "
+            "carry no understanding: the example topic the instructor typed, a variable "
+            "name, a file name, which dataset was loaded. If a question can only be "
+            "answered by having watched that exact demo, it is the wrong question — ask "
+            "about the mechanism the demo was illustrating instead.\n"
+            "- Never ask for a number, a count, a limit or a version unless the number "
+            "is itself something the course teaches. A figure said once in passing is "
+            "not a fact worth testing, and guessing one is worse.\n"
+            "- If the excerpts do not state something explicitly and unambiguously, do "
+            "not ask about it. Prefer a question you can point at a sentence for.\n\n"
+            "Rules for the options:\n"
+            "- Exactly four, labelled A-D, exactly one correct.\n"
+            "- All four must be the same KIND of statement and roughly the same length. "
+            "A single longer, more detailed option gives the answer away.\n"
+            "- Wrong options must be plausible to someone who half-remembers the "
+            "material — a real concept applied to the wrong thing, or a common "
+            "misunderstanding. Never absurd, never obviously off-topic, never a "
+            "filler like 'none of the above'.\n"
+            "- Vary which letter is correct across the quiz. Left to itself the model "
+            "puts the right answer at B nearly every time, which a student can game "
+            "without knowing anything.\n"
+            "- Base every question and every option strictly on the excerpts. Never "
+            "invent a fact that is not in them. If the excerpts do not support four "
+            "distinct plausible options, ask a simpler question that they do support.\n\n"
+            "Format each question exactly as:\n\n"
+            "<question>\nA) ...\nB) ...\nC) ...\nD) ...\nAnswer: <letter>\n\n"
             f"Course excerpts:\n{context}"
         )
-        return quiz_llm.invoke(prompt).content
+        return shuffle_quiz_answers(quiz_llm.invoke(prompt).content)
 
     def lesson_index(week: str = "") -> str:
         """The course calendar — no retrieval, no LLM call, just data/lessons.json."""

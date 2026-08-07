@@ -17,7 +17,7 @@ from pathlib import Path
 
 from notebook_utils import normalize_notebook_path
 
-from schemas import NOTEBOOK_MAX_CHARS, notebook_chunk
+from schemas import EXTRA_LESSON_ID, NOTEBOOK_MAX_CHARS, notebook_chunk
 
 
 def _find_demos_dir() -> Path:
@@ -295,4 +295,42 @@ def chunk_all_notebooks(demos_dir: Path = DEMOS_DIR) -> list[dict]:
                 path, lesson_id=lesson_id, lesson_title=title, demos_dir=demos_dir
             )
         )
+
+    chunks.extend(chunk_extra_notebooks(demos_dir, mapped=set(NOTEBOOK_LESSONS)))
+    return chunks
+
+
+def chunk_extra_notebooks(demos_dir: Path, mapped: set[str]) -> list[dict]:
+    """Notebooks in the course repo that no lesson claims.
+
+    The Slack resource posts attach 40 notebooks to lessons; the repo holds 64. The
+    other 24 are supplementary — Python basics, NumPy, pandas, data viz, transfer
+    learning, LangSmith deep dives, extra RAG evaluation. They are real course material
+    and a student should be able to find them, so they are indexed.
+
+    They are tagged EXTRA_LESSON_ID rather than given a lesson inherited from their
+    folder. Folder inheritance looked tempting and is wrong: 01_python is mapped to
+    w4d1 (regex), so eight Python-basics notebooks would have been cited as
+    "week 4 day 1". A citation that is confidently wrong is worse than one that says
+    plainly it is supplementary.
+    """
+    extras = sorted(
+        str(path.relative_to(demos_dir))
+        for path in demos_dir.rglob("*.ipynb")
+        if ".ipynb_checkpoints" not in str(path)
+        and str(path.relative_to(demos_dir)) not in mapped
+    )
+
+    chunks: list[dict] = []
+    for relative in extras:
+        chunks.extend(
+            chunk_notebook(
+                demos_dir / relative,
+                lesson_id=EXTRA_LESSON_ID,
+                lesson_title="Supplementary course notebook",
+                demos_dir=demos_dir,
+            )
+        )
+
+    print(f"{len(extras)} supplementary notebooks -> {len(chunks):,} chunks")
     return chunks

@@ -27,6 +27,8 @@ if str(SRC_DIR) not in sys.path:
     sys.path.insert(0, str(SRC_DIR))
 
 from agent import Copilot  # noqa: E402
+from retrieval import search_with_scores  # noqa: E402
+from tools import RELEVANCE_CUTOFF  # noqa: E402
 
 
 # ---------------------------------------------------------------------------
@@ -255,6 +257,78 @@ if "messages" not in st.session_state:
 # Citation helpers
 # ---------------------------------------------------------------------------
 
+def pick_quiz_topic(scope_lesson: str, scope_week: int | None) -> str | None:
+    """A real topic to quiz on, drawn from the lessons inside the current scope.
+
+    Used when the student leaves the topic box empty. Two things this has to survive:
+
+    1. A blank topic must not be turned into a sentence. Sending "the main concepts
+       covered in the course" to the embedder is a sentence ABOUT topics, not a topic —
+       it lands nearest the generic intro talk, so every quiz came out of week 1.
+
+    2. Not every fragment of a lesson title is a topic. w6d5's entire title is
+       "Group2B · Group2A" — project presentation day, no teaching content — and a
+       random pick from it produced "Quiz me on Group2A", which then refused.
+
+    So candidates are shuffled and each is checked against the index before use. The
+    first one that actually retrieves course material within the scope wins. Returns
+    None when the scope holds nothing quizzable, which is a real answer for a week of
+    presentations.
+    """
+    # Presentation days are titled by group, not by topic — w6d5 is "Group2B · Group2A".
+    # Those fragments cannot be filtered by checking the index, because the sessions
+    # WERE recorded, so "Group2A" happily retrieves its own transcript. They have to be
+    # recognised by shape.
+    #
+    # A word-count rule was the obvious alternative and is wrong: of the 115 title
+    # fragments in the course, only five are single words, and three of those
+    # (NumPy, Pandas, Streaming) are real topics.
+    not_a_topic = re.compile(r"^(group|team|grupo|equipo)\s*\d*[a-z]?$", re.IGNORECASE)
+
+    candidates: list[str] = []
+
+    for lesson_id, lesson in SYLLABUS_LESSONS.items():
+        if scope_lesson and lesson_id != scope_lesson:
+            continue
+        if scope_week and not lesson_id.startswith(f"w{scope_week}d"):
+            continue
+        candidates.extend(
+            part.strip()
+            for part in lesson["title"].split(" · ")
+            if part.strip() and not not_a_topic.match(part.strip())
+        )
+
+    random.shuffle(candidates)
+
+    for candidate in candidates[:8]:
+        hits = search_with_scores(
+            candidate,
+            k=1,
+            lesson_id=scope_lesson or None,
+            week=scope_week,
+        )
+        if hits and hits[0][1] <= RELEVANCE_CUTOFF:
+            return candidate
+
+    return None
+
+
+def external_link(label: str, url: str) -> str:
+    """A link that opens in a new tab.
+
+    Streamlit's markdown links navigate the current tab. On Streamlit Cloud the app
+    runs inside an iframe, so following a Loom or GitHub link replaces the copilot and
+    the student loses their conversation — memory included, since it lives in the
+    session. Every link here points off-site, so every one of them opens in a new tab.
+
+    rel="noopener noreferrer" because target="_blank" otherwise hands the opened page a
+    handle on this one via window.opener.
+    """
+    return (
+        f'<a href="{url}" target="_blank" rel="noopener noreferrer">{label}</a>'
+    )
+
+
 def render_citation(citation: dict) -> None:
     """Render one citation using metadata prepared by the backend."""
     source_type = citation.get("source_type", "")
@@ -265,7 +339,7 @@ def render_citation(citation: dict) -> None:
         st.markdown("**🎥 Lecture video**")
 
         if url:
-            st.markdown(f"[{label}]({url})")
+            st.markdown(external_link(label, url), unsafe_allow_html=True)
 
             # Loom URLs produced by the backend already use /embed/ and
             # include the timestamp query parameter, so the player opens
@@ -282,7 +356,7 @@ def render_citation(citation: dict) -> None:
         st.markdown("**📓 Course notebook**")
 
         if url:
-            st.markdown(f"[{label}]({url})")
+            st.markdown(external_link(label, url), unsafe_allow_html=True)
         else:
             st.write(label)
 
@@ -290,7 +364,7 @@ def render_citation(citation: dict) -> None:
         st.markdown("**🔗 Course source**")
 
         if url:
-            st.markdown(f"[{label}]({url})")
+            st.markdown(external_link(label, url), unsafe_allow_html=True)
         else:
             st.write(label)
 
@@ -731,8 +805,15 @@ def render_quiz(answer: str, quiz_id: str) -> None:
 def render_response(
     response: dict,
     message_id: str,
+    sources_expander: bool = True,
 ) -> None:
-    """Render one Copilot response and its citations."""
+    """Render one Copilot response and its citations.
+
+    `sources_expander=False` renders the sources without their own expander. Older
+    answers in the history are themselves collapsed into an expander, and Streamlit
+    cannot nest one inside another — it raises rather than degrading.
+    """
+    import contextlib
     answer = response.get(
         "answer",
         "No answer returned.",
@@ -773,10 +854,19 @@ def render_response(
                 f"{len(extra_citations)} more below)"
             )
 
-        with st.expander(
-            source_label,
-            expanded=True,
-        ):
+        # Collapsed by default. Each video citation embeds a Loom player, so an open
+        # sources block pushed the answer itself off the screen — the student had to
+        # scroll past three videos to read what they asked for.
+        sources_box = (
+            st.expander(source_label, expanded=False)
+            if sources_expander
+            else contextlib.nullcontext()
+        )
+
+        if not sources_expander:
+            st.caption(source_label)
+
+        with sources_box:
             columns = st.columns(len(visible_citations))
 
             for column, citation in zip(
@@ -800,7 +890,10 @@ def render_response(
                     url = citation.get("url", "")
 
                     if url:
-                        st.markdown(f"{icon} [{label}]({url})")
+                        st.markdown(
+                            f"{icon} " + external_link(label, url),
+                            unsafe_allow_html=True,
+                        )
                     else:
                         st.markdown(f"{icon} {label}")
 
@@ -841,179 +934,98 @@ with st.sidebar:
     # Course browser
     # -----------------------------------------------------------------------
 
-    st.subheader("🎯 Scope")
-
-    lessons_path = ROOT_DIR / "data" / "lessons.json"
-
-    with lessons_path.open(
-        "r",
-        encoding="utf-8",
-    ) as file:
-        lessons = json.load(file)
-
-    # Build available week numbers from IDs such as w7d2.
-    weeks = sorted(
-        {
-            int(lesson_id.split("d")[0][1:])
-            for lesson_id in lessons
-        }
-    )
-
-    selected_week = st.selectbox(
-        "Week",
-        weeks,
-        format_func=lambda week: f"Week {week}",
-    )
-
-    # Only show lesson days belonging to the selected week.
-    week_lessons = {
-        lesson_id: lesson
-        for lesson_id, lesson in lessons.items()
-        if lesson_id.startswith(f"w{selected_week}d")
-    }
-
-    lesson_ids = sorted(
-        week_lessons,
-        key=lambda lesson_id: int(
-            lesson_id.split("d")[1]
-        ),
-    )
-
-    def lesson_label(lesson_id: str) -> str:
-        """Create a compact label for the lesson selectbox."""
-        day = lesson_id.split("d")[1]
-        title = week_lessons[lesson_id]["title"]
-
-        # Use the first topic so long lesson titles do not overwhelm
-        # the sidebar selectbox.
-        first_topic = title.split(" · ")[0]
-
-        if len(first_topic) > 45:
-            first_topic = first_topic[:42] + "..."
-
-        return f"Day {day} — {first_topic}"
-
-    selected_lesson_id = st.selectbox(
-        "Lesson",
-        lesson_ids,
-        format_func=lesson_label,
-    )
-
-    selected_lesson = week_lessons[
-        selected_lesson_id
-    ]
-
-    # Show the complete contents of the selected lesson underneath.
-    st.caption(
-        selected_lesson["title"]
-    )
-
-    # This used to be display-only: you picked a lesson and nothing happened. The
-    # syllabus in the main column lists lessons better, so these controls earn their
-    # place by narrowing what the copilot can see — the one thing a list cannot do.
-    #
-    # The scope is set on the Copilot rather than written into the question, so every
-    # tool shares it. That is what makes "quiz me on week 7" mean a quiz built from
-    # week 7's material and not a whole-course quiz that mentions week 7.
-    scope_choice = st.radio(
-        "Answers come from",
-        ["Whole course", f"Week {selected_week}", selected_lesson_id],
-        key="scope_choice",
-        help=(
-            "Narrows every tool, not just search. A quiz scoped to a week is "
-            "written only from that week's material."
-        ),
-    )
-
-    if scope_choice == "Whole course":
-        st.session_state.scope_week = None
-        st.session_state.scope_lesson = ""
-    elif scope_choice.startswith("Week"):
-        st.session_state.scope_week = selected_week
-        st.session_state.scope_lesson = ""
-    else:
-        st.session_state.scope_week = None
-        st.session_state.scope_lesson = selected_lesson_id
-
-    st.divider()
-
-    # -----------------------------------------------------------------------
-    # Quiz builder
-    # -----------------------------------------------------------------------
-    #
-    # The quiz is the clearest use of the scope above, so it lives next to it: pick
-    # how much of the course to be tested on, optionally narrow to a topic, generate.
-    # Leaving the topic blank quizzes on whatever the chosen scope covers, which is
-    # the point of scoping by week.
-
     st.subheader("📝 Quiz me")
+
+    # One section, not two. Scope used to be its own block that also narrowed ordinary
+    # chat answers, which meant two controls doing overlapping jobs and no obvious
+    # reason to touch either. The quiz is where narrowing genuinely matters — revising
+    # week 5 means being tested on week 5 — so the scope lives here and applies to the
+    # quiz only. Chat always searches the whole course.
 
     quiz_topic = st.text_input(
         "Topic (optional)",
         key="quiz_topic",
         placeholder="e.g. embeddings",
-        help="Leave blank to be quizzed on whatever the scope above covers.",
+        help="Leave blank to be quizzed on whatever the scope below covers.",
     )
 
-    quiz_count = st.slider(
-        "Questions",
-        min_value=3,
-        max_value=5,
-        value=3,
-        key="quiz_count",
+    quiz_scope = st.radio(
+        "Quiz me on",
+        ["Whole course", "A week", "A specific day"],
+        key="quiz_scope",
     )
 
-    scope_words = {
-        "Whole course": "the course",
-        f"Week {selected_week}": f"week {selected_week}",
-    }.get(scope_choice, f"lesson {selected_lesson_id}")
+    scope_week = None
+    scope_lesson = ""
+    scope_words = "the whole course"
+
+    if quiz_scope != "Whole course":
+        weeks = sorted(
+            {int(lesson_id.split("d")[0][1:]) for lesson_id in SYLLABUS_LESSONS}
+        )
+        selected_week = st.selectbox(
+            "Week",
+            weeks,
+            format_func=lambda week: f"Week {week}",
+            key="quiz_week",
+        )
+        scope_week = selected_week
+        scope_words = f"week {selected_week}"
+
+    if quiz_scope == "A specific day":
+        week_lessons = {
+            lesson_id: lesson
+            for lesson_id, lesson in SYLLABUS_LESSONS.items()
+            if lesson_id.startswith(f"w{scope_week}d")
+        }
+        lesson_ids = sorted(
+            week_lessons, key=lambda lesson_id: int(lesson_id.split("d")[1])
+        )
+
+        def lesson_label(lesson_id: str) -> str:
+            """Compact label — full lesson titles are several topics long."""
+            day = lesson_id.split("d")[1]
+            first_topic = week_lessons[lesson_id]["title"].split(" · ")[0]
+            if len(first_topic) > 40:
+                first_topic = first_topic[:37] + "..."
+            return f"Day {day} — {first_topic}"
+
+        selected_lesson_id = st.selectbox(
+            "Day",
+            lesson_ids,
+            format_func=lesson_label,
+            key="quiz_lesson",
+        )
+        scope_lesson = selected_lesson_id
+        scope_week = None
+        scope_words = f"lesson {selected_lesson_id}"
+
+        st.caption(week_lessons[selected_lesson_id]["title"])
+
+    quiz_count = st.slider("Questions", min_value=3, max_value=5, value=3, key="quiz_count")
 
     if st.button(
         f"Generate quiz · {scope_words}",
         use_container_width=True,
         key="quiz_button",
     ):
-        topic = quiz_topic.strip()
+        topic = quiz_topic.strip() or pick_quiz_topic(scope_lesson, scope_week)
 
         if not topic:
-            # A blank topic used to send the literal phrase "the main concepts covered
-            # in the course" to the embedder. That is not a topic — it is a sentence
-            # about topics, and it lands nearest the generic intro/overview talk, which
-            # is week 1. Every whole-course quiz came out of week 1.
-            #
-            # Instead, pick a real lesson from whatever is in scope and quiz on that.
-            # Random, so pressing the button twice covers different ground.
-            candidates = [
-                lesson
-                for lesson_id, lesson in SYLLABUS_LESSONS.items()
-                if (
-                    not st.session_state.scope_lesson
-                    or lesson_id == st.session_state.scope_lesson
-                )
-                and (
-                    not st.session_state.scope_week
-                    or lesson_id.startswith(f"w{st.session_state.scope_week}d")
-                )
-            ]
-
-            if candidates:
-                chosen = random.choice(candidates)
-                # Lesson titles are several topics joined by " · "; one is a better
-                # quiz seed than the whole string.
-                topic = random.choice(chosen["title"].split(" · ")).strip()
-            else:
-                topic = f"the main concepts covered in {scope_words}"
-
-        st.session_state.pending_question = (
-            f"Quiz me on {topic}. Give me {quiz_count} questions."
-        )
-        st.rerun()
+            st.warning(
+                f"There is no teaching material indexed for {scope_words} — it is "
+                "project presentations. Pick another week, or type a topic."
+            )
+        else:
+            # The scope applies to this one turn only, so an ordinary follow-up
+            # question afterwards is not silently still filtered.
+            st.session_state.pending_scope = (scope_lesson, scope_week)
+            st.session_state.pending_question = (
+                f"Quiz me on {topic}. Give me {quiz_count} questions."
+            )
+            st.rerun()
 
     st.divider()
-
-    # -----------------------------------------------------------------------
-    # Answer language
-    # -----------------------------------------------------------------------
 
     st.subheader("🌐 Answer language")
 
@@ -1123,7 +1135,9 @@ def render_syllabus(lessons: dict) -> None:
 
                     if loom_id:
                         st.markdown(
-                            f"&nbsp;&nbsp;🎥 [{title}]({url}) · {minutes:.0f} min",
+                            "&nbsp;&nbsp;🎥 "
+                            + external_link(title, url)
+                            + f" · {minutes:.0f} min",
                             unsafe_allow_html=True,
                         )
                     else:
@@ -1181,17 +1195,94 @@ if not st.session_state.messages:
 # Render previous conversation turns
 # ---------------------------------------------------------------------------
 
+# Only the newest answer stays open. Each answer carries an embedded Loom player per
+# citation, so three questions deep the page is mostly video and the student has to
+# scroll past everything they have already read to reach the thing they just asked.
+#
+# Older answers collapse into an expander showing their first line. render_response()
+# normally opens its own expander for the sources, which cannot be nested inside this
+# one, so it is asked to render them inline instead.
+
+_last_assistant = max(
+    (
+        index
+        for index, message in enumerate(st.session_state.messages)
+        if message["role"] == "assistant"
+    ),
+    default=-1,
+)
+
+
+def _preview(text: str, limit: int = 110) -> str:
+    """First line of an answer, for the collapsed label."""
+    first_line = next(
+        (line.strip() for line in text.splitlines() if line.strip()),
+        "",
+    )
+    if len(first_line) > limit:
+        first_line = first_line[: limit - 1].rstrip() + "…"
+    return first_line or "Answer"
+
+
 for message_index, message in enumerate(
     st.session_state.messages
 ):
     with st.chat_message(message["role"], avatar=AVATARS[message["role"]]):
         if message["role"] == "assistant":
-            render_response(
-                message["response"],
-                message_id=str(message_index),
-            )
+            if message_index == _last_assistant:
+                render_response(
+                    message["response"],
+                    message_id=str(message_index),
+                )
+            else:
+                answer = message["response"].get("answer", "")
+                sources = len(message["response"].get("citations", []))
+                source_note = f" · {sources} sources" if sources else ""
+
+                with st.expander(f"{_preview(answer)}{source_note}"):
+                    render_response(
+                        message["response"],
+                        message_id=str(message_index),
+                        # Already inside an expander — see render_response.
+                        sources_expander=False,
+                    )
         else:
             st.markdown(message["content"])
+
+            if message.get("scope_note"):
+                st.caption(f"🔒 scoped to {message['scope_note']}")
+
+
+# ---------------------------------------------------------------------------
+# Memory nudge
+# ---------------------------------------------------------------------------
+#
+# ConversationSummaryBufferMemory keeps recent turns verbatim inside an 800-token
+# budget and compresses what falls out into a running summary. Measured on this agent,
+# that means roughly three exchanges at full detail; from the fourth, older turns
+# survive as summary only.
+#
+# Nothing is ever dropped entirely, so the conversation never breaks — but exact detail
+# does go. Timestamps and lesson ids do not survive compression, so "go back to that
+# minute you gave me earlier" stops working, and a stale summary about one topic biases
+# tool routing on an unrelated question.
+#
+# The student cannot see any of that happening; they just notice answers drifting. So
+# say it once, at the point it starts to matter.
+
+MEMORY_FULL_DETAIL_TURNS = 3
+
+_user_turns = sum(
+    1 for message in st.session_state.messages if message["role"] == "user"
+)
+
+if _user_turns > MEMORY_FULL_DETAIL_TURNS:
+    st.caption(
+        "💭 This conversation is long enough that earlier turns are now summarised. "
+        "Follow-ups on the same topic still work — but for a **new topic**, or if you "
+        "need an exact timestamp from earlier, start a **New conversation** in the "
+        "sidebar."
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -1210,21 +1301,21 @@ if st.session_state.pending_question:
 
 if question:
     # Save and immediately display the student's question.
+    pending = st.session_state.get("pending_scope") or ("", None)
+    scope_note = pending[0] or (f"week {pending[1]}" if pending[1] else "")
+
     st.session_state.messages.append(
         {
             "role": "user",
             "content": question,
+            # Stored, not recomputed: the scope is consumed when the answer is
+            # generated, so re-rendering history later would otherwise lose the badge.
+            "scope_note": scope_note,
         }
     )
 
     with st.chat_message("user", avatar=AVATARS["user"]):
         st.markdown(question)
-
-        scope_note = st.session_state.get("scope_lesson") or (
-            f"week {st.session_state.scope_week}"
-            if st.session_state.get("scope_week")
-            else ""
-        )
 
         if scope_note:
             st.caption(f"🔒 scoped to {scope_note}")
@@ -1255,9 +1346,17 @@ if question:
                 # prompt instruction only reaches whichever tool the model happens to
                 # pick; setting it here narrows every tool, so a quiz scoped to a week
                 # is written from that week's material too.
+                #
+                # It is consumed here and cleared, so it lasts exactly one turn. A
+                # follow-up typed after a week-5 quiz searches the whole course again,
+                # which is what a student expects — the filter belonged to the quiz
+                # they asked for, not to the conversation.
+                turn_lesson, turn_week = st.session_state.pop(
+                    "pending_scope", ("", None)
+                )
                 st.session_state.copilot.scope.set(
-                    lesson_id=st.session_state.get("scope_lesson", ""),
-                    week=st.session_state.get("scope_week"),
+                    lesson_id=turn_lesson,
+                    week=turn_week,
                 )
 
                 response = (
@@ -1281,6 +1380,13 @@ if question:
                     "response": response,
                 }
             )
+
+            # Rerun so the history re-renders with this answer as the newest one and
+            # the previous one collapsed. Without it the script has already finished
+            # and the older answer stays open until the student's *next* action —
+            # collapsing one turn late, which looks broken. Nothing is re-asked: the
+            # response is already in session state.
+            st.rerun()
 
         except Exception as exc:
             st.error(

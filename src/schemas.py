@@ -54,6 +54,13 @@ REFUSAL_MARKERS = (
 NOTEBOOK_REPO = "https://github.com/ironhack-ai-eng-june2026/demos_ai_eng/blob/main"
 LOOM_EMBED = "https://www.loom.com/embed"
 
+# Supplementary notebooks live in the course repo but are not attached to any lesson in
+# the Slack resource posts — Python basics, pandas, transfer learning, LangSmith deep
+# dives. They are indexed so a student can still find them, but they must NOT claim a
+# lesson: inheriting one from the folder would have labelled eight Python-basics
+# notebooks "w4d1 · Regex", which is a confidently wrong citation.
+EXTRA_LESSON_ID = "extra"
+
 SOURCE_VIDEO = "video"
 SOURCE_NOTEBOOK = "notebook"
 
@@ -182,7 +189,13 @@ def notebook_chunk(
 
 
 def parse_lesson_id(lesson_id: str) -> tuple[int, int]:
-    """'w7d2' -> (7, 2). Returns (-1, -1) for anything unparseable."""
+    """'w7d2' -> (7, 2). Returns (-1, -1) for anything unparseable.
+
+    The supplementary sentinel maps to (0, 0) rather than (-1, -1) so `week` stays a
+    sane sort key and a `where={"week": n}` filter never matches it by accident.
+    """
+    if lesson_id == EXTRA_LESSON_ID:
+        return 0, 0
     try:
         week, day = lesson_id.lower().lstrip("w").split("d")
         return int(week), int(day)
@@ -219,10 +232,17 @@ def build_citation(metadata: dict) -> dict:
         notebook = metadata.get("notebook", "")
         cell = int(metadata.get("cell_index", -1))
         cell_label = f" · cell {cell}" if cell >= 0 else ""
+        # Supplementary notebooks are labelled as such, so a student can see at a
+        # glance that this one was not part of a taught lesson.
+        prefix = (
+            "Extra · "
+            if metadata.get("lesson_id", "") == EXTRA_LESSON_ID
+            else ""
+        )
         return {
             "source_type": SOURCE_NOTEBOOK,
             "lesson_id": metadata.get("lesson_id", ""),
-            "label": f"{folder}/{notebook}{cell_label}",
+            "label": f"{prefix}{folder}/{notebook}{cell_label}",
             "url": f"{NOTEBOOK_REPO}/{folder}/{notebook}",
             "start_seconds": -1,
         }
