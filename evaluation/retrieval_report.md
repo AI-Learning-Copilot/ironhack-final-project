@@ -39,7 +39,7 @@
 |------|--------|--------|---------:|
 | 1 | w5d2 | Prompt Engineering | 1.218 |
 | 2 | w7d3 | Retrieval Agents | 1.224 |
-| 3 | w5d3 | OpenAI API Usage + example of prompt injection | 1.259 |
+| 3 | w5d3 | OpenAI API Usage + example of prompt injection | 1.258 |
 | 4 | w7d3 | Retrieval Agents | 1.259 |
 | 5 | w5d2 | Prompt Engineering | 1.268 |
 
@@ -53,7 +53,7 @@
 | 2 | w3d2 | Computer Vision Intro (Image Preprocessing, Filtering, and Feature Extraction) | 1.022 |
 | 3 | w3d2 | Computer Vision Intro (Image Preprocessing, Filtering, and Feature Extraction) | 1.042 |
 | 4 | w3d2 | Computer Vision Intro (Image Preprocessing, Filtering, and Feature Extraction) | 1.045 |
-| 5 | w3d2 | Computer Vision Intro (Image Preprocessing, Filtering, and Feature Extraction) | 1.055 |
+| 5 | w3d2 | Computer Vision Intro (Image Preprocessing, Filtering, and Feature Extraction) | 1.054 |
 
 ### What is reduce() used for?
 
@@ -87,7 +87,7 @@
 |------|--------|--------|---------:|
 | 1 | w2d2 | 6_supervised_algorithms_classification.ipynb | 0.803 |
 | 2 | w2d3 | 7_supervised_end_to_end_demo.ipynb | 0.846 |
-| 3 | w2d1 | 2_supervised_demo_iI_logistic_reg.ipynb | 0.836 |
+| 3 | w2d1 | 2_supervised_demo_iI_logistic_reg.ipynb | 0.837 |
 | 4 | w2d2 | 6_supervised_algorithms_classification.ipynb | 0.968 |
 | 5 | w2d1 | ML demo II (Logistic Regression) | 0.829 |
 
@@ -98,10 +98,10 @@
 | Rank | Lesson | Source | Distance |
 |------|--------|--------|---------:|
 | 1 | w2d3 | 7_supervised_end_to_end_demo.ipynb | 0.880 |
-| 2 | w2d1 | 2_supervised_demo_iI_logistic_reg.ipynb | 0.884 |
+| 2 | w2d1 | 2_supervised_demo_iI_logistic_reg.ipynb | 0.883 |
 | 3 | w2d2 | 4_supervised_metrics_classification.ipynb | 0.927 |
 | 4 | w2d1 | ML demo II (Logistic Regression) | 0.868 |
-| 5 | w2d2 | Classification Metrics (Confusion Matrix, Accuracy, Precision, Recall...) | 0.955 |
+| 5 | w2d2 | Classification Metrics (Confusion Matrix, Accuracy, Precision, Recall...) | 0.954 |
 
 ### What is Recall?
 
@@ -111,8 +111,8 @@
 |------|--------|--------|---------:|
 | 1 | w7d3 | Retrieval Agents | 1.163 |
 | 2 | w7d3 | Retrieval Agents | 1.186 |
-| 3 | w7d3 | Retrieval Agents | 1.223 |
-| 4 | w7d5 | Recap Week 7 | 1.240 |
+| 3 | w7d3 | Retrieval Agents | 1.224 |
+| 4 | w7d5 | Recap Week 7 | 1.241 |
 | 5 | w7d3 | Retrieval Agents | 1.249 |
 
 ### What is Accuracy?
