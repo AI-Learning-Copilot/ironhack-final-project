@@ -1495,31 +1495,36 @@ for message_index, message in enumerate(
 # Memory nudge
 # ---------------------------------------------------------------------------
 #
-# ConversationSummaryBufferMemory keeps recent turns verbatim inside an 800-token
-# budget and compresses what falls out into a running summary. Measured on this agent,
-# that means roughly three exchanges at full detail; from the fourth, older turns
-# survive as summary only.
+# ConversationSummaryBufferMemory keeps recent turns verbatim inside a token budget and
+# compresses whatever falls out into a running prose summary.
 #
-# Nothing is ever dropped entirely, so the conversation never breaks — but exact detail
-# does go. Timestamps and lesson ids do not survive compression, so "go back to that
-# minute you gave me earlier" stops working, and a stale summary about one topic biases
-# tool routing on an unrelated question.
+# This used to fire on a turn count of 3, from an early estimate. Measured on the real
+# agent over a nine-turn conversation, compression actually starts at **turn 6** — the
+# buffer holds 173, 248, 396, 547 and 618 tokens over the first five turns and only then
+# overflows. The nudge was warning students three turns before anything had happened.
 #
-# The student cannot see any of that happening; they just notice answers drifting. So
-# say it once, at the point it starts to matter.
+# The count was the wrong thing to watch anyway: the budget is tokens, so a conversation
+# of short refusals lasts twice as long as one of long explanations. `moving_summary_buffer`
+# is empty until the memory genuinely compresses something, so ask the memory instead of
+# guessing from turn numbers. Exact, and it cannot drift again.
+#
+# What compression costs, measured on the summary text it produced: weeks survive as
+# prose ("week 4 day 3"), but machine-readable lesson ids and exact timestamps do not —
+# a regex for `w\dd\d` and for `\d+:\d\d` both return nothing, and the summariser writes
+# the phrase "at specific timestamps" in place of the numbers. So "which week was that?"
+# keeps working and "go back to that minute you gave me" cannot.
 
-MEMORY_FULL_DETAIL_TURNS = 3
-
-_user_turns = sum(
-    1 for message in st.session_state.messages if message["role"] == "user"
+_memory_has_summarised = bool(
+    getattr(st.session_state.copilot.memory, "moving_summary_buffer", "")
 )
 
-if _user_turns > MEMORY_FULL_DETAIL_TURNS:
+if _memory_has_summarised:
     st.caption(
-        "💭 This conversation is long enough that earlier turns are now summarised. "
-        "Follow-ups on the same topic still work — but for a **new topic**, or if you "
-        "need an exact timestamp from earlier, start a **New conversation** in the "
-        "sidebar."
+        "💭 This conversation is now long enough that the earliest turns are "
+        "summarised. Follow-ups on the same topic still work, and so does *\"which "
+        "week was that?\"* — but the **exact timestamps** from those early answers are "
+        "gone. For a new topic, or to get a precise minute back, start a "
+        "**New conversation** in the sidebar."
     )
 
 
