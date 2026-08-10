@@ -148,6 +148,62 @@ def _load_lessons() -> dict:
     return json.loads(LESSONS_PATH.read_text())
 
 
+class SourceLog:
+    """Every source cited so far this conversation, kept outside the LLM's memory.
+
+    The problem this solves: `ConversationSummaryBufferMemory` compresses older turns
+    into prose, and prose loses digits. Measured on a real conversation, the summary kept
+    "week 4 day 3" but contained no lesson id and no timestamp — the summariser wrote
+    "at specific timestamps" instead of the numbers. So "go back to that minute you gave
+    me earlier" became unanswerable after the buffer overflowed, even though the exact
+    values had been in hand when the answer was generated.
+
+    They were structured data before they were ever prose. `CitationCollector` already
+    holds `lesson_id` and `start_seconds` per turn; this keeps them, indexed by turn, for
+    as long as the conversation lasts. A prompt asking the summariser to preserve
+    timestamps helps, but it is a model doing as it is told — this is the guarantee.
+
+    Deduplicated on the citation label, so ten chunks from one lesson minute do not
+    become ten entries.
+    """
+
+    # Enough to cover a long revision session without the tool output itself becoming a
+    # wall of text the agent has to read on every call.
+    MAX_TURNS = 12
+
+    def __init__(self) -> None:
+        self.turns: list[dict] = []
+
+    def record(self, question: str, citations: list[dict]) -> None:
+        """Called once per answered turn, after the citations are built."""
+        if not citations:
+            return
+
+        seen: set[str] = set()
+        labels: list[str] = []
+        for citation in citations:
+            label = citation.get("label", "")
+            if label and label not in seen:
+                seen.add(label)
+                labels.append(label)
+
+        self.turns.append({"question": question, "labels": labels})
+        del self.turns[: -self.MAX_TURNS]
+
+    def clear(self) -> None:
+        self.turns.clear()
+
+    def render(self) -> str:
+        if not self.turns:
+            return "NO_RESULTS: nothing has been cited in this conversation yet."
+
+        lines = []
+        for number, turn in enumerate(self.turns, 1):
+            lines.append(f"{number}. You asked: {turn['question']}")
+            lines.extend(f"   - {label}" for label in turn["labels"])
+        return "Sources cited earlier in this conversation:\n" + "\n".join(lines)
+
+
 class SearchScope:
     """How much of the course the tools are allowed to see this turn.
 
@@ -258,6 +314,7 @@ def make_tools(
     collector: CitationCollector,
     llm: ChatOpenAI | None = None,
     scope: SearchScope | None = None,
+    sources: SourceLog | None = None,
 ) -> list[StructuredTool]:
     """Build the tool set, wired to one collector.
 
@@ -267,6 +324,7 @@ def make_tools(
     """
     synth_llm = llm or ChatOpenAI(model=CHAT_MODEL, temperature=0)
     scope = scope if scope is not None else SearchScope()
+    sources = sources if sources is not None else SourceLog()
 
     # The quiz gets its own client at a non-zero temperature. Everything else in this
     # project wants determinism, but a study tool that returns the identical three
@@ -467,6 +525,16 @@ def make_tools(
         )
         return shuffle_quiz_answers(quiz_llm.invoke(prompt).content)
 
+    def recall_sources() -> str:
+        """What was cited earlier in this conversation — exact ids and timestamps.
+
+        No retrieval and no LLM call: this reads the log of what the tools already
+        returned. That is the point. Re-searching for "the video you mentioned earlier"
+        finds whatever ranks best today, which is not necessarily what was actually
+        shown then.
+        """
+        return sources.render()
+
     def lesson_index(week: str = "") -> str:
         """The course calendar — no retrieval, no LLM call, just data/lessons.json."""
         lessons = _load_lessons()
@@ -520,6 +588,19 @@ def make_tools(
                 "Returns transcript excerpts with the lesson and timestamp they came from."
             ),
             args_schema=SearchInput,
+        ),
+        StructuredTool.from_function(
+            func=recall_sources,
+            name="recall_sources",
+            description=(
+                "Look up what you cited EARLIER IN THIS CONVERSATION, with the exact "
+                "lesson ids and timestamps. Use this whenever the student refers back "
+                "to a previous answer rather than asking something new — 'that "
+                "timestamp you gave me', 'the video from before', 'which lesson was "
+                "that again', 'open the second one'. Do NOT search the course again "
+                "for these: search returns what ranks best now, which may not be what "
+                "was actually shown earlier."
+            ),
         ),
         StructuredTool.from_function(
             func=find_notebooks,

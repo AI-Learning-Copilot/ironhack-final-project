@@ -20,24 +20,59 @@ from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_openai import ChatOpenAI
 
 from schemas import CHAT_MODEL, REFUSAL_MARKERS, build_response
-from tools import CitationCollector, SearchScope, make_tools
+from tools import CitationCollector, SearchScope, SourceLog, make_tools
 
 load_dotenv(Path(__file__).resolve().parents[1] / ".env")
 
 MODEL = CHAT_MODEL
 
+# The default summariser rewrites the conversation as flowing prose, and prose is where
+# the useful details die. Measured on a real nine-turn conversation, its output kept
+# "week 4 day 3" but contained no lesson id and no timestamp at all — it wrote the
+# phrase "at specific timestamps" in place of the numbers.
+#
+# This version asks for a bullet list and names the two things that must survive
+# verbatim. It is a genuine improvement over the default, but it is still a prompt, so
+# it is a best effort: `SourceLog` is the guarantee, and it is kept in code precisely
+# because a model cannot be relied on to preserve exact digits.
+SUMMARY_PROMPT = ChatPromptTemplate.from_template(
+    """Condense the conversation below into a compact bulleted record.
+
+Rules:
+- One bullet per topic discussed, newest last.
+- Copy lesson ids (like w7d2) and timestamps (like 12:28) EXACTLY as they appear. \
+Never replace a number with a description of it, and never write "at specific \
+timestamps" or similar.
+- Keep what the student asked and what they were told. Drop pleasantries.
+- If the existing summary already has a bullet for a topic, update it rather than \
+adding a second one.
+
+Existing summary:
+{summary}
+
+New lines of conversation:
+{new_lines}
+
+Updated summary:"""
+)
+
 SYSTEM_PROMPT = """You are the AI Learning Copilot for an Ironhack AI Engineering \
 bootcamp. You answer questions using ONLY what was said in the recorded lessons.
 
-You have five tools. Pick ONE per turn based on what the student is actually asking for:
+You have seven tools. Pick ONE per turn based on what the student is actually asking for:
 
 - search_course_material — a factual lookup ("what is X", "how does X work").
+- find_notebooks — the student wants a NOTEBOOK, the code, or a demo file.
 - find_timestamp — WHERE/WHEN something was covered, not what it means.
 - explain_concept — the student explicitly asks you to explain/teach something, usually \
 wanting a simpler or more intuitive framing than a plain lookup.
 - generate_quiz — the student asks to be quizzed or tested.
 - lesson_index — "what did we cover in week X" / "what lessons exist" — a table of \
 contents question, not a concept question.
+- recall_sources — the student refers BACK to something you already cited ("that \
+timestamp you gave me", "the video from before", "which lesson was that again"). Use \
+this instead of searching again: search returns what ranks best now, not what you \
+actually showed them earlier.
 
 How to answer:
 - Pass the student's FULL question to the tool, close to their own wording. Never \
@@ -94,10 +129,15 @@ class Copilot:
         # The UI narrows this before a turn; empty means the whole course. Held on the
         # Copilot so every tool built below shares the same instance.
         self.scope = SearchScope()
+        # Exact ids and timestamps for everything cited this conversation, held outside
+        # the LLM's memory so summarisation cannot destroy them.
+        self.sources = SourceLog()
         llm = ChatOpenAI(model=model, temperature=0)
         # Same llm instance reused inside explain_concept/generate_quiz — one model
         # client per Copilot, not two.
-        self.tools = make_tools(self.collector, llm=llm, scope=self.scope)
+        self.tools = make_tools(
+            self.collector, llm=llm, scope=self.scope, sources=self.sources
+        )
 
         prompt = ChatPromptTemplate.from_messages(
             [
@@ -113,7 +153,20 @@ class Copilot:
         # turns. This keeps recent turns verbatim and summarises what falls out.
         self.memory = ConversationSummaryBufferMemory(
             llm=llm,
-            max_token_limit=800,
+            # 2000, up from 800. Measured: at 800 the buffer overflows on turn 6, and
+            # compression destroys exactly what students ask for — lesson ids and
+            # timestamps do not survive it, only the prose "week 4 day 3" does.
+            #
+            # The cost of holding more is small and known. The buffer is resent on every
+            # model call, so a full 2000-token buffer adds ~$0.0003 per call against a
+            # measured ~$0.0008 per question. That buys roughly turn 6 to turn 15 before
+            # anything is lost at all.
+            #
+            # Not unlimited: gpt-4o-mini has room, but an uncapped transcript would grow
+            # the per-call bill without bound and eventually crowd out the retrieved
+            # course material, which is the part that makes the answer correct.
+            max_token_limit=2000,
+            prompt=SUMMARY_PROMPT,
             memory_key="chat_history",
             input_key="input",
             output_key="output",
@@ -173,7 +226,13 @@ class Copilot:
                     return build_response(self._not_covered(), [])
                 return build_response(answer, [])
 
-        return build_response(answer, self.collector.metadatas)
+        response = build_response(answer, self.collector.metadatas)
+        # Log after build_response, not from the raw collector: this stores exactly the
+        # citations the student was shown, deduplicated and labelled the same way. A
+        # refusal reaches one of the returns above and is never logged, so "the video
+        # you mentioned" can never resolve to something we declined to cite.
+        self.sources.record(question, response["citations"])
+        return response
 
     def _not_covered(self) -> str:
         """The refusal wording, which depends on whether a scope narrowed the search."""
@@ -193,6 +252,9 @@ class Copilot:
     def reset(self) -> None:
         self.memory.clear()
         self.collector.reset()
+        # Otherwise "the video you mentioned earlier" would resolve to the previous
+        # conversation after the student pressed New conversation.
+        self.sources.clear()
 
 
 if __name__ == "__main__":
