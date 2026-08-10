@@ -10,9 +10,21 @@ import json
 import random
 import re
 import sys
+from io import BytesIO
 from pathlib import Path
 
 import streamlit as st
+
+from reportlab.lib.enums import TA_CENTER
+from reportlab.lib.pagesizes import A4
+from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+from reportlab.lib.units import cm
+from reportlab.platypus import (
+    SimpleDocTemplate,
+    Paragraph,
+    Spacer,
+    PageBreak,
+)
 
 
 # ---------------------------------------------------------------------------
@@ -405,6 +417,372 @@ WEEK_THEMES = {
     8: "Multimodal & evaluation",
 }
 
+def load_study_note(lesson_id: str) -> str | None:
+    """Load generated Study Notes for a lesson, if available."""
+    notes_path = ROOT_DIR / "summaries" / f"{lesson_id}.md"
+
+    if not notes_path.exists():
+        return None
+
+    return notes_path.read_text(encoding="utf-8")
+
+def study_notes_to_pdf(
+    markdown: str,
+    lesson_id: str,
+    lesson_title: str,
+) -> bytes:
+    """Convert Study Notes Markdown into a polished downloadable PDF."""
+
+    buffer = BytesIO()
+
+    doc = SimpleDocTemplate(
+        buffer,
+        pagesize=A4,
+        rightMargin=1.8 * cm,
+        leftMargin=1.8 * cm,
+        topMargin=2.0 * cm,
+        bottomMargin=1.8 * cm,
+        title=f"Study Notes — {lesson_id.upper()}",
+        author="Ironhack AI Course Copilot",
+    )
+
+    styles = getSampleStyleSheet()
+
+    # -----------------------------------------------------------------------
+    # Styles
+    # -----------------------------------------------------------------------
+
+    brand_style = ParagraphStyle(
+        "StudyNotesBrand",
+        parent=styles["Normal"],
+        fontName="Helvetica-Bold",
+        fontSize=9,
+        leading=11,
+        alignment=TA_CENTER,
+        textColor="#6366F1",
+        spaceAfter=8,
+    )
+
+    title_style = ParagraphStyle(
+        "StudyNotesTitle",
+        parent=styles["Title"],
+        fontName="Helvetica-Bold",
+        fontSize=20,
+        leading=24,
+        alignment=TA_CENTER,
+        textColor="#1E1B4B",
+        spaceAfter=8,
+    )
+
+    subtitle_style = ParagraphStyle(
+        "StudyNotesSubtitle",
+        parent=styles["Normal"],
+        fontName="Helvetica",
+        fontSize=10,
+        leading=14,
+        alignment=TA_CENTER,
+        textColor="#4B5563",
+        spaceAfter=18,
+    )
+
+    heading_style = ParagraphStyle(
+        "StudyNotesHeading",
+        parent=styles["Heading2"],
+        fontName="Helvetica-Bold",
+        fontSize=14,
+        leading=17,
+        textColor="#4338CA",
+        spaceBefore=14,
+        spaceAfter=7,
+    )
+
+    subheading_style = ParagraphStyle(
+        "StudyNotesSubheading",
+        parent=styles["Heading3"],
+        fontName="Helvetica-Bold",
+        fontSize=11,
+        leading=14,
+        textColor="#312E81",
+        spaceBefore=10,
+        spaceAfter=5,
+    )
+
+    body_style = ParagraphStyle(
+        "StudyNotesBody",
+        parent=styles["BodyText"],
+        fontName="Helvetica",
+        fontSize=9.5,
+        leading=14,
+        textColor="#1F2937",
+        spaceAfter=6,
+    )
+
+    bullet_style = ParagraphStyle(
+        "StudyNotesBullet",
+        parent=body_style,
+        leftIndent=14,
+        firstLineIndent=-8,
+        spaceAfter=4,
+    )
+
+    numbered_style = ParagraphStyle(
+        "StudyNotesNumbered",
+        parent=body_style,
+        leftIndent=14,
+        firstLineIndent=0,
+        spaceAfter=4,
+    )
+
+    source_style = ParagraphStyle(
+        "StudyNotesSource",
+        parent=body_style,
+        fontSize=8.5,
+        leading=12,
+        leftIndent=12,
+        firstLineIndent=-8,
+        textColor="#374151",
+        spaceAfter=4,
+    )
+
+    # -----------------------------------------------------------------------
+    # Footer
+    # -----------------------------------------------------------------------
+
+    def draw_footer(canvas, document) -> None:
+        canvas.saveState()
+
+        width, _ = A4
+
+        canvas.setStrokeColor("#D1D5DB")
+        canvas.setLineWidth(0.5)
+        canvas.line(
+            document.leftMargin,
+            1.15 * cm,
+            width - document.rightMargin,
+            1.15 * cm,
+        )
+
+        canvas.setFont("Helvetica", 7.5)
+        canvas.setFillColor("#6B7280")
+
+        canvas.drawString(
+            document.leftMargin,
+            0.75 * cm,
+            f"Ironhack AI Course Copilot · {lesson_id.upper()}",
+        )
+
+        canvas.drawRightString(
+            width - document.rightMargin,
+            0.75 * cm,
+            f"Page {document.page}",
+        )
+
+        canvas.restoreState()
+
+    # -----------------------------------------------------------------------
+    # Helpers
+    # -----------------------------------------------------------------------
+
+    def markdown_inline_to_reportlab(text: str) -> str:
+        """Convert the small subset of Markdown used by Study Notes."""
+
+        # Escape ampersands first.
+        text = text.replace("&", "&amp;")
+
+        # Convert Markdown links:
+        # [label](https://example.com)
+        text = re.sub(
+            r"\[([^\]]+)\]\((https?://[^)]+)\)",
+            r'<link href="\2" color="#4F46E5"><u>\1</u></link>',
+            text,
+        )
+
+        # Bold
+        text = re.sub(
+            r"\*\*(.+?)\*\*",
+            r"<b>\1</b>",
+            text,
+        )
+
+        # Inline code
+        text = re.sub(
+            r"`(.+?)`",
+            r'<font name="Courier">\1</font>',
+            text,
+        )
+
+        # Italic
+        text = re.sub(
+            r"(?<!\*)\*([^*]+)\*(?!\*)",
+            r"<i>\1</i>",
+            text,
+        )
+
+        return text
+
+    # -----------------------------------------------------------------------
+    # Build document
+    # -----------------------------------------------------------------------
+
+    story = []
+
+    # Brand
+    story.append(
+        Paragraph(
+            "IRONHACK AI ENGINEERING",
+            brand_style,
+        )
+    )
+
+    # Title
+    story.append(
+        Paragraph(
+            f"{lesson_id.upper()} — {lesson_title}",
+            title_style,
+        )
+    )
+
+    # Subtitle
+    story.append(
+        Paragraph(
+            "Study notes generated from the indexed Ironhack AI Engineering "
+            "course recordings and notebooks.",
+            subtitle_style,
+        )
+    )
+
+    # Remove generated Markdown title and blockquote because the PDF
+    # has its own designed header.
+    content = re.sub(
+        r"^# .*\n+",
+        "",
+        markdown,
+        count=1,
+    )
+
+    content = re.sub(
+        r"^> .*\n+",
+        "",
+        content,
+        count=1,
+        flags=re.MULTILINE,
+    )
+
+    in_sources = False
+    source_category = ""
+
+    for raw_line in content.splitlines():
+        line = raw_line.strip()
+
+        if not line:
+            story.append(Spacer(1, 3))
+            continue
+
+        # ---------------------------------------------------------------
+        # Main headings
+        # ---------------------------------------------------------------
+
+        if line.startswith("## "):
+            text = line[3:].strip()
+
+            if text.lower() == "sources":
+                in_sources = True
+
+            story.append(
+                Paragraph(
+                    markdown_inline_to_reportlab(text),
+                    heading_style,
+                )
+            )
+            continue
+
+        # ---------------------------------------------------------------
+        # Subheadings
+        # ---------------------------------------------------------------
+
+        if line.startswith("### "):
+            text = line[4:].strip()
+
+            if in_sources:
+                source_category = text
+
+            story.append(
+                Paragraph(
+                    markdown_inline_to_reportlab(text),
+                    subheading_style,
+                )
+            )
+            continue
+
+        # ---------------------------------------------------------------
+        # Sources
+        # ---------------------------------------------------------------
+
+        if in_sources and line.startswith("- "):
+            text = line[2:].strip()
+
+            story.append(
+                Paragraph(
+                    f"• {markdown_inline_to_reportlab(text)}",
+                    source_style,
+                )
+            )
+            continue
+
+        # ---------------------------------------------------------------
+        # Bullets
+        # ---------------------------------------------------------------
+
+        if line.startswith("- "):
+            text = line[2:].strip()
+
+            story.append(
+                Paragraph(
+                    f"• {markdown_inline_to_reportlab(text)}",
+                    bullet_style,
+                )
+            )
+            continue
+
+        # ---------------------------------------------------------------
+        # Numbered lists
+        # ---------------------------------------------------------------
+
+        numbered_match = re.match(
+            r"^(\d+)\.\s+(.+)",
+            line,
+        )
+
+        if numbered_match:
+            number = numbered_match.group(1)
+            text = numbered_match.group(2)
+
+            story.append(
+                Paragraph(
+                    f"{number}. {markdown_inline_to_reportlab(text)}",
+                    numbered_style,
+                )
+            )
+            continue
+
+        # ---------------------------------------------------------------
+        # Normal paragraph
+        # ---------------------------------------------------------------
+
+        story.append(
+            Paragraph(
+                markdown_inline_to_reportlab(line),
+                body_style,
+            )
+        )
+
+    doc.build(
+        story,
+        onFirstPage=draw_footer,
+        onLaterPages=draw_footer,
+    )
+
+    return buffer.getvalue()
 
 def week_label(week: int) -> str:
     """"Week 4 · NLP & embeddings" — falls back to the bare number if a week is added
@@ -1361,6 +1739,18 @@ def render_syllabus(lessons: dict) -> None:
                     unsafe_allow_html=True,
                 )
 
+                # Study Notes are available only for lessons that already have
+                # generated notes in summaries/.
+                notes_path = ROOT_DIR / "summaries" / f"{lesson_id}.md"
+
+                if notes_path.exists():
+                    if st.button(
+                        "📚 Study Notes",
+                        key=f"study_notes_{lesson_id}",
+                    ):
+                        st.session_state["study_notes_lesson"] = lesson_id
+                        st.rerun()
+
                 for recording in recordings:
                     minutes = recording.get("duration_seconds", 0) / 60
                     title = recording.get("title", "Untitled")
@@ -1385,6 +1775,81 @@ with st.expander("🗂️ Full course syllabus — all 8 weeks"):
     # same testid, so the syllabus is told apart by a span the app puts inside it.
     st.markdown(SYLLABUS_MARKER, unsafe_allow_html=True)
     render_syllabus(SYLLABUS_LESSONS)
+
+# ---------------------------------------------------------------------------
+# Study Notes viewer
+# ---------------------------------------------------------------------------
+
+selected_notes_lesson = st.session_state.get("study_notes_lesson")
+
+if selected_notes_lesson:
+    notes = load_study_note(selected_notes_lesson)
+
+    if notes:
+        lesson = SYLLABUS_LESSONS.get(
+            selected_notes_lesson,
+            {},
+        )
+
+        lesson_title = lesson.get(
+            "title",
+            selected_notes_lesson.upper(),
+        )
+
+        st.markdown("---")
+
+        st.subheader(
+            f"📚 Study Notes — {selected_notes_lesson.upper()}"
+        )
+
+        if lesson_title:
+            st.caption(lesson_title)
+
+        # The Markdown file already contains its own H1 title.
+        # Remove it because the app displays the title above.
+        notes_body = re.sub(
+            r"^# .*\n+",
+            "",
+            notes,
+            count=1,
+        )
+
+        st.markdown(notes_body)
+
+        pdf_data = study_notes_to_pdf(
+            markdown=notes,
+            lesson_id=selected_notes_lesson,
+            lesson_title=lesson_title,
+        )
+
+        col1, col2 = st.columns(2)
+
+        with col1:
+            st.download_button(
+                "⬇️ Download Study Notes PDF",
+                data=pdf_data,
+                file_name=f"{selected_notes_lesson}_study_notes.pdf",
+                mime="application/pdf",
+                use_container_width=True,
+            )
+
+        with col2:
+            if st.button(
+                "✕ Close Study Notes",
+                key="close_study_notes",
+                use_container_width=True,
+            ):
+                st.session_state.pop(
+                    "study_notes_lesson",
+                    None,
+                )
+                st.rerun()
+
+    else:
+        st.warning(
+            f"Study Notes for {selected_notes_lesson.upper()} "
+            "could not be found."
+        )
 
 
 # ---------------------------------------------------------------------------
