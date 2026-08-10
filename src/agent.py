@@ -117,8 +117,10 @@ your explanation, never the quotes.
 - Refer to lessons the way the transcript does: "in week 7 day 2". Do NOT write out URLs, \
 timestamps, or markdown links — those are attached automatically, and anything you type \
 by hand will be wrong.
-- Be direct and concrete. Prefer the instructor's own framing and examples over a \
-textbook definition."""
+-- Be direct and concrete. Prefer the instructor's own terminology, framing, and examples \
+over a textbook definition. When the retrieved course material uses a specific technical \
+term for an important concept, preserve that terminology in the answer rather than \
+replacing it with a generic synonym."""
 
 
 class Copilot:
@@ -132,7 +134,13 @@ class Copilot:
         # Exact ids and timestamps for everything cited this conversation, held outside
         # the LLM's memory so summarisation cannot destroy them.
         self.sources = SourceLog()
-        llm = ChatOpenAI(model=model, temperature=0)
+        llm = ChatOpenAI(
+            model=model,
+            temperature=1,
+            seed=42,
+            model_kwargs={"reasoning_effort": "none"},
+            tiktoken_model_name="gpt-4o-mini",
+        )
         # Same llm instance reused inside explain_concept/generate_quiz — one model
         # client per Copilot, not two.
         self.tools = make_tools(
@@ -162,7 +170,7 @@ class Copilot:
             # measured ~$0.0008 per question. That buys roughly turn 6 to turn 15 before
             # anything is lost at all.
             #
-            # Not unlimited: gpt-4o-mini has room, but an uncapped transcript would grow
+            # Not unlimited: gpt-5.6-terra has room, but an uncapped transcript would grow
             # the per-call bill without bound and eventually crowd out the retrieved
             # course material, which is the part that makes the answer correct.
             max_token_limit=2000,

@@ -40,7 +40,7 @@ LESSONS_PATH = Path(__file__).resolve().parents[1] / "data" / "lessons.json"
 #
 # Fitted to eleven queries, so treat it as a starting point. C6 should re-tune it against
 # the 25-question eval set, which includes three deliberately unanswerable ones.
-RELEVANCE_CUTOFF = 1.3
+RELEVANCE_CUTOFF = 1.0
 
 # A scoped search needs a stricter bar. Unscoped, a chunk has to beat 5,000 others to
 # rank first, so a top hit under 1.3 really is about the topic. Scoped to one week or
@@ -322,7 +322,12 @@ def make_tools(
     not pure retrieval like the first two tools. Reuse the caller's `llm` when one is
     passed (agent.py does this) so a Copilot only opens one model client rather than two.
     """
-    synth_llm = llm or ChatOpenAI(model=CHAT_MODEL, temperature=0)
+    synth_llm = llm or ChatOpenAI(
+        model=CHAT_MODEL,
+        temperature=1,
+        seed=42,
+        model_kwargs={"reasoning_effort": "none"},
+    )
     scope = scope if scope is not None else SearchScope()
     sources = sources if sources is not None else SourceLog()
 
@@ -333,7 +338,12 @@ def make_tools(
     # 0.5, not 0.8. Variety now comes from sampling a wider pool of excerpts rather
     # than from the sampler, and a hotter model was more willing to state a number it
     # half-remembered from the transcript as though it were a taught fact.
-    quiz_llm = ChatOpenAI(model=CHAT_MODEL, temperature=0.5)
+    quiz_llm = ChatOpenAI(
+        model=CHAT_MODEL,
+        temperature=1,
+        seed=42,
+        model_kwargs={"reasoning_effort": "none"},
+        )
 
     def search_course_material(query: str, lesson_id: str = "") -> str:
         """Search the course recordings for what was actually said about something."""

@@ -26,7 +26,7 @@ NOTEBOOK_BONUS = 0.05
 # so read the +2.3 points as "does not hurt, probably helps" rather than as a validated
 # gain. It is two questions. The scoring fix in scripts/evaluate_retrieval.py is the
 # result that actually matters.
-EXTRA_NOTEBOOK_PENALTY = 0.10
+EXTRA_NOTEBOOK_PENALTY = 0.25
 
 HEADING_TOKEN_BONUS = 0.05
 

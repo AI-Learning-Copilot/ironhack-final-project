@@ -33,7 +33,7 @@ EMBED_DIMENSIONS = 512
 
 # Chat model. Not part of the frozen contracts — just shared config so agent.py and
 # tools.py (which both make LLM calls) can't drift to two different models.
-CHAT_MODEL = "gpt-4o-mini"
+CHAT_MODEL = "gpt-5.6-terra"
 
 # Refusal detection. agent.py uses this to decide whether to drop citations (a
 # confidently-wrong retrieval can still surface 5 irrelevant chunks even when the model
