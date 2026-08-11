@@ -1,154 +1,110 @@
 # 🎓 Ironhack AI Course Copilot
 
-An AI learning assistant built for the **Ironhack AI Engineering Bootcamp**.
+> An AI-powered study assistant for the Ironhack AI Engineering bootcamp. It answers questions using the course recordings and notebooks, with grounded answers and direct source references.
 
-The Course Copilot uses **Retrieval-Augmented Generation (RAG)** to answer questions using the actual course material, including lecture recordings and notebooks.
+![Ironhack AI Course Copilot Architecture](PRES/architecture.png)
 
-Instead of searching through hours of recordings, students can ask questions and receive grounded answers with links to the relevant lessons and timestamps.
+## Overview
 
-**Live:** https://ai-learning-copilot-ironhack-final-project.streamlit.app/
+The **Ironhack AI Course Copilot** is an agentic RAG application built as the final project for the Ironhack AI Engineering bootcamp.
+
+Instead of relying only on the LLM's general knowledge, the Copilot retrieves relevant material from the bootcamp's recorded lessons and notebooks and uses it as context for generating answers.
+
+The application supports English and Spanish and can connect answers to the relevant lesson, notebook, and video timestamp.
 
 ## ✨ Features
 
-- 💬 Ask questions about the AI Engineering course
-- 🔎 Search across **120 teaching recordings** (90 hours, 32 lesson days)
-- 📓 Retrieve information from **64 course notebooks**
-- 🎥 Cite lecture videos with timestamps
-- 🧠 Maintain conversational memory for follow-up questions
-- 🌍 Answer in English or Spanish
-- 📍 Find where a topic was covered
-- 📝 Generate interactive multiple-choice quizzes with scoring
-- 🛡️ Refuse unsupported questions instead of relying on general model knowledge
+- 🔎 **Course-grounded Q&A** — answers are based on the bootcamp material.
+- 🎥 **Timestamped citations** — jump directly to where a concept was explained.
+- 📓 **Notebook references** — locate relevant implementation examples and cells.
+- 🧠 **Conversation memory** — supports contextual follow-up questions.
+- 📝 **Interactive quizzes** — generate and score multiple-choice quizzes from course material.
+- 📚 **Study Notes** — generate structured notes and PDF exports.
+- 🌐 **English & Spanish** — follows the language of the student's question.
+- 🛑 **Scope protection** — refuses questions that cannot be grounded in the course.
 
-## 🏗️ How It Works
+# 🏗️ Architecture
+
+The Copilot uses an **agentic RAG architecture**.
+
+![Architecture](PRES/architecture.png)
+
+### Offline / Indexing
 
 ```text
 Course recordings + notebooks
             ↓
-     Parsing & Chunking
+        Chunking
             ↓
-      OpenAI Embeddings
+        Embeddings
             ↓
-      Chroma Vector DB
-            ↓
-        Retrieval
-            ↓
-     LangChain Agent
-            ↓
- Grounded answer + citations
-            ↓
-      Streamlit UI
+      Chroma vector DB
 ```
 
-The knowledge base combines lecture transcripts and course notebooks in a single Chroma collection.
+Course chunks are stored together with metadata such as source type, lesson, week/day, timestamps, notebook references, and text.
 
-When a student asks a question, relevant chunks are retrieved and provided to the LLM as context. The agent then generates an answer grounded in the retrieved course material.
+### Online / Query time
 
-## 📚 What Is Indexed
+```text
+Student
+   ↓
+Streamlit UI
+   ↓
+LangChain Copilot + Memory
+   ↓
+Tool layer
+   ↓
+Retrieval + Reranking
+   ↓
+Relevant course context
+   ↓
+LLM
+   ↓
+Answer + Citations
+```
 
-| | |
+The agent can use tools for course search, notebook lookup, timestamp lookup, concept explanation, quiz generation, lesson indexing, and source recall.
+
+## 🧩 RAG
+
+Retrieval-Augmented Generation allows the Copilot to retrieve the relevant course material at query time instead of depending on the model's pretrained knowledge.
+
+This improves:
+
+- Grounding in the actual course.
+- Traceability to original sources.
+- Access to course-specific knowledge.
+- Detection of unsupported questions.
+
+## 🛠️ Technology Stack
+
+| Component | Technology |
 |---|---|
-| Teaching recordings | **120** across **32 lesson days**, **90 hours** |
-| Course notebooks | **64** — 40 mapped to a lesson, 24 supplementary |
-| Video chunks | 5,090 |
-| Notebook chunks | 947 |
-| **Total indexed passages** | **6,037** |
-
-Notebook coverage spans weeks 1–5 and 7–8. Week 6 is deployment and project
-presentations, which produced no notebooks.
-
-The 24 supplementary notebooks are files that live in the course repository without
-belonging to a taught day — Python basics, NumPy, pandas, transfer learning, LangSmith.
-They are indexed and cited with an `Extra ·` prefix so a student can tell them apart from
-lesson material.
-
-**Not indexed: the Ironhack lab assignments.** The copilot searches the lectures and the
-demo notebooks. Asking where a lab is will return the recording where the instructor
-introduces it, not the lab itself.
-
-The index is built once and committed. The deployed app only reads it — it never
-re-embeds on boot, which keeps cold starts fast and means the index cannot be lost when
-the host restarts.
-
-## 🛠️ Tech Stack
-
-- **Python 3.11**
-- **LangChain**
-- **OpenAI**
-- **Chroma**
-- **Streamlit**
-- **Tiktoken**
-- **Pandas / NumPy**
-
-## 🧪 Evaluation
-
-Two suites, measuring different things.
-
-### End-to-end — does the copilot answer correctly?
-
-30 hand-written cases run through the full agent: course content, lesson and timestamp
-retrieval, Spanish questions, unsupported questions that must be refused, conversational
-follow-ups, and notebook retrieval.
-
-```
-29 / 30 cases pass
-Source accuracy    27 / 27  — every citation points at a lesson that really covers it
-Refusal accuracy    3 / 3   — no invented answer to an out-of-scope question
-Median latency      4.6s
-```
-
-**The one failure is `f01`,** and it is a wording assertion rather than a retrieval fault.
-The case requires the answer to "What is RAG and why would I use it?" to contain the word
-*context*; the model sometimes says *external documents* or *knowledge base* instead. It
-fails roughly one run in three on unchanged code. We are reporting 29/30 rather than
-re-running until it passes.
-
-### Retrieval — does the right material come back at all?
-
-84 golden questions with a known correct lesson and notebook, scored on whether the
-correct source appears in the top 1, 3 or 5 results. No LLM involved.
-
-```
-Top-1   83.3%
-Top-3   92.9%
-Top-5   94.0%
-```
-
-Both suites are reproducible:
-
-```bash
-python evaluation/evaluation.py          # end-to-end
-python scripts/evaluate_retrieval.py     # retrieval
-```
-
-### Honest notes on these numbers
-
-- Retrieval uses **approximate** nearest-neighbour search (HNSW), so identical queries can
-  return slightly different results between processes. Treat single-point differences as
-  noise.
-- The reranker's penalty for supplementary notebooks was tuned on the same 84 questions it
-  is measured against. Its +2.3 points on Top-1 is two questions, and should be read as
-  "does not hurt" rather than as a validated gain.
-- Both suites were written by us, so they measure what we thought to test.
+| UI | Streamlit |
+| Agent | LangChain |
+| LLM | GPT-4o-mini |
+| Embeddings | OpenAI embeddings |
+| Vector DB | Chroma |
+| Retrieval | Similarity search + metadata filtering + reranking |
+| Source material | Loom recordings + Jupyter notebooks |
+| Language | Python |
+| PDF generation | ReportLab |
 
 ## 📁 Project Structure
 
 ```text
 ironhack-final-project/
 ├── app/
-│   └── app.py
 ├── data/
 ├── evaluation/
+├── index/
 ├── notebooks/
+├── para-leer/
+├── PRES/
+│   └── architecture.png
+├── scripts/
 ├── src/
-│   ├── agent.py
-│   ├── chunking.py
-│   ├── embeddings.py
-│   ├── ingestion.py
-│   ├── notebooks.py
-│   ├── retrieval.py
-│   ├── schemas.py
-│   └── tools.py
+├── summaries/
 ├── tests/
 ├── requirements.txt
 └── README.md
@@ -156,88 +112,78 @@ ironhack-final-project/
 
 ## 🚀 Run Locally
 
-Clone the repository:
+### 1. Clone and enter the repository
 
 ```bash
 git clone https://github.com/AI-Learning-Copilot/ironhack-final-project.git
 cd ironhack-final-project
 ```
 
-Create and activate the virtual environment:
+### 2. Create the environment
 
 ```bash
-python3.11 -m venv .venv
+python3 -m venv .venv
 source .venv/bin/activate
-```
-
-Install the dependencies:
-
-```bash
 pip install -r requirements.txt
 ```
 
-Create your environment file:
+### 3. Configure the API key
 
-```bash
-cp .env.example .env
+Create `.env` in the project root:
+
+```env
+OPENAI_API_KEY=your_api_key_here
 ```
 
-Add the required API configuration to `.env`, then run:
+Never commit API keys.
+
+### 4. Start the application
 
 ```bash
-python -m streamlit run app/app.py
+streamlit run app/app.py
 ```
 
-## 🎯 MVP Scope
+## 🧪 Evaluation
 
-The current MVP is a **text-based course learning assistant**.
+The evaluation suite tests content questions, lesson-location queries, Spanish questions, unanswerable questions, follow-ups, and notebook/code queries.
 
-Voice input was intentionally left outside the MVP so development could focus on reliable retrieval, grounded answers, citations, conversational memory, lesson navigation, and interactive quizzes.
+Latest GPT-4o-mini evaluation:
 
-Raw course transcripts are not included in the public repository.
+```text
+30/30 cases pass
+SOURCE ACCURACY     27/27 (100%)
+REFUSAL ACCURACY      3/3
+median latency       4.2s
+p95 latency          6.3s
+max latency          8.6s
+```
 
-**Conversations are held in memory and end with the session.** Nothing a student asks is
-written to disk or to any database. Refreshing the page starts a new conversation. This
-is a deliberate choice, not a missing feature — see Future Work.
+Run it with:
 
-## 🔭 Future Work
+```bash
+LLM_PROVIDER=openai PYTHONPATH=src python evaluation/evaluation.py
+```
 
-### Persistent conversations, and what they would let us learn
+## 🎯 Design Goal
 
-Today a conversation lives in the server's memory for one browser connection. It survives
-clicks; it does not survive a refresh, a second tab, or the host restarting.
+The Copilot is designed around a simple learning flow:
 
-Making it persist is not primarily a convenience feature. The valuable part is the
-**record of what students actually ask**: which topics generate the most questions, where
-the copilot refuses most often, which lessons nobody ever asks about. That is feedback on
-*the course*, not on the app, and we currently throw all of it away.
+**Question → Grounded explanation → Source → Lesson / Notebook → Timestamp**
 
-It is not a small change, and the interesting difficulties are not the storage:
+If the course material does not support an answer, the system should say so rather than presenting general LLM knowledge as something taught in the bootcamp.
 
-- **It forces an identity decision.** There is no such thing as "your" conversation today.
-  The moment one is stored, something must say whose it is and who may read it back. With
-  an anonymous id, a conversation link becomes a capability: hold it, read it.
-- **The host cannot be trusted to keep a file.** The deployment rebuilds its container on
-  redeploy and sleeps when idle — the same constraint that led us to commit the Chroma
-  index rather than build it at runtime. Persistence means an external database, not a
-  file on disk.
-- **It creates a data-protection obligation we do not currently have.** Storing nothing is
-  a strong privacy position. Storing conversations means a stated retention period, a way
-  to erase on request, and a conversation with Ironhack, whose material and students these
-  are.
+## 👥 Project
 
-The groundwork is already in place: `SourceLog` (added to survive summarisation) is plain
-serialisable data, and it is the piece that makes a restored conversation useful rather
-than one whose early timestamps have already been compressed away.
+Built as the final project for the **Ironhack AI Engineering Bootcamp**.
 
-### Other known gaps
+GitHub: https://github.com/AI-Learning-Copilot/ironhack-final-project
 
-- **The lab assignments are not indexed** — only the lectures and the demo notebooks.
-- **Retrieval is approximate** (HNSW), so identical queries can return slightly different
-  results between processes.
-- **The reranker's supplementary-notebook penalty was tuned on the evaluation set it is
-  measured against.** A held-out set would tell us whether the gain is real.
+The course material used by the application belongs to Ironhack.
 
-## 👥 Team
+### Architecture
 
-Built by **Casilda and Felipe** as the final project for the **Ironhack AI Engineering Bootcamp**.
+The canonical architecture diagram is maintained at:
+
+```text
+PRES/architecture.png
+```
