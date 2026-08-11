@@ -357,9 +357,9 @@ SYLLABUS_MARKER = '<span class="vc-syllabus"></span>'
 
 LESSONS_PATH = ROOT_DIR / "data" / "lessons.json"
 
-# Built by scripts/build_syllabus_pdf.py and committed. The app only reads it — same
-# build-time / run-time split as the Chroma index, so reportlab is not a deploy
-# dependency and the download costs no CPU on Streamlit Cloud.
+# Built by scripts/build_syllabus_pdf.py and committed. The app only reads it.
+# ReportLab is pinned as a deploy dependency because Study Notes PDFs are
+# generated at runtime.
 SYLLABUS_PDF_PATH = ROOT_DIR / "app" / "assets" / "ironhack-ai-syllabus.pdf"
 
 # Loom's public watch URL. The agent emits /embed/ links for the inline players;
