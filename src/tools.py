@@ -324,9 +324,7 @@ def make_tools(
     """
     synth_llm = llm or ChatOpenAI(
         model=CHAT_MODEL,
-        temperature=1,
-        seed=42,
-        model_kwargs={"reasoning_effort": "none"},
+        temperature=0,
     )
     scope = scope if scope is not None else SearchScope()
     sources = sources if sources is not None else SourceLog()
@@ -340,9 +338,7 @@ def make_tools(
     # half-remembered from the transcript as though it were a taught fact.
     quiz_llm = ChatOpenAI(
         model=CHAT_MODEL,
-        temperature=1,
-        seed=42,
-        model_kwargs={"reasoning_effort": "none"},
+        temperature=0,
         )
 
     def search_course_material(query: str, lesson_id: str = "") -> str:

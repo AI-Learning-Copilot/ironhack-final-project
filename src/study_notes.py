@@ -610,9 +610,7 @@ def generate_study_notes(
 
     llm = ChatOpenAI(
         model=CHAT_MODEL,
-        temperature=1,
-        seed=42,
-        model_kwargs={"reasoning_effort": "none"},
+        temperature=0,
     )
 
     # -----------------------------------------------------------------------
