@@ -338,7 +338,7 @@ def make_tools(
     # half-remembered from the transcript as though it were a taught fact.
     quiz_llm = ChatOpenAI(
         model=CHAT_MODEL,
-        temperature=0,
+        temperature=1,
         )
 
     def search_course_material(query: str, lesson_id: str = "") -> str:
