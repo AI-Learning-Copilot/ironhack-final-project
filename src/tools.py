@@ -448,7 +448,25 @@ def make_tools(
         # Retrieve wider than needed, then sample. With k=8 and a fixed cap of 6 the
         # same six excerpts fed the model every time, so temperature alone would only
         # reword one fixed quiz. A wider pool means genuinely different questions.
-        scored = search_with_scores(topic, k=20, **scope.kwargs())
+        # Expand common course abbreviations so short quiz topics still retrieve
+        # the relevant lesson. Keep this local to quiz generation so we do not
+        # change the behaviour of normal course Q&A.
+        quiz_query = topic
+
+        topic_expansions = {
+            "pca": "PCA Principal Component Analysis dimensionality reduction",
+            "clip": "CLIP Contrastive Language-Image Pre-training multimodal image text",
+            "rag": "RAG Retrieval-Augmented Generation retrieval context",
+            "nlp": "NLP Natural Language Processing",
+        }
+
+        normalized_topic = topic.strip().lower()
+
+        if normalized_topic in topic_expansions:
+            quiz_query = topic_expansions[normalized_topic]
+
+        scored = search_with_scores(quiz_query, k=20, **scope.kwargs())
+
         hits = [doc for doc, score in scored if score <= scope.cutoff()]
         if not hits:
             return (

@@ -1105,6 +1105,61 @@ def parse_quiz(answer: str) -> tuple[str, list[dict]]:
                 question_match.group(1).strip()
             ]
             continue
+            # A new question can be returned in several formats by the LLM.
+            # Examples:
+            # 1. What is RAG?
+            # 2) What is an embedding?
+            # --- Question 2: What is an embedding?
+            # ### Question 3: What is an embedding?
+            # Question 4
+            # What is an embedding?
+
+            cleaned_line = _strip_markdown(line)
+
+            # Format: "Question 4"
+            # The actual question may be on the following line.
+            question_header_match = re.match(
+                r"^(?:[-*]+\s*)?"
+                r"(?:#{1,6}\s*)?"
+                r"question\s+\d+\s*:?\s*$",
+                cleaned_line,
+                flags=re.IGNORECASE,
+            )
+
+            if question_header_match:
+                if current_options and current_answer:
+                    save_current_question()
+
+                quiz_started = True
+                current_question_lines = []
+                continue
+
+            # Format: "Question 2: What is..."
+            # Also handles "--- Question 2: ..." and "### Question 2: ..."
+            question_match = re.match(
+                r"^(?:[-*]+\s*)?"
+                r"(?:#{1,6}\s*)?"
+                r"question\s+\d+\s*:\s*(.+)",
+                cleaned_line,
+                flags=re.IGNORECASE,
+            )
+
+            # Format: "2. What is..." or "2) What is..."
+            if not question_match:
+                question_match = re.match(
+                    r"^\s*\d+[\.\)]\s*(.+)",
+                    cleaned_line,
+                )
+
+            if question_match:
+                if current_options and current_answer:
+                    save_current_question()
+
+                quiz_started = True
+                current_question_lines = [
+                    question_match.group(1).strip()
+                ]
+                continue
 
         if quiz_started:
             if not current_options:

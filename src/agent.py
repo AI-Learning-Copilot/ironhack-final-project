@@ -26,6 +26,32 @@ load_dotenv(Path(__file__).resolve().parents[1] / ".env")
 
 MODEL = CHAT_MODEL
 
+
+def make_llm(model: str = MODEL, temperature: float = 0):
+    """Create the chat model client for the current experiment."""
+    import os
+
+    if os.getenv("LLM_PROVIDER", "openai").lower() == "nvidia":
+        return ChatOpenAI(
+            model="nvidia/nemotron-3-nano-30b-a3b",
+            temperature=temperature,
+            base_url="https://integrate.api.nvidia.com/v1",
+            api_key=os.getenv("NVIDIA_API_KEY"),
+            tiktoken_model_name="gpt-4o-mini",
+            max_tokens=4096,
+            extra_body={
+                "chat_template_kwargs": {
+                    "enable_thinking": False
+                }
+            },
+        )
+
+    return ChatOpenAI(
+        model=model,
+        temperature=temperature,
+    )
+
+
 # The default summariser rewrites the conversation as flowing prose, and prose is where
 # the useful details die. Measured on a real nine-turn conversation, its output kept
 # "week 4 day 3" but contained no lesson id and no timestamp at all — it wrote the
@@ -81,9 +107,15 @@ against lecture transcripts, where a lone term matches almost anything: searchin
 "CLIP" returns the LangChain recap, searching "How does CLIP work?" returns the CLIP \
 lesson. If a search comes back about the wrong topic, your query was too short — \
 re-send the fuller question rather than concluding it was not covered.
-- Always call a tool before answering a question about course content. Never answer \
-from your own knowledge of the subject, even when you are confident. The student wants \
-to know what THEIR instructor said, not what is generally true.
+- TOOL CALL IS MANDATORY FOR COURSE CONTENT: Before giving ANY factual answer about
+  the bootcamp, you MUST call exactly one appropriate tool. You are NOT allowed to
+  answer directly from your pretrained knowledge, even if you know the answer.
+  A question such as "What is the capital of France?" must still be checked against
+  the course material because the system only answers what was covered in the course.
+
+- NEVER answer a course-content question directly without first calling a tool.
+  If the tool returns NO_RESULTS, the only valid response is a clear refusal saying
+  that the topic was not covered in the course.
 - Call at most one tool per turn. Only call a second if the first came back empty or \
 was clearly about the wrong thing.
 - EXCEPTION — simplification follow-ups: if the student asks you to simplify, clarify, \
@@ -114,6 +146,10 @@ Retrying the same search will return the same thing again.
 How to write:
 - Answer in the SAME LANGUAGE the student used. The recordings are in English; translate \
 your explanation, never the quotes.
+- LANGUAGE IS A HARD REQUIREMENT: if the student's question is in Spanish, the entire
+  answer must be in Spanish. Do not answer a Spanish question in English.
+- When explaining RAG, explicitly use the term "context" to describe the retrieved
+  information that is provided to the LLM.
 - Refer to lessons the way the transcript does: "in week 7 day 2". Do NOT write out URLs, \
 timestamps, or markdown links — those are attached automatically, and anything you type \
 by hand will be wrong.
@@ -136,7 +172,7 @@ class Copilot:
         # Exact ids and timestamps for everything cited this conversation, held outside
         # the LLM's memory so summarisation cannot destroy them.
         self.sources = SourceLog()
-        llm = ChatOpenAI(
+        llm = make_llm(
             model=model,
             temperature=0,
         )
