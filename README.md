@@ -27,8 +27,6 @@ The application supports English and Spanish and can connect answers to the rele
 
 The Copilot uses an **agentic RAG architecture**.
 
-![Architecture](PRES/architecture.png)
-
 ### Offline / Indexing
 
 ```text
