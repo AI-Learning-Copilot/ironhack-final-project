@@ -21,6 +21,7 @@ import time
 from pathlib import Path
 
 from fastapi import APIRouter, FastAPI, HTTPException
+from fastapi.responses import Response
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
@@ -33,6 +34,7 @@ sys.path.insert(0, str(ROOT / "src"))
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 import course  # noqa: E402
+import pdf  # noqa: E402
 from sessions import InMemorySessionStore, Turn  # noqa: E402
 
 app = FastAPI(title="Ironhack AI Course Copilot API", version="0.1.0-spike")
@@ -155,6 +157,40 @@ def get_notes(lesson_id: str) -> dict:
     if md is None:
         raise HTTPException(status_code=404, detail=f"no study notes for {lesson_id}")
     return {"lesson_id": lesson_id, "markdown": md}
+
+
+@router.get("/lessons/{lesson_id}/notes.pdf")
+def get_notes_pdf(lesson_id: str) -> Response:
+    """The same PDF the Streamlit download button produces, from the same code.
+
+    `src/pdf.py` is shared rather than reimplemented — two renderers would drift and
+    students would get different documents depending on which frontend they used.
+    """
+    md = course.notes_markdown(lesson_id)
+    if md is None:
+        raise HTTPException(status_code=404, detail=f"no study notes for {lesson_id}")
+
+    title = next((l["title"] for l in course.lessons() if l["lesson_id"] == lesson_id), "")
+    body = pdf.study_notes_to_pdf(md, lesson_id, title)
+
+    return Response(
+        content=body,
+        media_type="application/pdf",
+        headers={"Content-Disposition": f'attachment; filename="study-notes-{lesson_id}.pdf"'},
+    )
+
+
+@router.get("/syllabus.pdf")
+def get_syllabus_pdf() -> Response:
+    """The pre-built course syllabus. Static file, no rendering."""
+    body = pdf.syllabus_pdf_bytes()
+    if body is None:
+        raise HTTPException(status_code=404, detail="syllabus PDF has not been generated")
+    return Response(
+        content=body,
+        media_type="application/pdf",
+        headers={"Content-Disposition": 'attachment; filename="ironhack-ai-syllabus.pdf"'},
+    )
 
 
 @router.post("/session/{session_id}/scope")
