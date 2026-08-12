@@ -43,6 +43,10 @@ LESSONS_PATH = Path(__file__).resolve().parents[1] / "data" / "lessons.json"
 # the 25-question eval set, which includes three deliberately unanswerable ones.
 RELEVANCE_CUTOFF = 1.0
 
+# How many lines find_timestamp returns. Enough to name every day a topic appears in
+# without turning a "which day" answer into a transcript index.
+MAX_TIMESTAMP_LESSONS = 6
+
 # A scoped search needs a stricter bar. Unscoped, a chunk has to beat 5,000 others to
 # rank first, so a top hit under 1.3 really is about the topic. Scoped to one week or
 # one day that competition disappears and the "best" chunk can be merely the least bad
@@ -422,24 +426,57 @@ def make_tools(
         # answers like "in the supplementary course notebook at 0:00 of the extra
         # lesson" — a timestamp invented for a file that does not have one. Notebook
         # questions belong to find_notebooks.
-        scored = search_with_scores(topic, k=8, source_type="video", **scope.kwargs())
+        # k=20, not 8. "When was X covered" is a question about DAYS, and a topic taught
+        # over a week has one dominant day: "when was langchain covered" put 13 of its
+        # top 20 chunks in w7d1, so a top-8 window answered with five moments inside one
+        # lesson and never mentioned w7d2, w7d3 or w7d4 at all. Widening the window is
+        # what makes the other days visible; the grouping below is what keeps them.
+        scored = search_with_scores(topic, k=20, source_type="video", **scope.kwargs())
         relevant = [(d, s) for d, s in scored if s <= scope.cutoff()]
         if not relevant:
             return "NO_RESULTS: that topic does not appear in the course recordings."
 
-        lines, seen = [], set()
+        # One entry per lesson, taking each lesson's best-ranked moment. Insertion order
+        # is rank order, so the strongest lesson stays first and the answer still leads
+        # with the right day — it just no longer hides the others behind it.
+        best_per_lesson: dict[str, dict] = {}
         for doc, _ in relevant:
-            meta = doc.metadata
-            key = (meta["lesson_id"], meta["loom_id"], meta["start_seconds"] // 300)
-            if key in seen:
-                continue
-            seen.add(key)
+            best_per_lesson.setdefault(doc.metadata["lesson_id"], doc.metadata)
+
+        chosen = list(best_per_lesson.values())[:MAX_TIMESTAMP_LESSONS]
+
+        # Only after every lesson has a slot: further moments from the strongest lesson,
+        # 5-minute buckets apart, for a topic that really is concentrated in one day.
+        if len(chosen) < MAX_TIMESTAMP_LESSONS:
+            top_lesson = chosen[0]["lesson_id"]
+            seen = {(chosen[0]["loom_id"], chosen[0]["start_seconds"] // 300)}
+            for doc, _ in relevant:
+                if len(chosen) >= MAX_TIMESTAMP_LESSONS:
+                    break
+                meta = doc.metadata
+                if meta["lesson_id"] != top_lesson:
+                    continue
+                key = (meta["loom_id"], meta["start_seconds"] // 300)
+                if key in seen:
+                    continue
+                seen.add(key)
+                chosen.append(meta)
+
+        for meta in chosen:
             collector.add(meta)
-            lines.append(
-                f"- {meta['lesson_id']} · {meta['lesson_title']} · "
-                f"{format_timestamp(meta['start_seconds'])}"
-            )
-        return "Covered at:\n" + "\n".join(lines[:5])
+
+        days = sorted({meta["lesson_id"] for meta in chosen})
+        lines = [
+            f"- {meta['lesson_id']} · {meta['lesson_title']} · "
+            f"{format_timestamp(meta['start_seconds'])}"
+            for meta in chosen
+        ]
+        # The lesson list comes first because it is the answer to the question asked. The
+        # timestamps are supporting detail, and the agent is told not to read them out.
+        return (
+            f"Covered across: {', '.join(days)}\n"
+            f"Best moment in each:\n" + "\n".join(lines)
+        )
 
     def explain_concept(concept: str, style: str = "simple") -> str:
         """A pedagogical explanation, grounded in the recordings — not a raw excerpt dump."""
