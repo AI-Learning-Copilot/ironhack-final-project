@@ -191,3 +191,13 @@ a.citation-label { text-decoration: none; }
 .related h4 { margin: 0 0 6px; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.07em;
               text-transform: uppercase; color: var(--muted); }
 .related .citations { margin-top: 0; }
+
+/* ---- language + credit ---- */
+.header-controls { order: 3; }
+.lang select { padding: 5px 8px; font-size: 0.78rem; border-radius: 8px; }
+.visually-hidden { position: absolute; width: 1px; height: 1px; overflow: hidden;
+                   clip: rect(0 0 0 0); white-space: nowrap; }
+footer { padding: 10px 20px 18px; flex: 0 0 auto; display: flex; flex-direction: column;
+         gap: 10px; align-items: flex-start; }
+.credit { margin: 0; font-size: 0.72rem; line-height: 1.5; color: var(--muted); }
+.credit a { color: var(--accent-ink); }

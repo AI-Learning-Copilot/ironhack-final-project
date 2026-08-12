@@ -452,13 +452,19 @@
               }
             ],
             "title": "Session Id"
+          },
+          "language": {
+            "type": "string",
+            "title": "Language",
+            "default": "auto"
           }
         },
         "type": "object",
         "required": [
           "question"
         ],
-        "title": "AskRequest"
+        "title": "AskRequest",
+        "description": "`language` is \"auto\", \"en\" or \"es\".\n\nAuto is the default and is handled by the system prompt, which answers in whatever\nlanguage the student wrote in. An explicit choice appends an instruction to the\nquestion sent to the agent, leaving the question shown in the transcript unchanged \u2014\nsame approach the Streamlit app takes, so both frontends behave identically."
       },
       "AskResponse": {
         "properties": {

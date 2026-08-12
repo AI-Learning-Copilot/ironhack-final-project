@@ -56,8 +56,17 @@ router = APIRouter()
 
 
 class AskRequest(BaseModel):
+    """`language` is "auto", "en" or "es".
+
+    Auto is the default and is handled by the system prompt, which answers in whatever
+    language the student wrote in. An explicit choice appends an instruction to the
+    question sent to the agent, leaving the question shown in the transcript unchanged —
+    same approach the Streamlit app takes, so both frontends behave identically.
+    """
+
     question: str = Field(min_length=1, max_length=2000)
     session_id: str | None = None
+    language: str = "auto"
 
 
 # How many notebook suggestions to attach to an answer that cited only lectures.
@@ -169,8 +178,14 @@ def ask(req: AskRequest) -> AskResponse:
     copilot, _state = found
     started = time.perf_counter()
 
+    asked = req.question
+    if req.language == "en":
+        asked = f"{req.question}\n\nAnswer in English."
+    elif req.language == "es":
+        asked = f"{req.question}\n\nResponde en español."
+
     try:
-        response = copilot.ask(req.question)
+        response = copilot.ask(asked)
     except Exception as exc:  # noqa: BLE001 — surface the failure, do not swallow it
         raise HTTPException(status_code=502, detail=f"copilot failed: {exc}") from exc
 

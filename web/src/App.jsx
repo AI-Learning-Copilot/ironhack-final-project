@@ -3,6 +3,9 @@ import { api } from "./api.js";
 import Chat from "./Chat.jsx";
 import CourseBrowser from "./CourseBrowser.jsx";
 import QuizPanel from "./QuizPanel.jsx";
+import { openExternal } from "./external.js";
+
+const REPO_URL = "https://github.com/AI-Learning-Copilot/ironhack-final-project";
 
 const EMPTY_SCOPE = { active: false, label: "", lesson_id: "", week: null };
 
@@ -14,6 +17,7 @@ export default function App() {
   const [tab, setTab] = useState("chat");
   const [weeks, setWeeks] = useState([]);
   const [scope, setScope] = useState(EMPTY_SCOPE);
+  const [language, setLanguage] = useState("auto");
 
   useEffect(() => {
     api.newSession()
@@ -27,7 +31,7 @@ export default function App() {
     setError(null);
     setTurns((t) => [...t, { role: "user", text: question }]);
     try {
-      const d = await api.ask(question, sessionId);
+      const d = await api.ask(question, sessionId, language);
       setSessionId(d.session_id);
       setTurns((t) => [
         ...t,
@@ -74,6 +78,16 @@ export default function App() {
           <h1>AI Course Copilot</h1>
           <p className="sub">Answers from the bootcamp's own recordings and notebooks</p>
         </div>
+        <div className="header-controls">
+          <label className="lang">
+            <span className="visually-hidden">Answer language</span>
+            <select value={language} onChange={(e) => setLanguage(e.target.value)}>
+              <option value="auto">Auto — match my question</option>
+              <option value="en">English</option>
+              <option value="es">Español</option>
+            </select>
+          </label>
+        </div>
         <nav>
           {[["chat", "Ask"], ["course", "Course"], ["quiz", "Quiz"]].map(([key, label]) => (
             <button key={key} className={tab === key ? "on" : ""} onClick={() => setTab(key)}>
@@ -106,11 +120,28 @@ export default function App() {
         {tab === "quiz" && <QuizPanel sessionId={sessionId} weeks={weeks} />}
       </main>
 
-      {tab === "chat" && turns.length > 0 && (
-        <footer>
+      <footer>
+        {tab === "chat" && turns.length > 0 && (
           <button className="ghost" onClick={reset}>Start a new conversation</button>
-        </footer>
-      )}
+        )}
+        {/* The corpus is Ironhack's, not ours. Saying so is not a formality: the app
+            would not exist without their material and the distinction between their
+            content and our code should be visible on the page, not buried in a README. */}
+        <p className="credit">
+          The material in this app — recordings and notebooks — is from the{" "}
+          <strong>Ironhack AI Engineering bootcamp</strong> and belongs to Ironhack. The
+          copilot itself is our final project for that bootcamp; the code is on{" "}
+          <a
+            href={REPO_URL}
+            target="_blank"
+            rel="noreferrer"
+            onClick={(e) => openExternal(e, REPO_URL)}
+          >
+            GitHub
+          </a>
+          .
+        </p>
+      </footer>
     </div>
   );
 }
