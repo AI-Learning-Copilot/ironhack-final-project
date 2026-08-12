@@ -83,6 +83,12 @@ notebook URLs are GitHub links and should open in a new tab.
 
 `rehydrated` is engineering instrumentation. Do not show it to students.
 
+**Each citation is one recording or notebook, not one passage.** A lecture that covers the
+topic at five points arrives as a single citation whose `url` is the best-ranked moment,
+with the rest in `also_at`. Show the citation as one item. Offer `also_at` quietly beneath
+it — "also covered at 20:44, 9:36" — never as extra citations, and never in the count. At
+most four citations come back; there is no need for pagination.
+
 `related_notebooks` has the same shape as a citation but a different meaning: it is the
 code for the topic, found by a second retrieval, and it did **not** ground the answer.
 Render it in its own labelled group, visually separated from the citations. Presenting it

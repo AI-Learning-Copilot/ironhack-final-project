@@ -84,6 +84,46 @@ class AskRequest(BaseModel):
 # How many notebook suggestions to attach to an answer that cited only lectures.
 RELATED_NOTEBOOKS = 3
 
+# How many distinct sources an answer shows before the rest are dropped. Five citations
+# is not five leads: it is usually one recording quoted five times, and the student reads
+# the first one.
+MAX_CITATIONS = 4
+
+
+def condense_citations(citations: list[dict]) -> list[dict]:
+    """One entry per recording or notebook, keeping the best-ranked position first.
+
+    `build_response` deduplicates on URL, and a URL carries the timestamp — so five
+    chunks from one lecture become five citations pointing at the same video, minutes
+    apart. Ranked by chunk score they are all near the top, which pushes the genuinely
+    different source off the end of the list. That is the "many videos and the first one
+    is not the best" problem: the list was never five sources, it was one source five
+    times.
+
+    Grouping by recording keeps the order the reranker produced — the first timestamp
+    seen for a recording is its best-scoring one, so it stays as the link. The remaining
+    timestamps are not thrown away; they move to `also_at` for a UI to offer underneath,
+    because "it comes up again at 24:10" is useful once it is not competing for the slot.
+    """
+    grouped: dict[str, dict] = {}
+
+    for citation in citations:
+        # loom_id for a video, path for a notebook — the URL minus the timestamp.
+        key = citation["url"].split("?")[0]
+        existing = grouped.get(key)
+        if existing is None:
+            grouped[key] = {**citation, "also_at": []}
+            continue
+        existing["also_at"].append(
+            {
+                "label": citation["label"],
+                "url": citation["url"],
+                "start_seconds": citation.get("start_seconds", -1),
+            }
+        )
+
+    return list(grouped.values())[:MAX_CITATIONS]
+
 
 def related_notebooks(question: str, cited: list[dict], scope) -> list[dict]:
     """Notebooks worth offering next to an answer that only cited recordings.
@@ -212,16 +252,18 @@ def ask(req: AskRequest) -> AskResponse:
         ),
     )
 
+    citations = condense_citations(response["citations"])
+
     # A refusal must never carry sources, related or otherwise.
     suggestions = (
-        [] if not response["citations"]
-        else related_notebooks(req.question, response["citations"], copilot.scope)
+        [] if not citations
+        else related_notebooks(req.question, citations, copilot.scope)
     )
 
     return AskResponse(
         session_id=session_id,
         answer=response["answer"],
-        citations=response["citations"],
+        citations=citations,
         related_notebooks=suggestions,
         elapsed_seconds=round(elapsed, 2),
         rehydrated=rebuilt,
