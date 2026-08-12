@@ -20,7 +20,8 @@ export const api = {
   notes: (id) => call(`/api/lessons/${id}/notes`),
   notesPdfUrl: (id) => `/api/lessons/${id}/notes.pdf`,
   syllabusPdfUrl: () => "/api/syllabus.pdf",
-  ask: (question, sessionId) => call("/api/ask", { method: "POST", body: { question, session_id: sessionId } }),
+  ask: (question, sessionId, language = "auto") =>
+    call("/api/ask", { method: "POST", body: { question, session_id: sessionId, language } }),
   scope: (sessionId, body) => call(`/api/session/${sessionId}/scope`, { method: "POST", body }),
   quiz: (sessionId, topic, numQuestions, scope = {}) =>
     call(`/api/session/${sessionId}/quiz`, {
