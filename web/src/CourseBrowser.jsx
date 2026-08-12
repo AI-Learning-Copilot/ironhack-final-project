@@ -26,6 +26,13 @@ const WEEK_THEMES = {
   8: "Multimodal & evaluation",
 };
 
+// The generated notes end with a "## Sources" block listing the same recordings and
+// notebooks this panel renders below as real links. Dropping it removes the duplicate.
+function withoutSources(markdown) {
+  const cut = String(markdown || "").search(/^##\s+Sources\s*$/m);
+  return cut === -1 ? markdown : markdown.slice(0, cut).trimEnd();
+}
+
 export default function CourseBrowser({ weeks, scope, onScope }) {
   const [openLesson, setOpenLesson] = useState(null);
   const [notes, setNotes] = useState({});
@@ -99,6 +106,26 @@ export default function CourseBrowser({ weeks, scope, onScope }) {
 
                     {open && (
                       <div className="lesson-body">
+                        <div className="resource-group">
+                          <h4>Study notes</h4>
+                          {!l.has_notes && <p className="hint">None for this day.</p>}
+                          {l.has_notes && loading === l.lesson_id && <p className="hint">Loading…</p>}
+                          {l.has_notes && notes[l.lesson_id] && (
+                            <>
+                              <a
+                                className="pdf-link"
+                                href={api.notesPdfUrl(l.lesson_id)}
+                                target="_blank"
+                                rel="noreferrer"
+                                onClick={(e) => openExternal(e, api.notesPdfUrl(l.lesson_id))}
+                              >
+                                Download as PDF ↗
+                              </a>
+                              <Markdown text={withoutSources(notes[l.lesson_id])} />
+                            </>
+                          )}
+                        </div>
+
                         {l.videos?.length > 0 && (
                           <div className="resource-group">
                             <h4>Recordings</h4>
@@ -132,20 +159,6 @@ export default function CourseBrowser({ weeks, scope, onScope }) {
                             </ul>
                           </div>
                         )}
-
-                        <div className="resource-group">
-                          <h4>Study notes</h4>
-                          {!l.has_notes && <p className="hint">None for this day.</p>}
-                          {l.has_notes && loading === l.lesson_id && <p className="hint">Loading…</p>}
-                          {l.has_notes && notes[l.lesson_id] && (
-                            <>
-                              <a className="pdf-link" href={api.notesPdfUrl(l.lesson_id)} target="_blank" rel="noreferrer" onClick={(e) => openExternal(e, api.notesPdfUrl(l.lesson_id))}>
-                                Download as PDF ↗
-                              </a>
-                              <Markdown text={notes[l.lesson_id]} />
-                            </>
-                          )}
-                        </div>
                       </div>
                     )}
                   </li>

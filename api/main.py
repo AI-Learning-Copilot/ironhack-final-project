@@ -111,8 +111,16 @@ class ScopeRequest(BaseModel):
 
 
 class QuizRequest(BaseModel):
+    """`week` and `lesson_id` scope this quiz only — they do not touch the conversation.
+
+    A student quizzing themselves on week 3 has not said anything about what their next
+    question should search, so the two are kept apart.
+    """
+
     topic: str = Field(min_length=1, max_length=200)
     num_questions: int = Field(default=3, ge=1, le=10)
+    week: int | None = None
+    lesson_id: str | None = None
 
 
 class AskResponse(BaseModel):
@@ -288,12 +296,26 @@ def quiz(session_id: str, req: QuizRequest) -> dict:
     if tool is None:
         raise HTTPException(status_code=500, detail="generate_quiz tool is not registered")
 
+    # The tools read the scope off the Copilot, so a per-quiz filter means swapping it for
+    # the duration of the call and putting the conversation's own scope back afterwards —
+    # including when the tool raises.
+    previous = (copilot.scope.lesson_id, copilot.scope.week)
+    scoped = req.week is not None or bool(req.lesson_id)
+    if scoped:
+        copilot.scope.set(lesson_id=req.lesson_id or "", week=req.week)
+
+    # Read the label while the quiz scope is still applied — the finally below puts the
+    # conversation's own scope back, and by then this would describe the wrong thing.
+    label = copilot.scope.label() if scoped else ""
+
     try:
         markdown = tool.func(topic=req.topic, num_questions=req.num_questions)
     except Exception as exc:  # noqa: BLE001
         raise HTTPException(status_code=502, detail=f"quiz failed: {exc}") from exc
+    finally:
+        copilot.scope.set(lesson_id=previous[0], week=previous[1])
 
-    return {"topic": req.topic, "markdown": markdown}
+    return {"topic": req.topic, "markdown": markdown, "scope": label}
 
 
 @router.post("/session/{session_id}/reset")

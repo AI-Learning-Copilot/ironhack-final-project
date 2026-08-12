@@ -103,7 +103,7 @@ export default function App() {
           />
         )}
         {tab === "course" && <CourseBrowser weeks={weeks} scope={scope} onScope={changeScope} />}
-        {tab === "quiz" && <QuizPanel sessionId={sessionId} scopeLabel={scope.active ? scope.label : ""} />}
+        {tab === "quiz" && <QuizPanel sessionId={sessionId} weeks={weeks} />}
       </main>
 
       {tab === "chat" && turns.length > 0 && (
