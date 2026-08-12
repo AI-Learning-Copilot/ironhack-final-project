@@ -38,9 +38,27 @@ function Citation({ c }) {
       </button>
 
       {open && (
-        <div className="embed">
-          <iframe src={c.url} title={c.label} allowFullScreen />
-        </div>
+        <>
+          <div className="embed">
+            <iframe src={c.url} title={c.label} allowFullScreen />
+          </div>
+          {/* The same recording covers the topic at these points too. Kept out of the
+              citation list because they are not separate sources — five entries for one
+              lecture buried whatever else was found. */}
+          {c.also_at?.length > 0 && (
+            <p className="also-at">
+              Also covered at{" "}
+              {c.also_at.map((a, i) => (
+                <span key={a.url}>
+                  {i > 0 && ", "}
+                  <a href={a.url} target="_blank" rel="noreferrer" onClick={(e) => openExternal(e, a.url)}>
+                    {a.label.split(" · ").pop()}
+                  </a>
+                </span>
+              ))}
+            </p>
+          )}
+        </>
       )}
     </li>
   );

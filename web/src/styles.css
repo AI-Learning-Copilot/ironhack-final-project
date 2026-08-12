@@ -201,3 +201,6 @@ footer { padding: 10px 20px 18px; flex: 0 0 auto; display: flex; flex-direction:
          gap: 10px; align-items: flex-start; }
 .credit { margin: 0; font-size: 0.72rem; line-height: 1.5; color: var(--muted); }
 .credit a { color: var(--accent-ink); }
+
+.also-at { margin: 8px 0 0; font-size: 0.78rem; color: var(--muted); }
+.also-at a { color: var(--accent-ink); }
