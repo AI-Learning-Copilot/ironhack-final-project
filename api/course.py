@@ -11,6 +11,7 @@ this owns the catalogue.
 
 from __future__ import annotations
 
+import csv
 import json
 import re
 from functools import lru_cache
@@ -19,6 +20,12 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 LESSONS_FILE = ROOT / "data" / "lessons.json"
 NOTES_DIR = ROOT / "summaries"
+NOTEBOOK_MAP = ROOT / "evaluation" / "notebook_mapping.csv"
+
+# Same constants the agent cites with, repeated rather than imported so this module stays
+# free of the agent's import chain (which loads chroma and the embedding client).
+LOOM_WATCH = "https://www.loom.com/share"
+NOTEBOOK_REPO = "https://github.com/ironhack-ai-eng-june2026/demos_ai_eng/blob/main"
 
 
 def parse_lesson_id(lesson_id: str) -> tuple[int, int]:
@@ -34,6 +41,26 @@ def _raw_lessons() -> dict:
     if not LESSONS_FILE.is_file():
         return {}
     return json.loads(LESSONS_FILE.read_text(encoding="utf-8"))
+
+
+@lru_cache(maxsize=1)
+def _notebooks_by_lesson() -> dict[str, list[str]]:
+    """Notebook paths per lesson, MAIN mappings only.
+
+    The CSV also carries EXTRA? and REVIEW rows. Those are the supplementary notebooks
+    that live in the course repo without belonging to a taught day — the agent cites them
+    with an `Extra ·` prefix, and listing them under a lesson here would assert a link the
+    mapping explicitly declined to make.
+    """
+    if not NOTEBOOK_MAP.is_file():
+        return {}
+    out: dict[str, list[str]] = {}
+    with NOTEBOOK_MAP.open(encoding="utf-8") as fh:
+        for row in csv.DictReader(fh):
+            if row.get("status") != "MAIN":
+                continue
+            out.setdefault(row["lesson"], []).append(row["notebook"])
+    return {k: sorted(v) for k, v in out.items()}
 
 
 def lessons() -> list[dict]:
@@ -57,6 +84,22 @@ def lessons() -> list[dict]:
                 "recordings": len(recordings),
                 "duration_seconds": sum(int(r.get("duration_seconds", 0)) for r in recordings),
                 "has_notes": (NOTES_DIR / f"{lesson_id}.md").is_file(),
+                # The actual links. Built here for the same reason build_citation builds
+                # them for the agent: one place knows Loom's URL shape and the repo path,
+                # and the UI never composes a link of its own.
+                "videos": [
+                    {
+                        "title": r.get("title", ""),
+                        "segment": r.get("segment", ""),
+                        "duration_seconds": int(r.get("duration_seconds", 0)),
+                        "url": f"{LOOM_WATCH}/{r.get('loom_id', '')}",
+                    }
+                    for r in recordings
+                ],
+                "notebooks": [
+                    {"path": nb, "url": f"{NOTEBOOK_REPO}/{nb}"}
+                    for nb in _notebooks_by_lesson().get(lesson_id, [])
+                ],
             }
         )
     return out

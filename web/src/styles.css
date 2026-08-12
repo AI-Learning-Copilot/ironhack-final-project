@@ -168,3 +168,20 @@ footer { padding: 0 20px 16px; flex: 0 0 auto; }
   .turn.user { max-width: 90%; }
   .lesson-meta { display: none; }
 }
+
+/* ---- lesson resources ---- */
+.resource-group { margin-bottom: 14px; }
+.resource-group:last-child { margin-bottom: 0; }
+.resource-group h4 { margin: 0 0 6px; font-size: 0.72rem; font-weight: 700;
+                     letter-spacing: 0.07em; text-transform: uppercase; color: var(--muted); }
+.resources { list-style: none; margin: 0; padding: 0; display: flex;
+             flex-direction: column; gap: 4px; }
+.resources a { display: flex; align-items: baseline; gap: 10px; text-decoration: none;
+               background: #F7F8FE; border: 1px solid var(--line); border-radius: 8px;
+               padding: 7px 11px; font-size: 0.83rem; color: var(--ink); }
+.resources a:hover { border-color: var(--accent); background: #F1F2FD; }
+.res-kind { flex: 0 0 auto; min-width: 44px; font-size: 0.66rem; text-transform: uppercase;
+            letter-spacing: 0.06em; color: var(--muted); }
+.res-text { flex: 1; min-width: 0; overflow-wrap: anywhere; }
+.res-meta { flex: 0 0 auto; color: var(--muted); font-size: 0.75rem; }
+a.citation-label { text-decoration: none; }

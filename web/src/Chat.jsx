@@ -8,23 +8,32 @@ function Citation({ c }) {
   const [open, setOpen] = useState(false);
   const isVideo = c.source_type === "video";
 
+  // Only videos expand. A notebook has nothing to embed, so hiding its GitHub link
+  // behind a click was pure friction — it is a link, so it is rendered as one.
+  if (!isVideo) {
+    return (
+      <li className="citation">
+        <a className="citation-label" href={c.url} target="_blank" rel="noreferrer">
+          <span className="citation-kind">notebook</span>
+          <span className="citation-text">{c.label}</span>
+          <span className="citation-chevron">↗</span>
+        </a>
+      </li>
+    );
+  }
+
   return (
     <li className="citation">
       <button className="citation-label" onClick={() => setOpen(!open)} aria-expanded={open}>
-        <span className="citation-kind">{isVideo ? "video" : "notebook"}</span>
+        <span className="citation-kind">video</span>
         <span className="citation-text">{c.label}</span>
-        <span className="citation-chevron">{open ? "−" : "+"}</span>
+        <span className="citation-chevron">{open ? "−" : "▶"}</span>
       </button>
 
-      {open && isVideo && (
+      {open && (
         <div className="embed">
           <iframe src={c.url} title={c.label} allowFullScreen />
         </div>
-      )}
-      {open && !isVideo && (
-        <a className="notebook-link" href={c.url} target="_blank" rel="noreferrer">
-          Open the notebook on GitHub →
-        </a>
       )}
     </li>
   );
