@@ -29,6 +29,8 @@ a normal, first-class response, not an error state.
    link out to GitHub.
 3. **Course browser** — 32 lesson days across 8 weeks, each with study notes in markdown.
 4. **Scope filter** — narrow the whole conversation to one lesson or one week.
+   Study notes and the syllabus both download as PDFs; link them, do not render them
+   in-page.
 5. **Quiz** — pick a topic, get multiple-choice questions with answers.
 
 ## Endpoints, in the order a frontend needs them
@@ -38,6 +40,8 @@ a normal, first-class response, not an error state.
 | `POST /api/session` | get a `session_id`, hold it for the whole visit | instant |
 | `GET /api/lessons` | 32 lessons + 8 weeks, for the browser and the scope filter | instant, static |
 | `GET /api/lessons/{id}/notes` | study notes as markdown | instant, static |
+| `GET /api/lessons/{id}/notes.pdf` | the same notes as a formatted PDF | ~0.2s |
+| `GET /api/syllabus.pdf` | the full 8-week course syllabus | instant, static |
 | `POST /api/ask` | one turn | **~5s**, an OpenAI call |
 | `POST /api/session/{id}/scope` | set or clear the lesson/week filter | instant |
 | `POST /api/session/{id}/quiz` | generate a quiz | **~10s** |
@@ -116,15 +120,10 @@ Should be usable on a phone. Students will check something on the way to class.
 - Login, accounts, or profiles. There is no auth and the session id is the only identity.
 - Anything that stores conversations client-side. Persistence is a decision we have not
   made.
-- A PDF download for study notes. It exists in the Streamlit app but has not been moved
-  into the API yet.
 - Streaming. The endpoint does not support it.
 
 ## Known gaps, so nothing here is a surprise
 
 - **No streaming**, so the wait is the design problem.
-- **No study-notes PDF.** The generator lives inside `app/app.py`, coupled to Streamlit;
-  moving it into `src/` is a small refactor of a shared file and needs agreeing first.
-- **No syllabus download**, same reason.
 - **No auth.** Anyone holding a session id can read that conversation.
 - **Nothing survives a restart.** Sessions are in memory.

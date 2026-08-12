@@ -3,7 +3,7 @@
   "info": {
     "title": "Ironhack AI Course Copilot API",
     "version": "0.1.0-spike",
-    "description": "Read-only catalogue endpoints (/lessons, /lessons/{id}/notes) are static and cheap. Everything under /session costs an OpenAI call and takes about 5 seconds. Citations arrive pre-labelled with a working URL: render them, never compute them."
+    "description": "Read-only catalogue endpoints (/lessons, /lessons/{id}/notes, the PDFs) are static and cheap. Everything under /session costs an OpenAI call and takes about 5 seconds. Citations arrive pre-labelled with a working URL: render them, never compute them."
   },
   "paths": {
     "/api/health": {
@@ -142,6 +142,61 @@
                 "schema": {
                   "$ref": "#/components/schemas/HTTPValidationError"
                 }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/lessons/{lesson_id}/notes.pdf": {
+      "get": {
+        "summary": "Get Notes Pdf",
+        "description": "The same PDF the Streamlit download button produces, from the same code.\n\n`src/pdf.py` is shared rather than reimplemented \u2014 two renderers would drift and\nstudents would get different documents depending on which frontend they used.",
+        "operationId": "get_notes_pdf_api_lessons__lesson_id__notes_pdf_get",
+        "parameters": [
+          {
+            "name": "lesson_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Lesson Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/syllabus.pdf": {
+      "get": {
+        "summary": "Get Syllabus Pdf",
+        "description": "The pre-built course syllabus. Static file, no rendering.",
+        "operationId": "get_syllabus_pdf_api_syllabus_pdf_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
               }
             }
           }
