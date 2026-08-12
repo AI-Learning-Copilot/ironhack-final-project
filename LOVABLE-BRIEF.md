@@ -81,6 +81,16 @@ notebook URLs are GitHub links and should open in a new tab.
 
 `rehydrated` is engineering instrumentation. Do not show it to students.
 
+`related_notebooks` has the same shape as a citation but a different meaning: it is the
+code for the topic, found by a second retrieval, and it did **not** ground the answer.
+Render it in its own labelled group, visually separated from the citations. Presenting it
+as a source would be a lie, and refusals never carry any.
+
+**External links need an onClick, not just `target="_blank"`.** Measured: a blocked popup
+makes a `target="_blank"` anchor do nothing at all, which reads as broken rather than
+blocked. See `web/src/external.js` — try `window.open`, fall back to same-tab navigation,
+and leave the `href` on the anchor so right-click and middle-click still work.
+
 ## Design constraints that are not negotiable
 
 **Answers take about five seconds.** Median ~5s, p95 ~10s, worst case ~12s. There is no

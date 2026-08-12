@@ -31,7 +31,13 @@ export default function App() {
       setSessionId(d.session_id);
       setTurns((t) => [
         ...t,
-        { role: "copilot", text: d.answer, citations: d.citations, elapsed: d.elapsed_seconds },
+        {
+          role: "copilot",
+          text: d.answer,
+          citations: d.citations,
+          related_notebooks: d.related_notebooks,
+          elapsed: d.elapsed_seconds,
+        },
       ]);
     } catch (err) {
       setError(String(err.message || err));

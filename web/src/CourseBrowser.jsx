@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { api } from "./api.js";
 import Markdown from "./Markdown.jsx";
+import { openExternal } from "./external.js";
 
 function duration(seconds) {
   // Round to whole minutes first, then split. Flooring the hours before rounding the
@@ -51,7 +52,7 @@ export default function CourseBrowser({ weeks, scope, onScope }) {
     <div className="browser">
       <div className="browser-head">
         <h2>The course</h2>
-        <a className="pdf-link" href={api.syllabusPdfUrl()} target="_blank" rel="noreferrer">
+        <a className="pdf-link" href={api.syllabusPdfUrl()} target="_blank" rel="noreferrer" onClick={(e) => openExternal(e, api.syllabusPdfUrl())}>
           Full syllabus (PDF)
         </a>
       </div>
@@ -104,7 +105,7 @@ export default function CourseBrowser({ weeks, scope, onScope }) {
                             <ul className="resources">
                               {l.videos.map((v) => (
                                 <li key={v.url}>
-                                  <a href={v.url} target="_blank" rel="noreferrer">
+                                  <a href={v.url} target="_blank" rel="noreferrer" onClick={(e) => openExternal(e, v.url)}>
                                     <span className="res-kind">video</span>
                                     <span className="res-text">{v.title || v.segment}</span>
                                     <span className="res-meta">{duration(v.duration_seconds)}</span>
@@ -121,7 +122,7 @@ export default function CourseBrowser({ weeks, scope, onScope }) {
                             <ul className="resources">
                               {l.notebooks.map((n) => (
                                 <li key={n.url}>
-                                  <a href={n.url} target="_blank" rel="noreferrer">
+                                  <a href={n.url} target="_blank" rel="noreferrer" onClick={(e) => openExternal(e, n.url)}>
                                     <span className="res-kind">code</span>
                                     <span className="res-text">{n.path}</span>
                                     <span className="res-meta">↗</span>
@@ -138,7 +139,7 @@ export default function CourseBrowser({ weeks, scope, onScope }) {
                           {l.has_notes && loading === l.lesson_id && <p className="hint">Loading…</p>}
                           {l.has_notes && notes[l.lesson_id] && (
                             <>
-                              <a className="pdf-link" href={api.notesPdfUrl(l.lesson_id)} target="_blank" rel="noreferrer">
+                              <a className="pdf-link" href={api.notesPdfUrl(l.lesson_id)} target="_blank" rel="noreferrer" onClick={(e) => openExternal(e, api.notesPdfUrl(l.lesson_id))}>
                                 Download as PDF ↗
                               </a>
                               <Markdown text={notes[l.lesson_id]} />

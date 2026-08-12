@@ -35,6 +35,8 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 import course  # noqa: E402
 import pdf  # noqa: E402
+from retrieval import search_with_scores  # noqa: E402
+from schemas import SOURCE_NOTEBOOK, build_citation  # noqa: E402
 from sessions import InMemorySessionStore, Turn  # noqa: E402
 
 app = FastAPI(title="Ironhack AI Course Copilot API", version="0.1.0-spike")
@@ -58,6 +60,49 @@ class AskRequest(BaseModel):
     session_id: str | None = None
 
 
+# How many notebook suggestions to attach to an answer that cited only lectures.
+RELATED_NOTEBOOKS = 3
+
+
+def related_notebooks(question: str, cited: list[dict], scope) -> list[dict]:
+    """Notebooks worth offering next to an answer that only cited recordings.
+
+    The agent calls one tool per turn by design, so a concept question routes to
+    `search_course_material` and comes back with lectures only — correct for the answer,
+    unhelpful for a student who then wants the code. This is a second retrieval filtered
+    to notebooks, about 250ms and no model call, and it is kept clearly separate from the
+    citations: these did not ground the answer, they are related material.
+
+    Skipped when the answer already cites notebooks, and when nothing clears the scope's
+    own relevance cutoff — 1.0 normally, 1.15 when a filter is active, the same numbers
+    the tools use. An irrelevant notebook is worse than none.
+    """
+    if any(c.get("source_type") == SOURCE_NOTEBOOK for c in cited):
+        return []
+
+    try:
+        hits = search_with_scores(
+            question,
+            k=RELATED_NOTEBOOKS,
+            source_type=SOURCE_NOTEBOOK,
+            lesson_id=scope.lesson_id or None,
+            week=scope.week,
+        )
+    except Exception:  # noqa: BLE001 — a suggestion failing must not fail the answer
+        return []
+
+    out, seen = [], set()
+    for doc, distance in hits:
+        if distance > scope.cutoff():
+            continue
+        citation = build_citation(doc.metadata)
+        if citation["url"] in seen:
+            continue
+        seen.add(citation["url"])
+        out.append(citation)
+    return out
+
+
 class ScopeRequest(BaseModel):
     """Empty body clears the scope, which is how the UI turns the filter off."""
 
@@ -74,6 +119,7 @@ class AskResponse(BaseModel):
     session_id: str
     answer: str
     citations: list[dict]
+    related_notebooks: list[dict] = []
     tools_used: list[str] = []
     elapsed_seconds: float
     rehydrated: bool = False
@@ -131,10 +177,17 @@ def ask(req: AskRequest) -> AskResponse:
         ),
     )
 
+    # A refusal must never carry sources, related or otherwise.
+    suggestions = (
+        [] if not response["citations"]
+        else related_notebooks(req.question, response["citations"], copilot.scope)
+    )
+
     return AskResponse(
         session_id=session_id,
         answer=response["answer"],
         citations=response["citations"],
+        related_notebooks=suggestions,
         elapsed_seconds=round(elapsed, 2),
         rehydrated=rebuilt,
     )
