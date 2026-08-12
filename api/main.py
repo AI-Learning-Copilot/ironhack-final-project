@@ -32,6 +32,7 @@ ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "src"))
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
+import course  # noqa: E402
 from sessions import InMemorySessionStore, Turn  # noqa: E402
 
 app = FastAPI(title="Ironhack AI Course Copilot API", version="0.1.0-spike")
@@ -53,6 +54,18 @@ router = APIRouter()
 class AskRequest(BaseModel):
     question: str = Field(min_length=1, max_length=2000)
     session_id: str | None = None
+
+
+class ScopeRequest(BaseModel):
+    """Empty body clears the scope, which is how the UI turns the filter off."""
+
+    lesson_id: str | None = None
+    week: int | None = None
+
+
+class QuizRequest(BaseModel):
+    topic: str = Field(min_length=1, max_length=200)
+    num_questions: int = Field(default=3, ge=1, le=10)
 
 
 class AskResponse(BaseModel):
@@ -123,6 +136,75 @@ def ask(req: AskRequest) -> AskResponse:
         elapsed_seconds=round(elapsed, 2),
         rehydrated=rebuilt,
     )
+
+
+@router.get("/lessons")
+def get_lessons() -> dict:
+    """The course calendar. Static, cheap, safe to call on page load."""
+    return {"lessons": course.lessons(), "weeks": course.weeks()}
+
+
+@router.get("/lessons/{lesson_id}/notes")
+def get_notes(lesson_id: str) -> dict:
+    """Study notes for one lesson, as markdown.
+
+    Markdown rather than HTML because the frontend should own presentation — the same
+    reason `build_citation` hands over a label and a URL rather than a rendered link.
+    """
+    md = course.notes_markdown(lesson_id)
+    if md is None:
+        raise HTTPException(status_code=404, detail=f"no study notes for {lesson_id}")
+    return {"lesson_id": lesson_id, "markdown": md}
+
+
+@router.post("/session/{session_id}/scope")
+def set_scope(session_id: str, req: ScopeRequest) -> dict:
+    """Narrow the search to a lesson or a week for the rest of the conversation.
+
+    Set on the retrieval side rather than worded into the question — see SearchScope.
+    A scoped refusal says "not in THIS lesson", which is a different fact from "not in
+    the course", and the frontend should show the filter that caused it.
+    """
+    found = store.get(session_id)
+    if found is None:
+        raise HTTPException(status_code=404, detail="unknown session")
+    copilot, _state = found
+
+    if req.lesson_id is None and req.week is None:
+        copilot.scope.clear()
+    else:
+        copilot.scope.set(lesson_id=req.lesson_id or "", week=req.week)
+
+    return {
+        "active": copilot.scope.active,
+        "label": copilot.scope.label() if copilot.scope.active else "",
+        "lesson_id": copilot.scope.lesson_id,
+        "week": copilot.scope.week,
+    }
+
+
+@router.post("/session/{session_id}/quiz")
+def quiz(session_id: str, req: QuizRequest) -> dict:
+    """Generate a scored quiz on a topic, honouring the session's scope.
+
+    Calls the tool directly rather than asking the agent to pick it. The agent route
+    works but costs an extra model call to decide something the button already decided.
+    """
+    found = store.get(session_id)
+    if found is None:
+        raise HTTPException(status_code=404, detail="unknown session")
+    copilot, _state = found
+
+    tool = next((t for t in copilot.executor.tools if t.name == "generate_quiz"), None)
+    if tool is None:
+        raise HTTPException(status_code=500, detail="generate_quiz tool is not registered")
+
+    try:
+        markdown = tool.func(topic=req.topic, num_questions=req.num_questions)
+    except Exception as exc:  # noqa: BLE001
+        raise HTTPException(status_code=502, detail=f"quiz failed: {exc}") from exc
+
+    return {"topic": req.topic, "markdown": markdown}
 
 
 @router.post("/session/{session_id}/reset")
