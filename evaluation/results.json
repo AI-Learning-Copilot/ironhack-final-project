@@ -4,31 +4,31 @@
     "expected_lesson": "w1d1",
     "retrieved_lessons": [
       "w1d1",
-      "extra",
-      "extra",
       "w1d1",
-      "extra"
+      "w1d1",
+      "w1d3",
+      "w4d1"
     ],
     "retrieved_sources": [
       "Python I",
-      "3_functions.ipynb",
-      "5_error_handling.ipynb",
       "Python I",
-      "1_intro_to_python.ipynb"
+      "Python I",
+      "Python Error Handling",
+      "Regular Expresions (Regex)"
     ],
     "retrieved_headings": [
       "",
-      "Python Functions",
-      "Python Error Handling",
       "",
-      "Demo 1 (Python + Jupyter Notebooks Intro)"
+      "",
+      "",
+      ""
     ],
     "retrieved_distances": [
       1.1295685768127441,
-      1.1609907150268555,
-      1.1678560972213745,
       1.1950798034667969,
-      1.2009228467941284
+      1.2023311853408813,
+      1.2165443897247314,
+      1.230338215827942
     ],
     "top1_correct": true,
     "top3_correct": true,
@@ -39,31 +39,31 @@
     "expected_lesson": "w1d1",
     "retrieved_lessons": [
       "extra",
-      "extra",
       "w1d1",
       "w1d4",
-      "extra"
+      "w1d1",
+      "w1d1"
     ],
     "retrieved_sources": [
       "bonus_python_variables_and_memory_model.ipynb",
-      "bonus_python_variables_and_memory_model.ipynb",
       "Python I",
       "Bonus session - Python variables and the memory model",
-      "1_intro_to_python.ipynb"
+      "Python I",
+      "Python I"
     ],
     "retrieved_headings": [
       "1. Python's variables are not like buckets",
-      "Python Variables & the Memory Model",
       "",
       "",
-      "Variables"
+      "",
+      ""
     ],
     "retrieved_distances": [
-      0.7163882851600647,
-      0.7610978484153748,
-      0.8278059363365173,
-      0.8315143585205078,
-      0.8446481823921204
+      0.716559886932373,
+      0.8280726075172424,
+      0.8317182660102844,
+      0.8450295329093933,
+      0.8537609577178955
     ],
     "top1_correct": false,
     "top3_correct": true,
@@ -144,17 +144,17 @@
     "expected_lesson": "w1d1",
     "retrieved_lessons": [
       "w1d1",
-      "w1d1",
       "w1d2",
+      "w1d1",
       "w1d1",
       "w1d1"
     ],
     "retrieved_sources": [
       "Python II",
-      "Python II",
       "Python List Comprehensions Explained",
       "Python II",
-      "Python I"
+      "Python II",
+      "Python II"
     ],
     "retrieved_headings": [
       "",
@@ -164,11 +164,11 @@
       ""
     ],
     "retrieved_distances": [
-      0.9993682503700256,
-      1.0219428539276123,
-      1.0256917476654053,
-      1.0260593891143799,
-      1.030619502067566
+      0.9993520975112915,
+      1.0201469659805298,
+      1.020434856414795,
+      1.0238720178604126,
+      1.0280946493148804
     ],
     "top1_correct": true,
     "top3_correct": true,
@@ -199,11 +199,11 @@
       ""
     ],
     "retrieved_distances": [
-      0.7656123638153076,
-      0.9400140047073364,
-      1.0048372745513916,
-      1.0225191116333008,
-      1.0270054340362549
+      0.7658628225326538,
+      0.9402446150779724,
+      1.0049896240234375,
+      1.0227134227752686,
+      1.0271552801132202
     ],
     "top1_correct": true,
     "top3_correct": true,
@@ -213,30 +213,30 @@
     "question": "What is a Python function?",
     "expected_lesson": "w1d2",
     "retrieved_lessons": [
+      "w1d2",
+      "w1d2",
       "extra",
-      "w1d2",
-      "w1d2",
       "w1d2",
       "w1d2"
     ],
     "retrieved_sources": [
+      "Python Functions I (intro + parameters, defaults parameters, positional and keyword params)",
+      "Python Functions I (intro + parameters, defaults parameters, positional and keyword params)",
       "3_functions.ipynb",
-      "Python Functions I (intro + parameters, defaults parameters, positional and keyword params)",
-      "Python Functions I (intro + parameters, defaults parameters, positional and keyword params)",
       "Python Functions IV (lambda functions)",
       "Python Functions I (intro + parameters, defaults parameters, positional and keyword params)"
     ],
     "retrieved_headings": [
+      "",
+      "",
       "Python Functions",
-      "",
-      "",
       "",
       ""
     ],
     "retrieved_distances": [
-      0.7565593123435974,
       0.8664917945861816,
       0.8962849974632263,
+      0.7565593123435974,
       0.9090108871459961,
       0.91468745470047
     ],
@@ -249,30 +249,30 @@
     "expected_lesson": "w1d2",
     "retrieved_lessons": [
       "w1d2",
+      "w1d2",
+      "w1d2",
       "extra",
-      "w1d2",
-      "w1d2",
       "w1d2"
     ],
     "retrieved_sources": [
       "Python Functions I (intro + parameters, defaults parameters, positional and keyword params)",
+      "Python Functions I (intro + parameters, defaults parameters, positional and keyword params)",
+      "Python Functions I (intro + parameters, defaults parameters, positional and keyword params)",
       "3_functions.ipynb",
-      "Python Functions I (intro + parameters, defaults parameters, positional and keyword params)",
-      "Python Functions I (intro + parameters, defaults parameters, positional and keyword params)",
       "Python Functions I (intro + parameters, defaults parameters, positional and keyword params)"
     ],
     "retrieved_headings": [
       "",
+      "",
+      "",
       "Positional Arguments & Keyword Arguments",
-      "",
-      "",
       ""
     ],
     "retrieved_distances": [
       0.7254427075386047,
-      0.8738604784011841,
       0.863539457321167,
       0.898382306098938,
+      0.8738604784011841,
       0.9433074593544006
     ],
     "top1_correct": true,
@@ -287,28 +287,28 @@
       "w1d2",
       "w1d2",
       "w1d2",
-      "extra"
+      "w1d2"
     ],
     "retrieved_sources": [
       "Python Functions III (Scope)",
       "Python Functions III (Scope)",
       "Python Functions III (Scope)",
       "Python Functions III (Scope)",
-      "3_functions.ipynb"
+      "Python Functions III (Scope)"
     ],
     "retrieved_headings": [
       "",
       "",
       "",
       "",
-      "Scope"
+      ""
     ],
     "retrieved_distances": [
-      0.7803429961204529,
-      0.7921515703201294,
-      0.811142086982727,
-      0.823982834815979,
-      0.8387514352798462
+      0.7802718281745911,
+      0.7921779751777649,
+      0.8112528324127197,
+      0.824036717414856,
+      0.8398826122283936
     ],
     "top1_correct": true,
     "top3_correct": true,
@@ -319,31 +319,31 @@
     "expected_lesson": "w1d2",
     "retrieved_lessons": [
       "w1d2",
-      "extra",
       "w1d2",
       "w1d2",
-      "w1d5"
+      "w1d5",
+      "w1d2"
     ],
     "retrieved_sources": [
       "Python Functions IV (lambda functions)",
-      "3_functions.ipynb",
       "Python Functions IV (lambda functions)",
       "Python Functions IV (lambda functions)",
-      "Pandas Groupby"
+      "Pandas Groupby",
+      "Python Functions IV (lambda functions)"
     ],
     "retrieved_headings": [
       "",
-      "Lambda functions",
+      "",
       "",
       "",
       ""
     ],
     "retrieved_distances": [
-      0.6591281890869141,
-      0.776431143283844,
-      0.8148829340934753,
-      0.852643609046936,
-      0.8773456811904907
+      0.6590368151664734,
+      0.8148237466812134,
+      0.8526248335838318,
+      0.8772507905960083,
+      0.8805585503578186
     ],
     "top1_correct": true,
     "top3_correct": true,
@@ -374,11 +374,11 @@
       ""
     ],
     "retrieved_distances": [
-      0.7273983955383301,
-      0.7574176788330078,
-      0.7610654234886169,
-      0.7624391317367554,
-      0.7653892636299133
+      0.7274947166442871,
+      0.7574928998947144,
+      0.7611433267593384,
+      0.7624813318252563,
+      0.7653759717941284
     ],
     "top1_correct": true,
     "top3_correct": true,
@@ -390,30 +390,30 @@
     "retrieved_lessons": [
       "w1d2",
       "w1d2",
-      "extra",
+      "w1d2",
       "w1d2",
       "w1d2"
     ],
     "retrieved_sources": [
       "Python List Comprehensions Explained",
       "Python List Comprehensions Explained",
-      "4_comprehensions.ipynb",
+      "Python List Comprehensions Explained",
       "Python List Comprehensions Explained",
       "Python List Comprehensions Explained"
     ],
     "retrieved_headings": [
       "",
       "",
-      "Python Comprehensions",
+      "",
       "",
       ""
     ],
     "retrieved_distances": [
-      0.6737393736839294,
-      0.7028633952140808,
-      0.7547855377197266,
-      0.72255539894104,
-      0.7238987684249878
+      0.6740102767944336,
+      0.7031202912330627,
+      0.7227771282196045,
+      0.7241051197052002,
+      0.7342995405197144
     ],
     "top1_correct": true,
     "top3_correct": true,
@@ -479,11 +479,11 @@
       ""
     ],
     "retrieved_distances": [
-      0.9699089527130127,
-      0.9981050491333008,
-      1.0278939008712769,
-      1.048174500465393,
-      1.064293384552002
+      0.9704625010490417,
+      0.9979694485664368,
+      1.0279487371444702,
+      1.048991084098816,
+      1.064124584197998
     ],
     "top1_correct": true,
     "top3_correct": true,
@@ -514,11 +514,11 @@
       ""
     ],
     "retrieved_distances": [
-      0.9929304718971252,
-      0.9977129697799683,
-      1.0363340377807617,
-      1.05042564868927,
-      1.0509278774261475
+      0.9929631352424622,
+      0.9977328777313232,
+      1.0363118648529053,
+      1.0504146814346313,
+      1.05095636844635
     ],
     "top1_correct": true,
     "top3_correct": true,
@@ -549,11 +549,11 @@
       ""
     ],
     "retrieved_distances": [
-      1.0081955194473267,
-      1.0219647884368896,
-      1.041678786277771,
-      1.0447781085968018,
-      1.05449640750885
+      1.0082777738571167,
+      1.0220763683319092,
+      1.0417803525924683,
+      1.0448956489562988,
+      1.0545843839645386
     ],
     "top1_correct": false,
     "top3_correct": false,
@@ -601,29 +601,29 @@
       "w1d4",
       "w1d4",
       "w1d4",
-      "extra",
+      "w1d4",
       "w1d4"
     ],
     "retrieved_sources": [
       "NumPy",
       "NumPy",
       "NumPy",
-      "2_1_numpy_intro.ipynb",
+      "NumPy",
       "NumPy"
     ],
     "retrieved_headings": [
       "",
       "",
       "",
-      "Numpy Intro",
+      "",
       ""
     ],
     "retrieved_distances": [
       0.7360358834266663,
       0.764286458492279,
       0.8012089729309082,
-      0.8154857158660889,
-      0.8246431350708008
+      0.8246431350708008,
+      0.8548427820205688
     ],
     "top1_correct": true,
     "top3_correct": true,
@@ -668,32 +668,32 @@
     "question": "What is Pandas?",
     "expected_lesson": "w1d4",
     "retrieved_lessons": [
+      "w1d4",
+      "w1d4",
+      "w1d4",
       "extra",
-      "w1d4",
-      "w1d4",
-      "w1d4",
-      "extra"
+      "w1d4"
     ],
     "retrieved_sources": [
+      "Pandas",
+      "Pandas",
+      "Pandas",
       "3_1_pandas_intro.ipynb",
-      "Pandas",
-      "Pandas",
-      "Pandas",
-      "3_1_pandas_intro.ipynb"
+      "Pandas"
     ],
     "retrieved_headings": [
+      "",
+      "",
+      "",
       "Pandas intro",
-      "",
-      "",
-      "",
-      "Pandas DataFrames"
+      ""
     ],
     "retrieved_distances": [
-      0.6838379502296448,
       0.7953574657440186,
       0.8056110143661499,
       0.8183954954147339,
-      0.838762104511261
+      0.6838379502296448,
+      0.8452721238136292
     ],
     "top1_correct": true,
     "top3_correct": true,
@@ -724,11 +724,11 @@
       ""
     ],
     "retrieved_distances": [
-      0.7155548930168152,
-      0.7553956508636475,
-      0.7893739938735962,
-      0.8182398676872253,
-      0.8274692296981812
+      0.7153900861740112,
+      0.7551910281181335,
+      0.7892775535583496,
+      0.8180698752403259,
+      0.8272616267204285
     ],
     "top1_correct": true,
     "top3_correct": true,
@@ -810,30 +810,30 @@
     "retrieved_lessons": [
       "w1d5",
       "w1d5",
-      "extra",
+      "w1d5",
       "w1d5",
       "w1d5"
     ],
     "retrieved_sources": [
       "Pandas Concat and Merge",
       "Pandas Concat and Merge",
-      "3_3_pandas_combining_dataframes.ipynb",
+      "Pandas Concat and Merge",
       "Pandas Concat and Merge",
       "Pandas Concat and Merge"
     ],
     "retrieved_headings": [
       "",
       "",
-      "2. Concat",
+      "",
       "",
       ""
     ],
     "retrieved_distances": [
       0.5951111316680908,
       0.6146199703216553,
-      0.6176548600196838,
       0.6742140054702759,
-      0.6857367753982544
+      0.6857367753982544,
+      0.6959757208824158
     ],
     "top1_correct": true,
     "top3_correct": true,
@@ -864,11 +864,11 @@
       ""
     ],
     "retrieved_distances": [
-      0.7629734873771667,
-      0.8084977865219116,
-      0.822294294834137,
-      0.8574850559234619,
-      0.8706550002098083
+      0.7634560465812683,
+      0.8089804649353027,
+      0.8225753307342529,
+      0.8579733371734619,
+      0.8707482218742371
     ],
     "top1_correct": true,
     "top3_correct": true,
@@ -1039,11 +1039,11 @@
       ""
     ],
     "retrieved_distances": [
-      0.8029301166534424,
-      0.8461226224899292,
-      0.836530327796936,
-      0.9683586955070496,
-      0.8287656903266907
+      0.8027881383895874,
+      0.8459914922714233,
+      0.8363877534866333,
+      0.9682875871658325,
+      0.8287001252174377
     ],
     "top1_correct": false,
     "top3_correct": true,
@@ -1284,11 +1284,11 @@
       ""
     ],
     "retrieved_distances": [
-      0.8679709434509277,
-      1.0218316316604614,
-      1.0238581895828247,
-      1.0499801635742188,
-      1.0510470867156982
+      0.867986261844635,
+      1.0219204425811768,
+      1.0238940715789795,
+      1.0502314567565918,
+      1.0511757135391235
     ],
     "top1_correct": false,
     "top3_correct": true,
@@ -1459,11 +1459,11 @@
       ""
     ],
     "retrieved_distances": [
-      1.0430197715759277,
-      0.9621089696884155,
-      1.0624641180038452,
-      1.0436335802078247,
-      1.054942011833191
+      1.0431724786758423,
+      0.9621458649635315,
+      1.0625933408737183,
+      1.043709635734558,
+      1.0549991130828857
     ],
     "top1_correct": true,
     "top3_correct": true,
@@ -1809,11 +1809,11 @@
       "3.3 Feature weighting (Inverse Document Frequency)"
     ],
     "retrieved_distances": [
-      0.8008731007575989,
-      0.7879589796066284,
-      0.9255970120429993,
-      0.7999937534332275,
-      0.9400010108947754
+      0.8008044958114624,
+      0.7878994345664978,
+      0.9255221486091614,
+      0.7998402714729309,
+      0.9399487972259521
     ],
     "top1_correct": true,
     "top3_correct": true,
@@ -1949,11 +1949,11 @@
       ""
     ],
     "retrieved_distances": [
-      0.6645715236663818,
-      0.636074960231781,
-      0.6984220743179321,
-      0.665428638458252,
-      0.6768365502357483
+      0.6645770072937012,
+      0.6360880732536316,
+      0.6984489560127258,
+      0.6653461456298828,
+      0.6767265796661377
     ],
     "top1_correct": true,
     "top3_correct": true,
@@ -1974,7 +1974,7 @@
       "SQLite I - Intro and CRUD operations",
       "SQLite I - Intro and CRUD operations",
       "SQLite I - Intro and CRUD operations",
-      "SQLite I - Intro and CRUD operations"
+      "Intro to Databases + SQLite setup"
     ],
     "retrieved_headings": [
       "",
@@ -1984,11 +1984,11 @@
       ""
     ],
     "retrieved_distances": [
-      0.7155230641365051,
-      0.7643218040466309,
-      0.803081750869751,
-      0.8201043605804443,
-      0.8484686613082886
+      0.7156738042831421,
+      0.7645247578620911,
+      0.8032727241516113,
+      0.8202375769615173,
+      0.8486868143081665
     ],
     "top1_correct": true,
     "top3_correct": true,
@@ -2019,11 +2019,11 @@
       ""
     ],
     "retrieved_distances": [
-      0.7461076974868774,
-      0.6400248408317566,
-      0.6866912245750427,
-      0.7158942222595215,
-      0.7594665884971619
+      0.7458953857421875,
+      0.6399120688438416,
+      0.6865752339363098,
+      0.7157390117645264,
+      0.7591737508773804
     ],
     "top1_correct": true,
     "top3_correct": true,
@@ -2054,11 +2054,11 @@
       ""
     ],
     "retrieved_distances": [
-      0.6260021924972534,
-      0.6548522114753723,
-      0.7325209975242615,
-      0.6851150989532471,
-      0.7043854594230652
+      0.6259398460388184,
+      0.6547755002975464,
+      0.7324076890945435,
+      0.684999406337738,
+      0.7043492794036865
     ],
     "top1_correct": true,
     "top3_correct": true,
@@ -2124,11 +2124,11 @@
       "Recommendations to Avoid Prompt Injection Attacks"
     ],
     "retrieved_distances": [
-      0.8158730268478394,
-      0.8250604271888733,
-      0.6781244277954102,
-      0.6810466051101685,
-      0.8565546870231628
+      0.8157294392585754,
+      0.8249484896659851,
+      0.6780393123626709,
+      0.6810058355331421,
+      0.8564668297767639
     ],
     "top1_correct": true,
     "top3_correct": true,
@@ -2159,11 +2159,11 @@
       "How Tool Calling Works"
     ],
     "retrieved_distances": [
-      0.715441882610321,
-      0.7465311884880066,
-      0.6124241352081299,
-      0.6259374618530273,
-      0.8007378578186035
+      0.7155596017837524,
+      0.7466781139373779,
+      0.6125254034996033,
+      0.6260021924972534,
+      0.8009126782417297
     ],
     "top1_correct": true,
     "top3_correct": true,
@@ -2175,30 +2175,30 @@
     "retrieved_lessons": [
       "w5d4",
       "w5d4",
-      "extra",
       "w5d4",
-      "w5d4"
+      "w5d4",
+      "w5d5"
     ],
     "retrieved_sources": [
       "1_quantization.ipynb",
       "1_quantization.ipynb",
-      "3_explanations_qlora.ipynb",
       "1_quantization.ipynb",
-      "Quantization + Labs intro"
+      "Quantization + Labs intro",
+      "QLoRA + Labs intro"
     ],
     "retrieved_headings": [
       "2. What Is Quantization, Conceptually?",
       "1. Why Quantization?",
-      "Brief Introduction to Quantization",
       "7. Key Takeaways",
+      "",
       ""
     ],
     "retrieved_distances": [
       0.5670518279075623,
       0.6320002675056458,
-      0.6256519556045532,
       0.719633162021637,
-      0.6792542338371277
+      0.6792542338371277,
+      0.688147783279419
     ],
     "top1_correct": true,
     "top3_correct": true,
@@ -2210,30 +2210,30 @@
     "retrieved_lessons": [
       "extra",
       "extra",
-      "extra",
       "w5d5",
-      "extra"
+      "w5d5",
+      "w5d5"
     ],
     "retrieved_sources": [
       "1_transfer_learning.ipynb",
       "1_transfer_learning.ipynb",
-      "1_transfer_learning.ipynb",
       "Transfer Learning + LoRA",
-      "1_transfer_learning.ipynb"
+      "Transfer Learning + LoRA",
+      "Transfer Learning + LoRA"
     ],
     "retrieved_headings": [
       "What is Transfer Learning",
       "Transfer Learning",
-      "Main categories of Transfer Learning",
       "",
-      "Main categories of Transfer Learning"
+      "",
+      ""
     ],
     "retrieved_distances": [
       0.6288168430328369,
       0.6306909322738647,
-      0.7909603714942932,
       0.788399338722229,
-      0.8742444515228271
+      0.8476443290710449,
+      0.8639006018638611
     ],
     "top1_correct": true,
     "top3_correct": true,
@@ -2243,34 +2243,34 @@
     "question": "What is LoRA?",
     "expected_lesson": "w5d5",
     "retrieved_lessons": [
-      "extra",
-      "extra",
+      "w5d5",
       "w5d5",
       "extra",
+      "w5d5",
       "w5d5"
     ],
     "retrieved_sources": [
-      "3_explanations_qlora.ipynb",
+      "Transfer Learning + LoRA",
+      "Transfer Learning + LoRA",
       "3_explanations_qlora.ipynb",
       "Transfer Learning + LoRA",
-      "2_explanations_lora.ipynb",
       "Transfer Learning + LoRA"
     ],
     "retrieved_headings": [
-      "LoRA vs. QLoRA",
-      "QLoRA. Fine-tuning a 4-bit Quantized Model using LoRA.",
       "",
-      "LoRA Tuning",
+      "",
+      "LoRA vs. QLoRA",
+      "",
       ""
     ],
     "retrieved_distances": [
-      0.7850844860076904,
-      0.8807500600814819,
       0.9070037007331848,
-      0.927240788936615,
-      0.9313937425613403
+      0.9313937425613403,
+      0.7850844860076904,
+      0.9392589926719666,
+      0.9511082172393799
     ],
-    "top1_correct": false,
+    "top1_correct": true,
     "top3_correct": true,
     "top5_correct": true
   },
@@ -2278,32 +2278,32 @@
     "question": "What is QLoRA?",
     "expected_lesson": "w5d5",
     "retrieved_lessons": [
+      "w5d5",
       "extra",
       "extra",
       "w5d5",
-      "w5d5",
-      "extra"
+      "w5d5"
     ],
     "retrieved_sources": [
+      "QLoRA + Labs intro",
       "3_explanations_qlora.ipynb",
       "3_explanations_qlora.ipynb",
       "QLoRA + Labs intro",
-      "QLoRA + Labs intro",
-      "3_explanations_qlora.ipynb"
+      "Transfer Learning + LoRA"
     ],
     "retrieved_headings": [
+      "",
       "QLoRA. Fine-tuning a 4-bit Quantized Model using LoRA.",
       "LoRA vs. QLoRA",
       "",
-      "",
-      "QLoRA Tuning using PEFT from Hugging Face"
+      ""
     ],
     "retrieved_distances": [
+      0.8513494729995728,
       0.7110174894332886,
       0.7125240564346313,
-      0.8513494729995728,
       0.8813490867614746,
-      0.9101345539093018
+      0.9199750423431396
     ],
     "top1_correct": true,
     "top3_correct": true,
@@ -2334,11 +2334,11 @@
       ""
     ],
     "retrieved_distances": [
-      0.6021075248718262,
-      0.6120215654373169,
-      0.628206729888916,
-      0.6488915085792542,
-      0.6989278793334961
+      0.6019856929779053,
+      0.6117802858352661,
+      0.62797611951828,
+      0.6487337350845337,
+      0.6987103819847107
     ],
     "top1_correct": true,
     "top3_correct": true,
@@ -2369,11 +2369,11 @@
       ""
     ],
     "retrieved_distances": [
-      1.0370427370071411,
-      1.0953404903411865,
-      1.163558840751648,
-      1.2159638404846191,
-      1.2262613773345947
+      1.037001132965088,
+      1.095246434211731,
+      1.1635160446166992,
+      1.2158410549163818,
+      1.2261894941329956
     ],
     "top1_correct": true,
     "top3_correct": true,
@@ -2474,11 +2474,11 @@
       "Runnable Lambdas"
     ],
     "retrieved_distances": [
-      0.8600724935531616,
-      0.907525897026062,
-      0.9768906831741333,
-      1.0235875844955444,
-      1.0498780012130737
+      0.8599920272827148,
+      0.9074286818504333,
+      0.9767811298370361,
+      1.0235178470611572,
+      1.0497905015945435
     ],
     "top1_correct": true,
     "top3_correct": true,
@@ -2488,34 +2488,34 @@
     "question": "What is RAG?",
     "expected_lesson": "w7d2",
     "retrieved_lessons": [
-      "extra",
       "w7d2",
-      "extra",
+      "w7d2",
+      "w7d4",
       "extra",
       "w7d2"
     ],
     "retrieved_sources": [
-      "16_extra-langsmith-deep-dive.ipynb",
       "3_langchain-RAG.ipynb",
-      "3_rag.ipynb",
-      "3_rag.ipynb",
-      "RAG I - Intro"
+      "RAG I - Intro",
+      "Labs intro + Q&A",
+      "16_extra-langsmith-deep-dive.ipynb",
+      "RAG II - Indexing"
     ],
     "retrieved_headings": [
-      "Evaluating RAG",
       "Intro to RAG",
-      "RAG Evaluation",
-      "Types of RAG eval",
+      "",
+      "",
+      "Evaluating RAG",
       ""
     ],
     "retrieved_distances": [
-      0.7400504946708679,
       0.8784445524215698,
-      0.7851576330608552,
-      0.8238482655184285,
-      0.8320692777633667
+      0.8320692777633667,
+      0.8375797271728516,
+      0.7400504946708679,
+      0.9065476059913635
     ],
-    "top1_correct": false,
+    "top1_correct": true,
     "top3_correct": true,
     "top5_correct": true
   },
@@ -2525,30 +2525,30 @@
     "retrieved_lessons": [
       "w7d2",
       "w7d4",
-      "extra",
+      "w7d2",
       "w7d2",
       "w7d2"
     ],
     "retrieved_sources": [
       "3_langchain-RAG.ipynb",
       "Labs intro + Q&A",
-      "16_extra-langsmith-deep-dive.ipynb",
       "RAG I - Intro",
-      "3_langchain-RAG.ipynb"
+      "3_langchain-RAG.ipynb",
+      "RAG I - Intro"
     ],
     "retrieved_headings": [
       "Intro to RAG",
       "",
-      "Evaluating RAG",
       "",
-      "Intro to RAG"
+      "Intro to RAG",
+      ""
     ],
     "retrieved_distances": [
       0.8115990161895752,
       0.7499821186065674,
-      0.7894715070724487,
       0.7991124987602234,
-      0.913154125213623
+      0.913154125213623,
+      0.8816754817962646
     ],
     "top1_correct": true,
     "top3_correct": true,
@@ -2579,11 +2579,11 @@
       ""
     ],
     "retrieved_distances": [
-      0.9757380485534668,
-      0.9818484783172607,
-      1.002190113067627,
-      1.0170069932937622,
-      1.0409146547317505
+      0.9762111306190491,
+      0.9823733568191528,
+      1.0026859045028687,
+      1.0174951553344727,
+      1.0414724349975586
     ],
     "top1_correct": true,
     "top3_correct": true,
@@ -2649,11 +2649,11 @@
       ""
     ],
     "retrieved_distances": [
-      0.5736064314842224,
-      0.5773295760154724,
-      0.5923129916191101,
-      0.6397328972816467,
-      0.5542612671852112
+      0.5736861228942871,
+      0.5773609280586243,
+      0.5922935009002686,
+      0.6397231817245483,
+      0.5543354749679565
     ],
     "top1_correct": true,
     "top3_correct": true,
@@ -2684,11 +2684,11 @@
       ""
     ],
     "retrieved_distances": [
-      0.6615571975708008,
-      0.6991754770278931,
-      0.7383938431739807,
-      0.7628448009490967,
-      0.7979742288589478
+      0.6615289449691772,
+      0.6992061138153076,
+      0.7383174300193787,
+      0.7629173994064331,
+      0.7979009747505188
     ],
     "top1_correct": true,
     "top3_correct": true,
@@ -2699,34 +2699,34 @@
     "expected_lesson": "w7d3",
     "retrieved_lessons": [
       "w7d1",
-      "extra",
-      "extra",
-      "extra",
-      "w7d1"
+      "w7d1",
+      "w7d1",
+      "w7d3",
+      "w7d4"
     ],
     "retrieved_sources": [
       "Langchain intro + setup with virtual environments",
-      "8_langchain-agents.ipynb",
-      "8_langchain-agents.ipynb",
-      "8_langchain-agents.ipynb",
-      "Langchain intro + setup with virtual environments"
+      "Langchain intro + setup with virtual environments",
+      "Langchain intro + setup with virtual environments",
+      "Retrieval Agents",
+      "Streaming"
     ],
     "retrieved_headings": [
       "",
-      "What is an agent?",
-      "LangChain Agents \ud83e\udd16",
-      "Agent types",
+      "",
+      "",
+      "",
       ""
     ],
     "retrieved_distances": [
       0.5998365879058838,
-      0.5929131530149476,
-      0.7113589895272555,
-      0.6138490065907157,
-      0.6716796159744263
+      0.6716796159744263,
+      0.7067513465881348,
+      0.7098119854927063,
+      0.7269333004951477
     ],
     "top1_correct": false,
-    "top3_correct": true,
+    "top3_correct": false,
     "top5_correct": true
   },
   {
@@ -2754,11 +2754,11 @@
       ""
     ],
     "retrieved_distances": [
-      0.7498438954353333,
-      0.8006174564361572,
-      0.8605995178222656,
-      0.8125724196434021,
-      0.8357992172241211
+      0.7495189905166626,
+      0.8003727793693542,
+      0.8603646159172058,
+      0.8122956156730652,
+      0.8355568647384644
     ],
     "top1_correct": true,
     "top3_correct": true,
@@ -2789,11 +2789,11 @@
       ""
     ],
     "retrieved_distances": [
-      0.8353343605995178,
-      1.0562647581100464,
-      0.9954662322998047,
-      1.0044665336608887,
-      1.0434130430221558
+      0.835456907749176,
+      1.0564340353012085,
+      0.9955981969833374,
+      1.0046625137329102,
+      1.0437122583389282
     ],
     "top1_correct": true,
     "top3_correct": true,
@@ -2806,29 +2806,29 @@
       "w8d1",
       "w8d1",
       "w8d1",
-      "extra",
+      "w8d1",
       "w8d1"
     ],
     "retrieved_sources": [
       "13_multi-modal-rag.ipynb",
       "13_multi-modal-rag.ipynb",
       "13_multi-modal-rag.ipynb",
-      "14_extra-multi-modal-rag-chroma.ipynb",
-      "13_multi-modal-rag.ipynb"
+      "13_multi-modal-rag.ipynb",
+      "Multi-modal RAG"
     ],
     "retrieved_headings": [
       "Multi-modal RAG",
       "RAG",
       "From Text-Only to Multimodal RAG",
-      "Chroma multi-modal RAG",
-      "RAG"
+      "RAG",
+      ""
     ],
     "retrieved_distances": [
-      0.5757092237472534,
-      0.6025186777114868,
-      0.7038731575012207,
-      0.7419002056121826,
-      0.7668529152870178
+      0.5757710933685303,
+      0.6025528907775879,
+      0.7038902044296265,
+      0.7669997811317444,
+      0.7536614537239075
     ],
     "top1_correct": true,
     "top3_correct": true,
@@ -2908,34 +2908,34 @@
     "question": "How do you evaluate a RAG system?",
     "expected_lesson": "w8d2",
     "retrieved_lessons": [
-      "extra",
       "w7d4",
       "extra",
       "extra",
-      "extra"
+      "extra",
+      "w7d4"
     ],
     "retrieved_sources": [
-      "4_evaluating-rag-giskard.ipynb",
       "Labs intro + Q&A",
+      "4_evaluating-rag-giskard.ipynb",
       "3_rag.ipynb",
       "3_rag.ipynb",
-      "3_rag.ipynb"
+      "Labs intro + Q&A"
     ],
     "retrieved_headings": [
-      "Evaluating a RAG solution with Giskard",
       "",
+      "Evaluating a RAG solution with Giskard",
       "Types of RAG eval",
       "RAG Evaluation",
-      "RAG Evaluators"
+      ""
     ],
     "retrieved_distances": [
-      0.8095775749106054,
       0.7808160781860352,
+      0.8095775749106054,
       0.7899510322575375,
       0.7909797722547474,
-      0.8293141048463788
+      0.9415158033370972
     ],
-    "top1_correct": true,
+    "top1_correct": false,
     "top3_correct": true,
     "top5_correct": true
   }

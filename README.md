@@ -2,8 +2,6 @@
 
 > An AI-powered study assistant for the Ironhack AI Engineering bootcamp. It answers questions using the course recordings and notebooks, with grounded answers and direct source references.
 
-![Ironhack AI Course Copilot Architecture](PRES/architecture.png)
-
 ## Overview
 
 The **Ironhack AI Course Copilot** is an agentic RAG application built as the final project for the Ironhack AI Engineering bootcamp.
@@ -76,17 +74,17 @@ This improves:
 
 ## 🛠️ Technology Stack
 
-| Component | Technology |
-|---|---|
-| UI | Streamlit |
-| Agent | LangChain |
-| LLM | GPT-4o-mini |
-| Embeddings | OpenAI embeddings |
-| Vector DB | Chroma |
-| Retrieval | Similarity search + metadata filtering + reranking |
-| Source material | Loom recordings + Jupyter notebooks |
-| Language | Python |
-| PDF generation | ReportLab |
+| Component       | Technology                                         |
+| --------------- | -------------------------------------------------- |
+| UI              | Streamlit                                          |
+| Agent           | LangChain                                          |
+| LLM             | GPT-4o-mini                                        |
+| Embeddings      | OpenAI embeddings                                  |
+| Vector DB       | Chroma                                             |
+| Retrieval       | Similarity search + metadata filtering + reranking |
+| Source material | Loom recordings + Jupyter notebooks                |
+| Language        | Python                                             |
+| PDF generation  | ReportLab                                          |
 
 ## 📁 Project Structure
 
@@ -145,22 +143,51 @@ streamlit run app/app.py
 
 The evaluation suite tests content questions, lesson-location queries, Spanish questions, unanswerable questions, follow-ups, and notebook/code queries.
 
+### GPT-4o-mini Evaluation
+
 Latest GPT-4o-mini evaluation:
 
 ```text
-30/30 cases pass
+29/30 cases pass
 SOURCE ACCURACY     27/27 (100%)
 REFUSAL ACCURACY      3/3
-median latency       4.2s
-p95 latency          6.3s
-max latency          8.6s
+median latency        4.2s
+p95 latency           13.0s
+max latency           22.0s
 ```
 
 Run it with:
 
 ```bash
-LLM_PROVIDER=openai PYTHONPATH=src python evaluation/evaluation.py
+PYTHONPATH=src python evaluation/evaluation.py
 ```
+
+### Retrieval Evaluation
+
+The retrieval evaluation tests 84 golden questions against the course index.
+
+```text
+Questions tested : 84
+Top-1 accuracy   : 84.5%
+Top-3 accuracy   : 91.7%
+Top-5 accuracy   : 94.0%
+Average distance : 0.792
+```
+
+Run it with:
+
+```bash
+PYTHONPATH=src python scripts/evaluate_retrieval.py
+```
+
+## 🧪 LLM Experiment
+
+The project was also tested with **NVIDIA Nemotron 3 Nano 30B A3B** as an alternative LLM.
+
+The experiment was kept isolated on the `experiment/nemotron` branch and was not merged into `main`. The main branch continues to use **GPT-4o-mini**.
+
+For the implementation details, configuration, and observed experiment results, see [`para-leer/nemotron-experiment.md`](para-leer/nemotron-experiment.md).
+
 
 ## 🎯 Design Goal
 
