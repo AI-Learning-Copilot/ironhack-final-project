@@ -1,0 +1,4 @@
+# Dependencies and build output. `npm install && npm run build` regenerates both, and
+# SPIKE.md says so — no reason to carry 148 kB of bundle plus a 360 kB sourcemap in git.
+node_modules/
+dist/
