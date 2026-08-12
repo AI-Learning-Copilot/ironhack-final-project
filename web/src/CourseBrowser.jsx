@@ -98,16 +98,53 @@ export default function CourseBrowser({ weeks, scope, onScope }) {
 
                     {open && (
                       <div className="lesson-body">
-                        {!l.has_notes && <p className="hint">No study notes for this day.</p>}
-                        {l.has_notes && loading === l.lesson_id && <p className="hint">Loading notes…</p>}
-                        {l.has_notes && notes[l.lesson_id] && (
-                          <>
-                            <a className="pdf-link" href={api.notesPdfUrl(l.lesson_id)} target="_blank" rel="noreferrer">
-                              Download these notes (PDF)
-                            </a>
-                            <Markdown text={notes[l.lesson_id]} />
-                          </>
+                        {l.videos?.length > 0 && (
+                          <div className="resource-group">
+                            <h4>Recordings</h4>
+                            <ul className="resources">
+                              {l.videos.map((v) => (
+                                <li key={v.url}>
+                                  <a href={v.url} target="_blank" rel="noreferrer">
+                                    <span className="res-kind">video</span>
+                                    <span className="res-text">{v.title || v.segment}</span>
+                                    <span className="res-meta">{duration(v.duration_seconds)}</span>
+                                  </a>
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
                         )}
+
+                        {l.notebooks?.length > 0 && (
+                          <div className="resource-group">
+                            <h4>Notebooks</h4>
+                            <ul className="resources">
+                              {l.notebooks.map((n) => (
+                                <li key={n.url}>
+                                  <a href={n.url} target="_blank" rel="noreferrer">
+                                    <span className="res-kind">code</span>
+                                    <span className="res-text">{n.path}</span>
+                                    <span className="res-meta">↗</span>
+                                  </a>
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                        )}
+
+                        <div className="resource-group">
+                          <h4>Study notes</h4>
+                          {!l.has_notes && <p className="hint">None for this day.</p>}
+                          {l.has_notes && loading === l.lesson_id && <p className="hint">Loading…</p>}
+                          {l.has_notes && notes[l.lesson_id] && (
+                            <>
+                              <a className="pdf-link" href={api.notesPdfUrl(l.lesson_id)} target="_blank" rel="noreferrer">
+                                Download as PDF ↗
+                              </a>
+                              <Markdown text={notes[l.lesson_id]} />
+                            </>
+                          )}
+                        </div>
                       </div>
                     )}
                   </li>
