@@ -22,7 +22,7 @@ The thing that makes it different from a chatbot is that **it refuses**. If the 
 not cover something, it says so and shows no sources at all. Design for that: a refusal is
 a normal, first-class response, not an error state.
 
-## The five surfaces to build
+## The six surfaces to build
 
 1. **Chat** — the main view. Question in, grounded answer out, citations underneath.
 2. **Citations** — expandable. Video citations embed the Loom player; notebook citations
@@ -31,7 +31,9 @@ a normal, first-class response, not an error state.
 4. **Scope filter** — narrow the whole conversation to one lesson or one week.
    Study notes and the syllabus both download as PDFs; link them, do not render them
    in-page.
-5. **Quiz** — pick a topic, get multiple-choice questions with answers.
+5. **Quiz** — pick a topic and a range (whole course, one week, or one lesson day), get
+   multiple-choice questions, answer them, see a score.
+6. **Answer language** — a small control for Auto / English / Español.
 
 ## Endpoints, in the order a frontend needs them
 
@@ -44,7 +46,7 @@ a normal, first-class response, not an error state.
 | `GET /api/syllabus.pdf` | the full 8-week course syllabus | instant, static |
 | `POST /api/ask` | one turn | **~5s**, an OpenAI call |
 | `POST /api/session/{id}/scope` | set or clear the lesson/week filter | instant |
-| `POST /api/session/{id}/quiz` | generate a quiz | **~10s** |
+| `POST /api/session/{id}/quiz` | generate a quiz; optional `week` or `lesson_id` scopes that quiz only | **~10s** |
 | `POST /api/session/{id}/reset` | start the conversation over | instant |
 
 `GET /api/health` returns session counts. `POST /api/session/{id}/evict` is a debugging
@@ -111,7 +113,15 @@ the conversation. The empty state should teach this — it is the feature people
 expect.
 
 **Markdown everywhere.** Answers, study notes and quizzes all come back as markdown. Render
-it properly: headings, lists, bold, and code blocks all appear.
+it properly: headings, lists, bold, links and code blocks all appear.
+
+**The language control sends `language` on `/ask`** — `"auto"`, `"en"` or `"es"`. Auto is
+the default and means the answer follows the language of the question, which the backend
+handles on its own. Do not translate anything client-side.
+
+**A quiz range is not the conversation scope.** The quiz's own `week` / `lesson_id` apply
+to that quiz only. Choosing to be tested on week 3 says nothing about what the next
+question should search, and the two must not be wired together.
 
 ## Look and feel
 
@@ -122,6 +132,12 @@ it is not sacred.
 **Do not use Ironhack's logo or brand colours** unless we have said otherwise. It is their
 material but not their product, and putting their branding on it uninvited is a
 conversation we have not had yet.
+
+**Keep the attribution line in the footer, wording unchanged:** the recordings and
+notebooks are from the Ironhack AI Engineering bootcamp and belong to Ironhack; the
+copilot is our final project for that bootcamp; the code is on GitHub. The whole app rests
+on their material and the line between their content and our code belongs on the page, not
+in a README. It can be small and quiet. It cannot be removed.
 
 Should be usable on a phone. Students will check something on the way to class.
 
