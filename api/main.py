@@ -41,12 +41,24 @@ from sessions import InMemorySessionStore, Turn  # noqa: E402
 
 app = FastAPI(title="Ironhack AI Course Copilot API", version="0.1.0-spike")
 
-# The dev frontend runs on Vite's default port. Kept explicit rather than "*" so that
-# turning this into something deployable is a config change, not a security review.
+# Any origin, and credentials off.
+#
+# A hosted preview (Lovable, StackBlitz, a deployed frontend) calls this from an origin
+# we cannot know in advance, and a browser blocks the request before it arrives if the
+# origin is not allowed. An allowlist would mean editing this file every time a frontend
+# moves.
+#
+# Safe here specifically because there is no auth and no cookies: a session id is passed
+# in the request body, so there is nothing for a third-party page to ride on. That stops
+# being true the moment this gains authentication — at which point allow_origins has to
+# become a real list and credentials come back on.
+#
+# allow_credentials must stay False: the CORS spec forbids "*" together with credentials,
+# and browsers reject the combination outright rather than falling back.
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=os.getenv("ALLOWED_ORIGINS", "http://localhost:5173").split(","),
-    allow_credentials=True,
+    allow_origins=os.getenv("ALLOWED_ORIGINS", "*").split(","),
+    allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
 )
