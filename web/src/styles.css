@@ -185,3 +185,9 @@ footer { padding: 0 20px 16px; flex: 0 0 auto; }
 .res-text { flex: 1; min-width: 0; overflow-wrap: anywhere; }
 .res-meta { flex: 0 0 auto; color: var(--muted); font-size: 0.75rem; }
 a.citation-label { text-decoration: none; }
+
+/* ---- related notebooks ---- */
+.related { margin-top: 14px; padding-top: 12px; border-top: 1px dashed var(--line); }
+.related h4 { margin: 0 0 6px; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.07em;
+              text-transform: uppercase; color: var(--muted); }
+.related .citations { margin-top: 0; }

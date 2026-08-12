@@ -3,7 +3,7 @@
   "info": {
     "title": "Ironhack AI Course Copilot API",
     "version": "0.1.0-spike",
-    "description": "Read-only catalogue endpoints (/lessons, /lessons/{id}/notes, the PDFs) are static and cheap. Everything under /session costs an OpenAI call and takes about 5 seconds. Citations arrive pre-labelled with a working URL: render them, never compute them."
+    "description": "Read-only catalogue endpoints (/lessons, /lessons/{id}/notes, the PDFs) are static and cheap. Everything under /session costs an OpenAI call and takes about 5 seconds. Citations arrive pre-labelled with a working URL: render them, never compute them. related_notebooks is suggested material, not sources \u2014 never present it as what grounded the answer."
   },
   "paths": {
     "/api/health": {
@@ -477,6 +477,15 @@
             },
             "type": "array",
             "title": "Citations"
+          },
+          "related_notebooks": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Related Notebooks",
+            "default": []
           },
           "tools_used": {
             "items": {

@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import Markdown from "./Markdown.jsx";
+import { openExternal } from "./external.js";
 
 // Citations arrive pre-labelled with a working URL. Nothing here composes either one —
 // build_citation already handled Loom's `?t=` and the `Extra ·` prefix for supplementary
@@ -13,7 +14,13 @@ function Citation({ c }) {
   if (!isVideo) {
     return (
       <li className="citation">
-        <a className="citation-label" href={c.url} target="_blank" rel="noreferrer">
+        <a
+          className="citation-label"
+          href={c.url}
+          target="_blank"
+          rel="noreferrer"
+          onClick={(e) => openExternal(e, c.url)}
+        >
           <span className="citation-kind">notebook</span>
           <span className="citation-text">{c.label}</span>
           <span className="citation-chevron">↗</span>
@@ -133,6 +140,18 @@ export default function Chat({ turns, busy, error, onAsk, scopeLabel }) {
                 <ul className="citations">
                   {t.citations.map((c, j) => <Citation key={j} c={c} />)}
                 </ul>
+              )}
+
+              {/* Kept visually separate from the citations above. These did not ground
+                  the answer — they are the code for the same topic, found by a second
+                  retrieval, and presenting them as sources would be a lie. */}
+              {t.related_notebooks?.length > 0 && (
+                <div className="related">
+                  <h4>Notebooks on this topic</h4>
+                  <ul className="citations">
+                    {t.related_notebooks.map((c, j) => <Citation key={j} c={c} />)}
+                  </ul>
+                </div>
               )}
               <p className="meta">{t.elapsed}s</p>
             </div>
