@@ -1,16 +1,31 @@
+import { openExternal } from "./external.js";
+
 // A deliberately small markdown renderer. Answers, study notes and quizzes all arrive as
 // markdown, and pulling in a full parser for headings, lists, bold and code is not worth
 // the dependency here — Lovable can swap this for react-markdown in one line if it wants
 // tables and footnotes.
 function inline(text, key) {
   const parts = [];
-  const re = /(\*\*[^*]+\*\*|`[^`]+`|\*[^*]+\*)/g;
+  const re = /(\[[^\]]+\]\([^)]+\)|\*\*[^*]+\*\*|`[^`]+`|\*[^*]+\*)/g;
   let last = 0;
   let m;
   while ((m = re.exec(text)) !== null) {
     if (m.index > last) parts.push(text.slice(last, m.index));
     const tok = m[0];
-    if (tok.startsWith("**")) parts.push(<strong key={parts.length}>{tok.slice(2, -2)}</strong>);
+    if (tok.startsWith("[")) {
+      const [, label, href] = tok.match(/^\[([^\]]+)\]\(([^)]+)\)$/) || [];
+      parts.push(
+        <a
+          key={parts.length}
+          href={href}
+          target="_blank"
+          rel="noreferrer"
+          onClick={(e) => openExternal(e, href)}
+        >
+          {label}
+        </a>
+      );
+    } else if (tok.startsWith("**")) parts.push(<strong key={parts.length}>{tok.slice(2, -2)}</strong>);
     else if (tok.startsWith("`")) parts.push(<code key={parts.length}>{tok.slice(1, -1)}</code>);
     else parts.push(<em key={parts.length}>{tok.slice(1, -1)}</em>);
     last = m.index + tok.length;

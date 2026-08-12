@@ -541,13 +541,36 @@
             "minimum": 1.0,
             "title": "Num Questions",
             "default": 3
+          },
+          "week": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Week"
+          },
+          "lesson_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Lesson Id"
           }
         },
         "type": "object",
         "required": [
           "topic"
         ],
-        "title": "QuizRequest"
+        "title": "QuizRequest",
+        "description": "`week` and `lesson_id` scope this quiz only \u2014 they do not touch the conversation.\n\nA student quizzing themselves on week 3 has not said anything about what their next\nquestion should search, so the two are kept apart."
       },
       "ScopeRequest": {
         "properties": {

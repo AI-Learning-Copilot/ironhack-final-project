@@ -22,7 +22,10 @@ export const api = {
   syllabusPdfUrl: () => "/api/syllabus.pdf",
   ask: (question, sessionId) => call("/api/ask", { method: "POST", body: { question, session_id: sessionId } }),
   scope: (sessionId, body) => call(`/api/session/${sessionId}/scope`, { method: "POST", body }),
-  quiz: (sessionId, topic, numQuestions) =>
-    call(`/api/session/${sessionId}/quiz`, { method: "POST", body: { topic, num_questions: numQuestions } }),
+  quiz: (sessionId, topic, numQuestions, scope = {}) =>
+    call(`/api/session/${sessionId}/quiz`, {
+      method: "POST",
+      body: { topic, num_questions: numQuestions, ...scope },
+    }),
   reset: (sessionId) => call(`/api/session/${sessionId}/reset`, { method: "POST" }),
 };

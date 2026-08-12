@@ -29,9 +29,17 @@ function parseQuiz(markdown) {
   return questions.filter((q) => q.options.length > 0);
 }
 
-export default function QuizPanel({ sessionId, scopeLabel }) {
+function rangeLabel(range) {
+  if (!range) return "the whole course";
+  return range.includes("d") ? `lesson ${range}` : `week ${range.slice(1)}`;
+}
+
+export default function QuizPanel({ sessionId, weeks }) {
   const [topic, setTopic] = useState("");
   const [count, setCount] = useState(3);
+  // "" = the whole course, "w3" = a week, "w3d2" = one lesson day. Encoded as one select
+  // value so the three choices are one decision rather than three controls.
+  const [range, setRange] = useState("");
   const [questions, setQuestions] = useState(null);
   const [picked, setPicked] = useState({});
   const [busy, setBusy] = useState(false);
@@ -45,7 +53,13 @@ export default function QuizPanel({ sessionId, scopeLabel }) {
     setQuestions(null);
     setPicked({});
     try {
-      const d = await api.quiz(sessionId, topic.trim(), count);
+      const scope = !range
+        ? {}
+        : range.includes("d")
+        ? { lesson_id: range }
+        : { week: Number(range.slice(1)) };
+
+      const d = await api.quiz(sessionId, topic.trim(), count, scope);
       const parsed = parseQuiz(d.markdown);
       if (!parsed.length) throw new Error("The quiz came back in an unexpected shape.");
       setQuestions(parsed);
@@ -62,10 +76,7 @@ export default function QuizPanel({ sessionId, scopeLabel }) {
   return (
     <div className="quiz">
       <h2>Quiz yourself</h2>
-      <p className="hint">
-        Questions are written from the course material only
-        {scopeLabel ? `, and right now only from ${scopeLabel}` : ""}.
-      </p>
+      <p className="hint">Questions are written from the course material only.</p>
 
       <form onSubmit={generate} className="quiz-form">
         <input
@@ -74,6 +85,19 @@ export default function QuizPanel({ sessionId, scopeLabel }) {
           placeholder="A topic — RAG, embeddings, overfitting…"
           disabled={busy}
         />
+        <select value={range} onChange={(e) => setRange(e.target.value)} disabled={busy}>
+          <option value="">The whole course</option>
+          {weeks.map(({ week, lessons }) => (
+            <optgroup key={week} label={`Week ${week}`}>
+              <option value={`w${week}`}>All of week {week}</option>
+              {lessons.map((l) => (
+                <option key={l.lesson_id} value={l.lesson_id}>
+                  {l.lesson_id} · {l.title.slice(0, 44)}
+                </option>
+              ))}
+            </optgroup>
+          ))}
+        </select>
         <select value={count} onChange={(e) => setCount(Number(e.target.value))} disabled={busy}>
           {[2, 3, 5].map((n) => <option key={n} value={n}>{n} questions</option>)}
         </select>
@@ -83,6 +107,7 @@ export default function QuizPanel({ sessionId, scopeLabel }) {
       </form>
 
       {busy && <p className="hint">This one takes about ten seconds — it writes and then shuffles the options.</p>}
+      {!busy && questions && <p className="hint">Drawn from {rangeLabel(range)}.</p>}
       {error && <p className="error">{error}</p>}
 
       {questions && (
