@@ -95,9 +95,7 @@ ironhack-final-project/
 ├── evaluation/
 ├── index/
 ├── notebooks/
-├── para-leer/
-├── PRES/
-│   └── architecture.png
+├── docs/
 ├── scripts/
 ├── src/
 ├── summaries/
@@ -186,7 +184,7 @@ The project was also tested with **NVIDIA Nemotron 3 Nano 30B A3B** as an altern
 
 The experiment was kept isolated on the `experiment/nemotron` branch and was not merged into `main`. The main branch continues to use **GPT-4o-mini**.
 
-For the implementation details, configuration, and observed experiment results, see [`para-leer/nemotron-experiment.md`](para-leer/nemotron-experiment.md).
+For the implementation details, configuration, and observed experiment results, see [`docs/nemotron-experiment.md`](docs/nemotron-experiment.md).
 
 
 ## 🎯 Design Goal
@@ -210,5 +208,5 @@ The course material used by the application belongs to Ironhack.
 The canonical architecture diagram is maintained at:
 
 ```text
-PRES/architecture.png
+docs/architecture.png
 ```

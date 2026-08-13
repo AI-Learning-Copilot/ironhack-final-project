@@ -14,7 +14,7 @@ from retrieval import search_with_scores
 
 
 QUESTIONS = ROOT / "evaluation" / "golden_questions.csv"
-OUTPUT = ROOT / "evaluation" / "results.json"
+OUTPUT = ROOT / "evaluation" / "retrieval_results.json"
 REPORT = ROOT / "evaluation" / "retrieval_report.md"
 
 

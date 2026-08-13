@@ -258,7 +258,7 @@ def shuffle_quiz_answers(quiz: str) -> str:
     guesses B beats one who has not studied, and D is safe to ignore entirely.
 
     So the options are shuffled after generation and the Answer line rewritten to match.
-    The output format is the contract in para-leer/SCHEMA.md that app.py parses, so this
+    The output format is the contract in docs/SCHEMA.md that app.py parses, so this
     re-emits exactly that shape. Any question that does not parse cleanly is passed
     through untouched rather than risking a mangled quiz.
     """
@@ -465,7 +465,7 @@ def make_tools(
         context = "\n\n".join(d.page_content.strip() for d in pool)
         # QUIZ FORMAT CONTRACT:
         # Keep this output format aligned with the frozen contract in
-        # para-leer/SCHEMA.md. app/app.py parses this text to build the
+        # docs/SCHEMA.md. app/app.py parses this text to build the
         # interactive quiz and calculate the student's score.
         # The rules below exist because the first version produced technically-correct
         # but weak questions. Two failures in particular:

@@ -87,7 +87,7 @@
 |------|--------|--------|---------:|
 | 1 | w2d2 | 6_supervised_algorithms_classification.ipynb | 0.803 |
 | 2 | w2d3 | 7_supervised_end_to_end_demo.ipynb | 0.846 |
-| 3 | w2d1 | 2_supervised_demo_iI_logistic_reg.ipynb | 0.836 |
+| 3 | w2d1 | 2_supervised_demo_iI_logistic_reg.ipynb | 0.837 |
 | 4 | w2d2 | 6_supervised_algorithms_classification.ipynb | 0.968 |
 | 5 | w2d1 | ML demo II (Logistic Regression) | 0.829 |
 

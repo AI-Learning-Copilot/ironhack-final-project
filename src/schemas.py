@@ -1,11 +1,11 @@
-"""The two contracts from para-leer/SCHEMA.md, as code.
+"""The two contracts from docs/SCHEMA.md, as code.
 
 Both parsers build chunks through the helpers here rather than hand-writing dicts, so
 Casilda's VTT parser and Felipe's notebook parser cannot drift apart. The agent builds
 citations through `build_citation`, so the UI never has to know that Loom wants `?t=872s`
 and silently ignores `?t=872`.
 
-If you need to change something in here, change para-leer/SCHEMA.md first and tell the
+If you need to change something in here, change docs/SCHEMA.md first and tell the
 other person. A silent change breaks the other side and surfaces days later.
 """
 

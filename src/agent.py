@@ -5,7 +5,7 @@
     copilot.ask("what is RAG?")            # -> {"answer": ..., "citations": [...]}
     copilot.ask("explain that more simply") # memory makes "that" resolve
 
-`ask()` returns exactly the shape frozen in para-leer/SCHEMA.md, so the Streamlit app can
+`ask()` returns exactly the shape frozen in docs/SCHEMA.md, so the Streamlit app can
 swap its mock fixture for a Copilot with no other change.
 """
 

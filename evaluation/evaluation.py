@@ -212,7 +212,7 @@ def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--upload", action="store_true", help="push dataset to LangSmith")
     parser.add_argument("--case", help="run a single case id")
-    parser.add_argument("--save", action="store_true", help="write evaluation/results.json")
+    parser.add_argument("--save", action="store_true", help="write evaluation/e2e_results.json")
     args = parser.parse_args()
 
     cases = load_cases()
@@ -229,7 +229,7 @@ def main() -> None:
     report(results)
 
     if args.save:
-        out = Path(__file__).parent / "results.json"
+        out = Path(__file__).parent / "e2e_results.json"
         out.write_text(json.dumps(results, indent=2, ensure_ascii=False))
         print(f"\nwrote {out.relative_to(REPO_ROOT)}")
 

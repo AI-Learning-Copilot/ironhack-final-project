@@ -72,7 +72,7 @@ def load_notebook_lessons() -> dict[str, str]:
     if not COURSE_RESOURCES.exists():
         raise FileNotFoundError(
             f"{COURSE_RESOURCES} not found. "
-            "Run scripts/parse_slack_resources.py first."
+            "The course resource mapping file is required to run the application."
         )
 
     with COURSE_RESOURCES.open(
