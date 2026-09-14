@@ -12,31 +12,67 @@ swap its mock fixture for a Copilot with no other change.
 from __future__ import annotations
 
 import logging
+import time
 import uuid
-from pathlib import Path
 
-from dotenv import load_dotenv
+import openai
 from langchain.agents import AgentExecutor, create_openai_tools_agent
 from langchain.memory import ConversationSummaryBufferMemory
+from langchain_community.callbacks import get_openai_callback
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_openai import ChatOpenAI
-from openai import APIConnectionError, APITimeoutError, RateLimitError
 
-from schemas import (
-    CHAT_MODEL,
-    LLM_MAX_RETRIES,
-    LLM_MAX_TOKENS,
-    LLM_TIMEOUT,
-    REFUSAL_MARKERS,
-    build_response,
-)
+import config  # noqa: F401  (loads .env once, sets telemetry off)
+from config import CHAT_MODEL, llm_kwargs
+from schemas import REFUSAL_MARKERS, build_response
 from tools import CitationCollector, SearchScope, SourceLog, make_tools
 
-load_dotenv(Path(__file__).resolve().parents[1] / ".env")
+log = logging.getLogger(__name__)
 
 logger = logging.getLogger(__name__)
 
 MODEL = CHAT_MODEL
+
+
+class CopilotError(Exception):
+    """A turn that could not be answered. `user_message` is safe to show a student.
+
+    Raised instead of letting OpenAI, Chroma and LangChain exceptions reach the UI raw.
+    The original exception is chained, so logs and tracebacks keep the real cause.
+    """
+
+    def __init__(self, user_message: str, *, kind: str) -> None:
+        super().__init__(user_message)
+        self.user_message = user_message
+        self.kind = kind
+
+
+def _classify(exc: Exception) -> CopilotError:
+    """Map a raw failure to something a student can act on."""
+    if isinstance(exc, openai.RateLimitError):
+        return CopilotError(
+            "The copilot is busy right now. Wait a minute and ask again.",
+            kind="rate_limit",
+        )
+    if isinstance(exc, openai.APITimeoutError):
+        return CopilotError(
+            "That took too long to answer. Try again, or ask a shorter question.",
+            kind="timeout",
+        )
+    if isinstance(exc, openai.AuthenticationError):
+        return CopilotError(
+            "The copilot is not configured correctly. Tell Casilda or Felipe.",
+            kind="auth",
+        )
+    if isinstance(exc, openai.APIConnectionError):
+        return CopilotError(
+            "Could not reach the language model. Check the connection and try again.",
+            kind="connection",
+        )
+    return CopilotError(
+        "The copilot could not answer this question. Try asking it another way.",
+        kind="unknown",
+    )
 
 # The default summariser rewrites the conversation as flowing prose, and prose is where
 # the useful details die. Measured on a real nine-turn conversation, its output kept
@@ -148,13 +184,14 @@ class Copilot:
         # Exact ids and timestamps for everything cited this conversation, held outside
         # the LLM's memory so summarisation cannot destroy them.
         self.sources = SourceLog()
-        llm = ChatOpenAI(
-            model=model,
-            temperature=0,
-            timeout=LLM_TIMEOUT,
-            max_retries=LLM_MAX_RETRIES,
-            max_tokens=LLM_MAX_TOKENS,
-        )
+        # Timeout, retries, token cap and stream_usage all come from config.py. The
+        # OpenAI default timeout is 600 s, which turns one hung request into a session
+        # that looks dead for ten minutes.
+        llm = ChatOpenAI(**llm_kwargs(model=model))
+        # Filled by ask() after every turn: tokens, cost, latency, tool used. Kept on
+        # the instance rather than in the response so the {answer, citations} shape
+        # stays frozen for the UI and the evaluation suite.
+        self.last_usage: dict = {}
         # Same llm instance reused inside explain_concept/generate_quiz — one model
         # client per Copilot, not two.
         self.tools = make_tools(
@@ -214,17 +251,50 @@ class Copilot:
     _ITERATION_LIMIT_MESSAGE = "agent stopped due to"
 
     def ask(self, question: str) -> dict:
-        """Answer one question. Returns the frozen {answer, citations} shape."""
-        self.collector.reset()
+        """Answer one question. Returns the frozen {answer, citations} shape.
+
+        Raises `CopilotError` when the turn cannot be answered. Everything else that
+        can go wrong (OpenAI, Chroma, a tool argument the model got wrong) is caught
+        here, logged with a request id, and translated into a message a student can
+        act on. The raw exception stays chained for the logs.
+        """
         request_id = uuid.uuid4().hex[:8]
+        started = time.time()
+        self.collector.reset()
         try:
-            result = self.executor.invoke({"input": question})
-        except (APITimeoutError, RateLimitError, APIConnectionError) as exc:
-            logger.warning("request %s: %s: %s", request_id, type(exc).__name__, exc)
-            return build_response(self._busy_message(), [])
-        except Exception as exc:  # noqa: BLE001 — never show a raw traceback to a student
-            logger.error("request %s: %s: %s", request_id, type(exc).__name__, exc)
-            return build_response(self._error_message(), [])
+            with get_openai_callback() as usage:
+                result = self.executor.invoke({"input": question})
+        except Exception as exc:  # noqa: BLE001 — deliberately broad, see docstring
+            elapsed = time.time() - started
+            error = _classify(exc)
+            self.last_usage = {
+                "request_id": request_id,
+                "latency_s": round(elapsed, 2),
+                "error": error.kind,
+            }
+            log.exception(
+                "turn %s failed after %.1fs (%s): %s",
+                request_id, elapsed, error.kind, type(exc).__name__,
+            )
+            raise error from exc
+
+        elapsed = time.time() - started
+        tools = [action.tool for action, _ in result.get("intermediate_steps", [])]
+        self.last_usage = {
+            "request_id": request_id,
+            "latency_s": round(elapsed, 2),
+            "prompt_tokens": usage.prompt_tokens,
+            "completion_tokens": usage.completion_tokens,
+            "llm_calls": usage.successful_requests,
+            "cost_usd": round(usage.total_cost, 6),
+            "tools": tools,
+        }
+        log.info(
+            "turn %s ok %.1fs tools=%s tokens=%d/%d cost=$%.5f",
+            request_id, elapsed, ",".join(tools) or "-",
+            usage.prompt_tokens, usage.completion_tokens, usage.total_cost,
+        )
+
         answer = result["output"]
         lowered = answer.lower()
 

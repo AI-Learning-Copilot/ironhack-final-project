@@ -1,5 +1,9 @@
 # 🎓 Ironhack AI Course Copilot
 
+### ▶️ [Try it live — ai-learning-copilot-ironhack-final-project.streamlit.app](https://ai-learning-copilot-ironhack-final-project.streamlit.app/)
+
+No sign-in and no API key needed. If the app has gone to sleep the first load takes about half a minute while it wakes up.
+
 > An AI-powered study assistant for the Ironhack AI Engineering bootcamp. It answers questions using the course recordings and notebooks, with grounded answers and direct source references.
 
 ## Overview
@@ -22,6 +26,8 @@ The application supports English and Spanish and can connect answers to the rele
 - 🛑 **Scope protection** — refuses questions that cannot be grounded in the course.
 
 # 🏗️ Architecture
+
+![Ironhack AI Course Copilot architecture](docs/architecture.png)
 
 The Copilot uses an **agentic RAG architecture**.
 
@@ -106,6 +112,8 @@ ironhack-final-project/
 
 ## 🚀 Run Locally
 
+The [hosted app](https://ai-learning-copilot-ironhack-final-project.streamlit.app/) needs none of this. Run it locally to change the code or rebuild the index.
+
 ### 1. Clone and enter the repository
 
 ```bash
@@ -149,10 +157,14 @@ Latest GPT-4o-mini evaluation:
 29/30 cases pass
 SOURCE ACCURACY     27/27 (100%)
 REFUSAL ACCURACY      3/3
-median latency        4.2s
-p95 latency           13.0s
-max latency           22.0s
+median latency        4.6s
+p95 latency            9.6s
+max latency           12.4s
 ```
+
+The suite was run twice, on 11 and 12 August, and the two runs agree to within a second (5.4 / 9.8 / 12.6 and 4.6 / 9.6 / 12.4). The figures above are the later run.
+
+The one failing case asserts specific wording in the answer rather than the source it cites, so it fails on phrasing rather than on retrieval. It is reported as a failure because that is what the suite measures.
 
 Run it with:
 
@@ -198,6 +210,8 @@ If the course material does not support an answer, the system should say so rath
 ## 👥 Project
 
 Built as the final project for the **Ironhack AI Engineering Bootcamp**.
+
+Live app: https://ai-learning-copilot-ironhack-final-project.streamlit.app/
 
 GitHub: https://github.com/AI-Learning-Copilot/ironhack-final-project
 
