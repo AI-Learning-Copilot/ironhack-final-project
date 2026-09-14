@@ -28,8 +28,12 @@ import config  # noqa: F401  (loads .env once)
 from chunking import chunk_all
 from config import MAX_RETRIES, TIMEOUT_SECONDS
 from ingestion import DEV_LESSONS, load_all
-from notebooks import chunk_all_notebooks
 from schemas import COLLECTION_NAME, EMBED_DIMENSIONS, EMBED_MODEL
+
+# Imported lazily inside main(), not at module level: notebooks.py's mapping is
+# build-time-only data (a CSV read), but this module is imported transitively by
+# retrieval.py on every query. A module-level import here would run that CSV read
+# on every question the app answers, and crash the whole app if the CSV is missing.
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 DEV_INDEX = REPO_ROOT / "index" / "dev"
@@ -159,6 +163,8 @@ def main() -> None:
     # whole point of the single-collection decision: one question can return both the
     # minute of the recording and the notebook cell that demonstrates it.
     if not args.no_notebooks:
+        from notebooks import chunk_all_notebooks
+
         notebook_chunks = chunk_all_notebooks()
         print(f"{len({c['metadata']['notebook'] for c in notebook_chunks})} notebooks "
               f"-> {len(notebook_chunks):,} notebook chunks")

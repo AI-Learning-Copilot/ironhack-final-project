@@ -31,9 +31,8 @@ NOTEBOOK_MAX_CHARS = 1500
 EMBED_MODEL = "text-embedding-3-small"
 EMBED_DIMENSIONS = 512
 
-# Chat model. Not part of the frozen contracts — just shared config so agent.py and
-# tools.py (which both make LLM calls) can't drift to two different models.
-CHAT_MODEL = "gpt-4o-mini"
+# Model name and every ChatOpenAI timeout/retry/token-cap setting live in config.py
+# now (env-configurable, shared by agent.py, tools.py and study_notes.py) — not here.
 
 # Refusal detection. agent.py uses this to decide whether to drop citations (a
 # confidently-wrong retrieval can still surface 5 irrelevant chunks even when the model

@@ -11,6 +11,7 @@ Large sections are split to NOTEBOOK_MAX_CHARS.
 from __future__ import annotations
 
 import csv
+import functools
 import json
 import re
 from pathlib import Path
@@ -46,7 +47,15 @@ def _find_demos_dir() -> Path:
     return candidates[0]
 
 
-DEMOS_DIR = _find_demos_dir()
+@functools.lru_cache(maxsize=1)
+def get_demos_dir() -> Path:
+    """Cached wrapper so the filesystem probe in `_find_demos_dir` runs once, lazily.
+
+    This is build-time code (only `chunk_all_notebooks`/`chunk_notebook` need it), so
+    it must not run merely because something imported this module — see
+    `load_notebook_lessons` below for why that matters.
+    """
+    return _find_demos_dir()
 
 
 # Explicit mapping is intentional. Notebook filenames and lesson days do not have a
@@ -60,11 +69,18 @@ COURSE_RESOURCES = (
 )
 
 
+@functools.lru_cache(maxsize=1)
 def load_notebook_lessons() -> dict[str, str]:
     """
     Load the official notebook → lesson mapping generated from the Slack export.
 
     Only notebooks classified as official resources are included.
+
+    Cached rather than run at import time: this module is imported transitively by
+    `retrieval.py` (via `embeddings.py`) on every query, and `retrieval.py` never needs
+    the mapping — only index *building* does. Running this eagerly at import meant a
+    missing `course_resources.csv` crashed the whole app before a single question could
+    be answered, not just an index rebuild.
     """
 
     mapping: dict[str, str] = {}
@@ -100,9 +116,6 @@ def load_notebook_lessons() -> dict[str, str]:
         print(f"Loaded {len(mapping)} notebook mappings.")
 
         return mapping
-
-
-NOTEBOOK_LESSONS = load_notebook_lessons()
 
 
 _HEADING = re.compile(r"^\s*(#{1,6})\s+(.+?)\s*$", re.MULTILINE)
@@ -236,9 +249,10 @@ def chunk_notebook(
     *,
     lesson_id: str,
     lesson_title: str,
-    demos_dir: Path = DEMOS_DIR,
+    demos_dir: Path | None = None,
 ) -> list[dict]:
     """Convert one notebook into frozen-schema chunks."""
+    demos_dir = demos_dir or get_demos_dir()
     relative = path.relative_to(demos_dir)
 
     folder = relative.parent.as_posix()
@@ -267,24 +281,27 @@ def chunk_notebook(
 
     return chunks
 
-def chunk_all_notebooks(demos_dir: Path = DEMOS_DIR) -> list[dict]:
-    """Every notebook in NOTEBOOK_LESSONS, as chunks.
+def chunk_all_notebooks(demos_dir: Path | None = None) -> list[dict]:
+    """Every notebook in the official mapping, as chunks.
 
     Lesson titles come from data/lessons.json so a notebook citation reads the same as
     a video one. Notebooks that are mapped but missing from the clone are skipped with a
     warning rather than raising — a partial index beats no index during the week.
 
-    Coverage is currently weeks 7-8 only, because NOTEBOOK_LESSONS is a hand-checked
-    mapping and guessing the rest from folder names would produce confidently wrong
-    citations. Extending it means reading the "Files:" list in each #3--resources post.
+    Coverage is currently weeks 7-8 only, because the mapping is hand-checked and
+    guessing the rest from folder names would produce confidently wrong citations.
+    Extending it means reading the "Files:" list in each #3--resources post.
     """
     import json
+
+    demos_dir = demos_dir or get_demos_dir()
+    notebook_lessons = load_notebook_lessons()
 
     lessons_path = Path(__file__).resolve().parents[1] / "data" / "lessons.json"
     lessons = json.loads(lessons_path.read_text()) if lessons_path.exists() else {}
 
     chunks: list[dict] = []
-    for relative, lesson_id in NOTEBOOK_LESSONS.items():
+    for relative, lesson_id in notebook_lessons.items():
         path = demos_dir / relative
         if not path.exists():
             print(f"  skipping missing notebook: {relative}")
@@ -296,7 +313,7 @@ def chunk_all_notebooks(demos_dir: Path = DEMOS_DIR) -> list[dict]:
             )
         )
 
-    chunks.extend(chunk_extra_notebooks(demos_dir, mapped=set(NOTEBOOK_LESSONS)))
+    chunks.extend(chunk_extra_notebooks(demos_dir, mapped=set(notebook_lessons)))
     return chunks
 
 
