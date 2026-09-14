@@ -29,8 +29,6 @@ from tools import CitationCollector, SearchScope, SourceLog, make_tools
 
 log = logging.getLogger(__name__)
 
-logger = logging.getLogger(__name__)
-
 MODEL = CHAT_MODEL
 
 
@@ -343,14 +341,6 @@ class Copilot:
                 f"turn the lesson filter off to search all 8 weeks."
             )
         return "That wasn't covered in the course."
-
-    def _busy_message(self) -> str:
-        """Shown for a transient failure (timeout, rate limit, connection drop)."""
-        return "The AI service is busy right now — please try asking again in a moment."
-
-    def _error_message(self) -> str:
-        """Shown when the model call fails for a reason worth investigating."""
-        return "Something went wrong answering that. Please try again."
 
     def tools_used(self, result: dict | None = None) -> list[str]:
         """Names of the tools called on the last turn — used by the memory demo."""

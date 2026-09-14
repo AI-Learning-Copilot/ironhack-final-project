@@ -50,8 +50,9 @@ if str(SRC_DIR) not in sys.path:
 
 from langchain_openai import ChatOpenAI
 
+from config import llm_kwargs
 from retrieval import get_store
-from schemas import CHAT_MODEL, LLM_MAX_RETRIES, LLM_TIMEOUT, build_citation
+from schemas import build_citation
 
 # ---------------------------------------------------------------------------
 # Paths
@@ -76,7 +77,7 @@ MAX_CHUNK_CHARS = 5000
 # lesson's notes.
 MAX_SUMMARY_CHARS = 30000
 
-# Longer than the general LLM_MAX_TOKENS default: the reduce step writes a full
+# Longer than config.py's general MAX_TOKENS default: the reduce step writes a full
 # multi-section Markdown document, not a short answer or a quiz.
 STUDY_NOTES_MAX_TOKENS = 4096
 
@@ -671,13 +672,7 @@ def generate_study_notes(
         f"Found {len(chunks)} indexed chunks."
     )
 
-    llm = ChatOpenAI(
-        model=CHAT_MODEL,
-        temperature=0,
-        timeout=LLM_TIMEOUT,
-        max_retries=LLM_MAX_RETRIES,
-        max_tokens=STUDY_NOTES_MAX_TOKENS,
-    )
+    llm = ChatOpenAI(**llm_kwargs(max_tokens=STUDY_NOTES_MAX_TOKENS))
 
     # -----------------------------------------------------------------------
     # MAP

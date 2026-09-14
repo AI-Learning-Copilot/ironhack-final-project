@@ -278,17 +278,13 @@ def shuffle_quiz_answers(quiz: str) -> str:
         letters = [letter for letter, _ in block]
         texts = [text for _, text in block]
         correct_text = dict(block).get(answer_letter)
-        if correct_text is None:
-            # The answer letter doesn't match any option actually parsed for this
-            # block (e.g. a duplicate letter swallowed the real one). Can't safely
-            # shuffle without losing track of which option is correct, so leave
-            # this block exactly as the model wrote it rather than crash the turn.
-            block = []
-            return
-
-        # The model sometimes writes "Answer: E", repeats a letter, or numbers five
-        # options. Shuffling would then raise inside the tool and kill the whole turn.
-        # Leaving that one question unshuffled is the lesser evil.
+        # correct_text is None when the answer letter doesn't match any option
+        # actually parsed for this block (e.g. a duplicate letter swallowed the real
+        # one, or the model wrote "Answer: E"). texts.count(correct_text) != 1 catches
+        # the case where two options have identical text — shuffled.index() below
+        # would silently return the wrong position rather than raise. Either way, we
+        # can't safely shuffle without losing track of which option is correct, so
+        # leave this block exactly as the model wrote it rather than crash the turn.
         if correct_text is None or texts.count(correct_text) != 1:
             block = []
             return

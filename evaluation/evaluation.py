@@ -264,13 +264,13 @@ def main() -> None:
     if args.upload:
         upload_dataset(load_cases())
 
-    out = Path(__file__).parent / "e2e_results.json" if args.save else None
-
     print(f"running {len(cases)} cases\n")
-    results = run(cases, out_path=out)
+    results = run(cases)
     report(results)
 
-    if out is not None:
+    if args.save:
+        out = Path(__file__).parent / "e2e_results.json"
+        out.write_text(json.dumps(results, indent=2, ensure_ascii=False))
         print(f"\nwrote {out.relative_to(REPO_ROOT)}")
 
 
