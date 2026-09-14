@@ -35,6 +35,15 @@ EMBED_DIMENSIONS = 512
 # tools.py (which both make LLM calls) can't drift to two different models.
 CHAT_MODEL = "gpt-4o-mini"
 
+# ChatOpenAI's own default timeout is 600s — one hung call would block a whole session
+# for ten minutes. Shared so every ChatOpenAI client in the project (agent, explain,
+# quiz) fails the same way instead of drifting.
+LLM_TIMEOUT = 30
+LLM_MAX_RETRIES = 3
+# Measured quiz completions run up to ~1,000 tokens for 3 questions; leaves headroom
+# for a 5-question quiz without letting a runaway completion balloon the bill.
+LLM_MAX_TOKENS = 2048
+
 # Refusal detection. agent.py uses this to decide whether to drop citations (a
 # confidently-wrong retrieval can still surface 5 irrelevant chunks even when the model
 # correctly judges the topic uncovered — see the "quantum" vs "quantization" case).

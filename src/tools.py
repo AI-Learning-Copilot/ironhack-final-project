@@ -23,7 +23,14 @@ from langchain_openai import ChatOpenAI
 from pydantic import BaseModel, Field
 
 from retrieval import search, search_with_scores
-from schemas import CHAT_MODEL, build_citation, format_timestamp
+from schemas import (
+    CHAT_MODEL,
+    LLM_MAX_RETRIES,
+    LLM_MAX_TOKENS,
+    LLM_TIMEOUT,
+    build_citation,
+    format_timestamp,
+)
 
 LESSONS_PATH = Path(__file__).resolve().parents[1] / "data" / "lessons.json"
 
@@ -277,6 +284,13 @@ def shuffle_quiz_answers(quiz: str) -> str:
         letters = [letter for letter, _ in block]
         texts = [text for _, text in block]
         correct_text = dict(block).get(answer_letter)
+        if correct_text is None:
+            # The answer letter doesn't match any option actually parsed for this
+            # block (e.g. a duplicate letter swallowed the real one). Can't safely
+            # shuffle without losing track of which option is correct, so leave
+            # this block exactly as the model wrote it rather than crash the turn.
+            block = []
+            return
 
         order = list(range(4))
         random.shuffle(order)
@@ -325,6 +339,9 @@ def make_tools(
     synth_llm = llm or ChatOpenAI(
         model=CHAT_MODEL,
         temperature=0,
+        timeout=LLM_TIMEOUT,
+        max_retries=LLM_MAX_RETRIES,
+        max_tokens=LLM_MAX_TOKENS,
     )
     scope = scope if scope is not None else SearchScope()
     sources = sources if sources is not None else SourceLog()
@@ -339,7 +356,10 @@ def make_tools(
     quiz_llm = ChatOpenAI(
         model=CHAT_MODEL,
         temperature=1,
-        )
+        timeout=LLM_TIMEOUT,
+        max_retries=LLM_MAX_RETRIES,
+        max_tokens=LLM_MAX_TOKENS,
+    )
 
     def search_course_material(query: str, lesson_id: str = "") -> str:
         """Search the course recordings for what was actually said about something."""

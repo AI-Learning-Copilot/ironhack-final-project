@@ -11,6 +11,8 @@ swap its mock fixture for a Copilot with no other change.
 
 from __future__ import annotations
 
+import logging
+import uuid
 from pathlib import Path
 
 from dotenv import load_dotenv
@@ -18,11 +20,21 @@ from langchain.agents import AgentExecutor, create_openai_tools_agent
 from langchain.memory import ConversationSummaryBufferMemory
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_openai import ChatOpenAI
+from openai import APIConnectionError, APITimeoutError, RateLimitError
 
-from schemas import CHAT_MODEL, REFUSAL_MARKERS, build_response
+from schemas import (
+    CHAT_MODEL,
+    LLM_MAX_RETRIES,
+    LLM_MAX_TOKENS,
+    LLM_TIMEOUT,
+    REFUSAL_MARKERS,
+    build_response,
+)
 from tools import CitationCollector, SearchScope, SourceLog, make_tools
 
 load_dotenv(Path(__file__).resolve().parents[1] / ".env")
+
+logger = logging.getLogger(__name__)
 
 MODEL = CHAT_MODEL
 
@@ -139,6 +151,9 @@ class Copilot:
         llm = ChatOpenAI(
             model=model,
             temperature=0,
+            timeout=LLM_TIMEOUT,
+            max_retries=LLM_MAX_RETRIES,
+            max_tokens=LLM_MAX_TOKENS,
         )
         # Same llm instance reused inside explain_concept/generate_quiz — one model
         # client per Copilot, not two.
@@ -201,7 +216,15 @@ class Copilot:
     def ask(self, question: str) -> dict:
         """Answer one question. Returns the frozen {answer, citations} shape."""
         self.collector.reset()
-        result = self.executor.invoke({"input": question})
+        request_id = uuid.uuid4().hex[:8]
+        try:
+            result = self.executor.invoke({"input": question})
+        except (APITimeoutError, RateLimitError, APIConnectionError) as exc:
+            logger.warning("request %s: %s: %s", request_id, type(exc).__name__, exc)
+            return build_response(self._busy_message(), [])
+        except Exception as exc:  # noqa: BLE001 — never show a raw traceback to a student
+            logger.error("request %s: %s: %s", request_id, type(exc).__name__, exc)
+            return build_response(self._error_message(), [])
         answer = result["output"]
         lowered = answer.lower()
 
@@ -250,6 +273,14 @@ class Copilot:
                 f"turn the lesson filter off to search all 8 weeks."
             )
         return "That wasn't covered in the course."
+
+    def _busy_message(self) -> str:
+        """Shown for a transient failure (timeout, rate limit, connection drop)."""
+        return "The AI service is busy right now — please try asking again in a moment."
+
+    def _error_message(self) -> str:
+        """Shown when the model call fails for a reason worth investigating."""
+        return "Something went wrong answering that. Please try again."
 
     def tools_used(self, result: dict | None = None) -> list[str]:
         """Names of the tools called on the last turn — used by the memory demo."""

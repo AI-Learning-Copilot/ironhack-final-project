@@ -113,24 +113,24 @@ def score_case(case: dict, response: dict, followup: dict | None) -> dict:
     return {"checks": checks, "notes": notes}
 
 
-def run(cases: list[dict]) -> list[dict]:
+def run(cases: list[dict], out_path: Path | None = None) -> list[dict]:
     results = []
     for case in cases:
-        copilot = Copilot()  # fresh memory per case, except within a followup pair
-        started = time.time()
-        response = copilot.ask(case["question"])
-        latency = time.time() - started
+        try:
+            copilot = Copilot()  # fresh memory per case, except within a followup pair
+            started = time.time()
+            response = copilot.ask(case["question"])
+            latency = time.time() - started
 
-        followup = None
-        if case.get("followup"):
-            f_started = time.time()
-            followup = copilot.ask(case["followup"])
-            latency += time.time() - f_started
+            followup = None
+            if case.get("followup"):
+                f_started = time.time()
+                followup = copilot.ask(case["followup"])
+                latency += time.time() - f_started
 
-        scored = score_case(case, response, followup)
-        passed = all(scored["checks"].values())
-        results.append(
-            {
+            scored = score_case(case, response, followup)
+            passed = all(scored["checks"].values())
+            result = {
                 "id": case["id"],
                 "kind": case["kind"],
                 "question": case["question"],
@@ -140,11 +140,27 @@ def run(cases: list[dict]) -> list[dict]:
                 "passed": passed,
                 **scored,
             }
-        )
-        mark = "PASS" if passed else "FAIL"
-        print(f"  {mark}  {case['id']}  {latency:5.1f}s  {case['question'][:52]}")
-        for note in scored["notes"]:
-            print(f"          - {note}")
+            mark = "PASS" if passed else "FAIL"
+            print(f"  {mark}  {case['id']}  {latency:5.1f}s  {case['question'][:52]}")
+            for note in scored["notes"]:
+                print(f"          - {note}")
+        except Exception as exc:  # noqa: BLE001 — one bad case must not lose the run
+            print(f"  ERROR {case['id']}  {type(exc).__name__}: {exc}")
+            result = {
+                "id": case["id"],
+                "kind": case["kind"],
+                "question": case["question"],
+                "answer": "",
+                "cited": [],
+                "latency": 0.0,
+                "passed": False,
+                "checks": {},
+                "notes": [f"raised {type(exc).__name__}: {exc}"],
+            }
+
+        results.append(result)
+        if out_path is not None:
+            out_path.write_text(json.dumps(results, indent=2, ensure_ascii=False))
     return results
 
 
@@ -224,13 +240,13 @@ def main() -> None:
     if args.upload:
         upload_dataset(load_cases())
 
+    out = Path(__file__).parent / "e2e_results.json" if args.save else None
+
     print(f"running {len(cases)} cases\n")
-    results = run(cases)
+    results = run(cases, out_path=out)
     report(results)
 
-    if args.save:
-        out = Path(__file__).parent / "e2e_results.json"
-        out.write_text(json.dumps(results, indent=2, ensure_ascii=False))
+    if out is not None:
         print(f"\nwrote {out.relative_to(REPO_ROOT)}")
 
 

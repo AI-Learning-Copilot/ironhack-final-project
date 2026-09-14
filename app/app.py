@@ -1069,6 +1069,13 @@ def parse_quiz(answer: str) -> tuple[str, list[dict]]:
             continue
 
         if _is_option_line(line):
+            if not quiz_started and not current_question_lines and intro_lines:
+                # The backend's own format has no leading number on question 1
+                # (see docs/SCHEMA.md) — everything buffered so far isn't intro
+                # text, it's the first question.
+                current_question_lines = intro_lines
+                intro_lines = []
+
             quiz_started = True
 
             option = _extract_option(line)

@@ -27,8 +27,12 @@ from langchain_openai import OpenAIEmbeddings
 
 from chunking import chunk_all
 from ingestion import DEV_LESSONS, load_all
-from notebooks import chunk_all_notebooks
 from schemas import COLLECTION_NAME, EMBED_DIMENSIONS, EMBED_MODEL
+
+# Imported lazily inside main(), not at module level: notebooks.py's mapping is
+# build-time-only data (a CSV read), but this module is imported transitively by
+# retrieval.py on every query. A module-level import here would run that CSV read
+# on every question the app answers, and crash the whole app if the CSV is missing.
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 DEV_INDEX = REPO_ROOT / "index" / "dev"
@@ -46,26 +50,39 @@ def build_index(chunks: list[dict], persist_dir: Path, batch_size: int = 256) ->
 
     Rebuilding from scratch rather than upserting keeps the index a pure function of the
     transcripts — no stale chunks surviving a change to the chunker or the jargon table.
+
+    Builds into a sibling temp directory first and only swaps it into place once every
+    batch has embedded successfully. Without this, a 429 (or anything else) partway
+    through left `persist_dir` deleted and half-written — the shipped index, broken.
     """
-    if persist_dir.exists():
-        shutil.rmtree(persist_dir)
-    persist_dir.mkdir(parents=True, exist_ok=True)
+    tmp_dir = persist_dir.with_name(persist_dir.name + ".tmp")
+    if tmp_dir.exists():
+        shutil.rmtree(tmp_dir)
+    tmp_dir.mkdir(parents=True, exist_ok=True)
 
     store = Chroma(
         collection_name=COLLECTION_NAME,
         embedding_function=get_embeddings(),
-        persist_directory=str(persist_dir),
+        persist_directory=str(tmp_dir),
     )
 
     started = time.time()
-    for offset in range(0, len(chunks), batch_size):
-        batch = chunks[offset : offset + batch_size]
-        store.add_texts(
-            texts=[c["text"] for c in batch],
-            metadatas=[c["metadata"] for c in batch],
-        )
-        done = min(offset + batch_size, len(chunks))
-        print(f"  embedded {done:>5,}/{len(chunks):,}", end="\r", flush=True)
+    try:
+        for offset in range(0, len(chunks), batch_size):
+            batch = chunks[offset : offset + batch_size]
+            store.add_texts(
+                texts=[c["text"] for c in batch],
+                metadatas=[c["metadata"] for c in batch],
+            )
+            done = min(offset + batch_size, len(chunks))
+            print(f"  embedded {done:>5,}/{len(chunks):,}", end="\r", flush=True)
+    except Exception:
+        shutil.rmtree(tmp_dir, ignore_errors=True)
+        raise
+
+    if persist_dir.exists():
+        shutil.rmtree(persist_dir)
+    tmp_dir.rename(persist_dir)
 
     elapsed = time.time() - started
     print(
@@ -118,6 +135,8 @@ def main() -> None:
     # whole point of the single-collection decision: one question can return both the
     # minute of the recording and the notebook cell that demonstrates it.
     if not args.no_notebooks:
+        from notebooks import chunk_all_notebooks
+
         notebook_chunks = chunk_all_notebooks()
         print(f"{len({c['metadata']['notebook'] for c in notebook_chunks})} notebooks "
               f"-> {len(notebook_chunks):,} notebook chunks")
