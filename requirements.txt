@@ -41,6 +41,9 @@ requests==2.34.2
 
 # --- App ---
 streamlit==1.61.1
+# st.login() (the sign-in gate in app/auth.py) imports Authlib at call time and fails
+# with an ImportError otherwise. Streamlit does not declare it as a dependency.
+Authlib==1.8.0
 reportlab==4.4.4
 # starlette is a TRANSITIVE dep of streamlit, pinned here deliberately — do not remove.
 #

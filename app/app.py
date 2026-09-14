@@ -7,6 +7,7 @@ instance in Streamlit session state so conversational memory survives reruns.
 from __future__ import annotations
 
 import json
+import os
 import random
 import re
 import sys
@@ -38,9 +39,18 @@ SRC_DIR = ROOT_DIR / "src"
 if str(SRC_DIR) not in sys.path:
     sys.path.insert(0, str(SRC_DIR))
 
-from agent import Copilot  # noqa: E402
+import turnlog  # noqa: E402
+from agent import Copilot, CopilotError  # noqa: E402
+from auth import require_login  # noqa: E402
+from config import configure_logging  # noqa: E402
 from retrieval import search_with_scores  # noqa: E402
 from tools import RELEVANCE_CUTOFF  # noqa: E402
+
+configure_logging()
+
+# Which course this deployment serves. One deployment per course for now; the turn log
+# keys on it so a client's usage can be reported on its own.
+COURSE_ID = "ironhack-ai-engineering"
 
 
 # ---------------------------------------------------------------------------
@@ -426,12 +436,17 @@ def load_study_note(lesson_id: str) -> str | None:
 
     return notes_path.read_text(encoding="utf-8")
 
+@st.cache_data(show_spinner=False)
 def study_notes_to_pdf(
     markdown: str,
     lesson_id: str,
     lesson_title: str,
 ) -> bytes:
-    """Convert Study Notes Markdown into a polished downloadable PDF."""
+    """Convert Study Notes Markdown into a polished downloadable PDF.
+
+    Cached on its arguments: while a lesson's notes are open, every rerun (each chat
+    turn, each widget change) used to rebuild the PDF from scratch.
+    """
 
     buffer = BytesIO()
 
@@ -790,10 +805,15 @@ def week_label(week: int) -> str:
     theme = WEEK_THEMES.get(week)
     return f"Week {week} · {theme}" if theme else f"Week {week}"
 
+# The gate. Everything below this line runs only for a signed-in user (or for anyone,
+# locally, when no [auth] secrets exist — see app/auth.py). It sits here so a visitor
+# who is not signed in never causes a Copilot to be built.
+USER_EMAIL = require_login()
+
 # Streamlit keeps session state across reruns, including a Copilot built by an older
 # version of the module. Bump this whenever Copilot gains state the app relies on, so a
 # live session rebuilds instead of failing on a missing attribute.
-COPILOT_VERSION = 2
+COPILOT_VERSION = 3
 
 if (
     "copilot" not in st.session_state
@@ -890,8 +910,13 @@ def external_link(label: str, url: str) -> str:
     )
 
 
-def render_citation(citation: dict) -> None:
-    """Render one citation using metadata prepared by the backend."""
+def render_citation(citation: dict, player: bool = True) -> None:
+    """Render one citation using metadata prepared by the backend.
+
+    `player=False` keeps the link and drops the embedded Loom iframe. Collapsed history
+    turns use it: ten answers with three players each meant thirty iframes rebuilt on
+    every rerun, which is every keystroke.
+    """
     source_type = citation.get("source_type", "")
     label = citation.get("label", "Course source")
     url = citation.get("url", "")
@@ -913,7 +938,7 @@ def render_citation(citation: dict) -> None:
             # Loom URLs produced by the backend already use /embed/ and
             # include the timestamp query parameter, so the player opens
             # directly at the cited point in the lecture.
-            if "loom.com/embed/" in url:
+            if player and "loom.com/embed/" in url:
                 st.iframe(
                     url,
                     height=190,
@@ -1069,6 +1094,11 @@ def parse_quiz(answer: str) -> tuple[str, list[dict]]:
             continue
 
         if _is_option_line(line):
+            # The tool's canonical format has no numbering: the question is the plain
+            # line right before "A)". Without this, that line was filed as intro text
+            # and the first question of every quiz was dropped.
+            if not current_question_lines and not current_options and intro_lines:
+                current_question_lines = [_strip_markdown(intro_lines.pop())]
             quiz_started = True
 
             option = _extract_option(line)
@@ -1375,6 +1405,7 @@ def render_response(
     response: dict,
     message_id: str,
     sources_expander: bool = True,
+    players: bool = True,
 ) -> None:
     """Render one Copilot response and its citations.
 
@@ -1444,7 +1475,7 @@ def render_response(
             ):
                 with column:
                     with st.container(border=True):
-                        render_citation(citation)
+                        render_citation(citation, player=players)
 
             # Everything past the top three is listed as a plain link rather than a
             # player. A student who wants the other passages can still reach them,
@@ -1482,11 +1513,13 @@ def reset_conversation() -> None:
 
     st.session_state.messages = []
 
-    # Clear interactive quiz state as well.
+    # Clear interactive quiz state as well. Quiz instances are keyed "quiz_<n>_..."
+    # (a message index); the sidebar controls are "quiz_topic", "quiz_week" and so on
+    # and must survive, or "New conversation" silently resets the quiz form.
     quiz_keys = [
         key
         for key in list(st.session_state.keys())
-        if key.startswith("quiz_")
+        if re.match(r"^quiz_\d+", key)
     ]
 
     for key in quiz_keys:
@@ -1947,6 +1980,8 @@ for message_index, message in enumerate(
                         message_id=str(message_index),
                         # Already inside an expander — see render_response.
                         sources_expander=False,
+                        # Links only. The players are for the newest answer.
+                        players=False,
                     )
         else:
             st.markdown(USER_TURN_MARKER, unsafe_allow_html=True)
@@ -1996,6 +2031,37 @@ if _memory_has_summarised:
 # ---------------------------------------------------------------------------
 # Chat input
 # ---------------------------------------------------------------------------
+
+def _turn_failed(question: str, message: str, exc: Exception) -> None:
+    """Show the error, keep the question, offer a one-click retry.
+
+    The user's bubble was appended before the agent ran. Leaving it there meant a
+    retry produced two identical bubbles; dropping it meant the question was gone
+    and had to be retyped. So it is removed from the history, and the Retry button
+    feeds it back in exactly as a starter button would.
+    """
+    if st.session_state.messages and st.session_state.messages[-1]["role"] == "user":
+        st.session_state.messages.pop()
+
+    turnlog.record(
+        user=USER_EMAIL,
+        course=COURSE_ID,
+        question=question,
+        usage=st.session_state.copilot.last_usage or {"error": type(exc).__name__},
+    )
+
+    st.error(message)
+
+    if st.button("Retry", key="retry_failed_turn", type="primary"):
+        st.session_state.pending_question = question
+        st.rerun()
+
+    # The raw exception is for the operator, not the student: it can carry model
+    # names, quota details or file paths. Shown only when the deployment asks for it.
+    if os.getenv("COPILOT_DEBUG"):
+        with st.expander("Technical details"):
+            st.code(f"{type(exc).__name__}: {exc}")
+
 
 question = st.chat_input(
     "Ask something about the course..."
@@ -2092,6 +2158,13 @@ if question:
                 }
             )
 
+            turnlog.record(
+                user=USER_EMAIL,
+                course=COURSE_ID,
+                question=question,
+                usage=st.session_state.copilot.last_usage,
+            )
+
             # Rerun so the history re-renders with this answer as the newest one and
             # the previous one collapsed. Without it the script has already finished
             # and the older answer stays open until the student's *next* action —
@@ -2099,15 +2172,12 @@ if question:
             # response is already in session state.
             st.rerun()
 
-        except Exception as exc:
-            st.error(
-                "The Course Copilot could not answer this question. "
-                "Please try again."
-            )
+        except CopilotError as exc:
+            _turn_failed(question, exc.user_message, exc)
 
-            # Useful during local MVP development without exposing the
-            # traceback or secrets in the normal interface.
-            with st.expander("Technical details"):
-                st.code(
-                    f"{type(exc).__name__}: {exc}"
-                )
+        except Exception as exc:  # noqa: BLE001 — last line of defence for the UI
+            _turn_failed(
+                question,
+                "The Course Copilot could not answer this question. Please try again.",
+                exc,
+            )

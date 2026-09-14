@@ -113,19 +113,46 @@ def score_case(case: dict, response: dict, followup: dict | None) -> dict:
     return {"checks": checks, "notes": notes}
 
 
+PARTIAL_PATH = Path(__file__).parent / "e2e_results.partial.json"
+
+
 def run(cases: list[dict]) -> list[dict]:
+    """Run every case. One failing API call marks that case, not the whole run.
+
+    Results are appended to e2e_results.partial.json after each case, so a run that
+    dies at case 28 of 30 still leaves 27 scored cases on disk.
+    """
     results = []
     for case in cases:
         copilot = Copilot()  # fresh memory per case, except within a followup pair
         started = time.time()
-        response = copilot.ask(case["question"])
-        latency = time.time() - started
+        try:
+            response = copilot.ask(case["question"])
+            latency = time.time() - started
 
-        followup = None
-        if case.get("followup"):
-            f_started = time.time()
-            followup = copilot.ask(case["followup"])
-            latency += time.time() - f_started
+            followup = None
+            if case.get("followup"):
+                f_started = time.time()
+                followup = copilot.ask(case["followup"])
+                latency += time.time() - f_started
+        except Exception as exc:  # noqa: BLE001 — record and move on
+            latency = time.time() - started
+            results.append(
+                {
+                    "id": case["id"],
+                    "kind": case["kind"],
+                    "question": case["question"],
+                    "answer": "",
+                    "cited": [],
+                    "latency": latency,
+                    "passed": False,
+                    "checks": {"completed": False},
+                    "notes": [f"error: {type(exc).__name__}: {exc}"[:300]],
+                }
+            )
+            print(f"  ERR   {case['id']}  {latency:5.1f}s  {type(exc).__name__}: {exc}"[:110])
+            _save_partial(results)
+            continue
 
         scored = score_case(case, response, followup)
         passed = all(scored["checks"].values())
@@ -145,7 +172,16 @@ def run(cases: list[dict]) -> list[dict]:
         print(f"  {mark}  {case['id']}  {latency:5.1f}s  {case['question'][:52]}")
         for note in scored["notes"]:
             print(f"          - {note}")
+        _save_partial(results)
     return results
+
+
+def _save_partial(results: list[dict]) -> None:
+    PARTIAL_PATH.write_text(json.dumps(results, indent=2, ensure_ascii=False))
+
+
+def _ratio(numerator: int, denominator: int) -> str:
+    return f"({numerator / denominator:.0%})" if denominator else "(n/a)"
 
 
 def report(results: list[dict]) -> None:
@@ -157,12 +193,16 @@ def report(results: list[dict]) -> None:
         return latencies[min(int(len(latencies) * p), len(latencies) - 1)]
 
     print("\n" + "=" * 62)
-    print(f"  OVERALL              {passed}/{total} cases pass ({passed / total:.0%})")
+    print(f"  OVERALL              {passed}/{total} cases pass {_ratio(passed, total)}")
+
+    errored = [r for r in results if not r["checks"].get("completed", True)]
+    if errored:
+        print(f"  ERRORS               {len(errored)} case(s) did not complete")
 
     answerable = [r for r in results if r["kind"] != "unanswerable"]
     source_ok = sum(r["checks"].get("source_correct", False) for r in answerable)
     print(f"  SOURCE ACCURACY      {source_ok}/{len(answerable)} "
-          f"({source_ok / len(answerable):.0%})  <- the headline number")
+          f"{_ratio(source_ok, len(answerable))}  <- the headline number")
 
     refusals = [r for r in results if r["kind"] == "unanswerable"]
     refused_ok = sum(r["passed"] for r in refusals)

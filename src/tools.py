@@ -22,8 +22,9 @@ from langchain_core.tools import StructuredTool
 from langchain_openai import ChatOpenAI
 from pydantic import BaseModel, Field
 
-from retrieval import search, search_with_scores
-from schemas import CHAT_MODEL, build_citation, format_timestamp
+from config import QUIZ_MAX_TOKENS, llm_kwargs
+from retrieval import search_with_scores
+from schemas import build_citation, format_timestamp
 
 LESSONS_PATH = Path(__file__).resolve().parents[1] / "data" / "lessons.json"
 
@@ -278,6 +279,13 @@ def shuffle_quiz_answers(quiz: str) -> str:
         texts = [text for _, text in block]
         correct_text = dict(block).get(answer_letter)
 
+        # The model sometimes writes "Answer: E", repeats a letter, or numbers five
+        # options. Shuffling would then raise inside the tool and kill the whole turn.
+        # Leaving that one question unshuffled is the lesser evil.
+        if correct_text is None or texts.count(correct_text) != 1:
+            block = []
+            return
+
         order = list(range(4))
         random.shuffle(order)
         shuffled = [texts[i] for i in order]
@@ -322,10 +330,7 @@ def make_tools(
     not pure retrieval like the first two tools. Reuse the caller's `llm` when one is
     passed (agent.py does this) so a Copilot only opens one model client rather than two.
     """
-    synth_llm = llm or ChatOpenAI(
-        model=CHAT_MODEL,
-        temperature=0,
-    )
+    synth_llm = llm or ChatOpenAI(**llm_kwargs())
     scope = scope if scope is not None else SearchScope()
     sources = sources if sources is not None else SourceLog()
 
@@ -336,10 +341,10 @@ def make_tools(
     # 0.5, not 0.8. Variety now comes from sampling a wider pool of excerpts rather
     # than from the sampler, and a hotter model was more willing to state a number it
     # half-remembered from the transcript as though it were a taught fact.
-    quiz_llm = ChatOpenAI(
-        model=CHAT_MODEL,
-        temperature=1,
-        )
+    # temperature=1 is what shipped and what the evaluation figures were measured
+    # with; the paragraph above argued for 0.5 and was never brought in line. Kept at
+    # 1 on purpose until a held-out quiz run shows 0.5 is better.
+    quiz_llm = ChatOpenAI(**llm_kwargs(temperature=1, max_tokens=QUIZ_MAX_TOKENS))
 
     def search_course_material(query: str, lesson_id: str = "") -> str:
         """Search the course recordings for what was actually said about something."""
@@ -550,6 +555,10 @@ def make_tools(
         ids = sorted(lessons)
         if week:
             prefix = week.strip().lower()
+            # "w1" must not match w10–w19 the day a course runs past nine weeks. A
+            # full lesson id ("w1d3") is accepted as-is; a week prefix needs the "d".
+            if re.fullmatch(r"w\d+", prefix):
+                prefix += "d"
             ids = [lesson_id for lesson_id in ids if lesson_id.startswith(prefix)]
             if not ids:
                 return f"NO_RESULTS: no lessons found matching '{week}'."

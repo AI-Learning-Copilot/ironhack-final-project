@@ -21,11 +21,12 @@ import shutil
 import time
 from pathlib import Path
 
-from dotenv import load_dotenv
 from langchain_chroma import Chroma
 from langchain_openai import OpenAIEmbeddings
 
+import config  # noqa: F401  (loads .env once)
 from chunking import chunk_all
+from config import MAX_RETRIES, TIMEOUT_SECONDS
 from ingestion import DEV_LESSONS, load_all
 from notebooks import chunk_all_notebooks
 from schemas import COLLECTION_NAME, EMBED_DIMENSIONS, EMBED_MODEL
@@ -34,11 +35,32 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 DEV_INDEX = REPO_ROOT / "index" / "dev"
 FULL_INDEX = REPO_ROOT / "index" / "full"
 
-load_dotenv(REPO_ROOT / ".env")
-
 
 def get_embeddings() -> OpenAIEmbeddings:
-    return OpenAIEmbeddings(model=EMBED_MODEL, dimensions=EMBED_DIMENSIONS)
+    return OpenAIEmbeddings(
+        model=EMBED_MODEL,
+        dimensions=EMBED_DIMENSIONS,
+        timeout=TIMEOUT_SECONDS,
+        max_retries=MAX_RETRIES,
+    )
+
+
+def _add_with_retry(store: Chroma, batch: list[dict], attempts: int = 5) -> None:
+    """One batch, retried with backoff. A 429 halfway through 6,000 chunks used to
+    abort the build with the old index already deleted."""
+    for attempt in range(1, attempts + 1):
+        try:
+            store.add_texts(
+                texts=[c["text"] for c in batch],
+                metadatas=[c["metadata"] for c in batch],
+            )
+            return
+        except Exception as exc:  # noqa: BLE001 — openai/httpx raise many types
+            if attempt == attempts:
+                raise
+            wait = 2 ** attempt
+            print(f"\n  batch failed ({type(exc).__name__}); retry {attempt}/{attempts - 1} in {wait}s")
+            time.sleep(wait)
 
 
 def build_index(chunks: list[dict], persist_dir: Path, batch_size: int = 256) -> Chroma:
@@ -46,33 +68,52 @@ def build_index(chunks: list[dict], persist_dir: Path, batch_size: int = 256) ->
 
     Rebuilding from scratch rather than upserting keeps the index a pure function of the
     transcripts — no stale chunks surviving a change to the chunker or the jargon table.
+
+    The build goes into a sibling temp directory and is swapped in only when every
+    batch has landed. The previous index stays intact until then, so a failed build
+    leaves the shipped index exactly as it was rather than deleted and half-written.
     """
-    if persist_dir.exists():
-        shutil.rmtree(persist_dir)
-    persist_dir.mkdir(parents=True, exist_ok=True)
+    persist_dir = Path(persist_dir)
+    persist_dir.parent.mkdir(parents=True, exist_ok=True)
+    build_dir = persist_dir.with_name(persist_dir.name + ".building")
+    if build_dir.exists():
+        shutil.rmtree(build_dir)
+    build_dir.mkdir(parents=True)
 
     store = Chroma(
         collection_name=COLLECTION_NAME,
         embedding_function=get_embeddings(),
-        persist_directory=str(persist_dir),
+        persist_directory=str(build_dir),
     )
 
     started = time.time()
-    for offset in range(0, len(chunks), batch_size):
-        batch = chunks[offset : offset + batch_size]
-        store.add_texts(
-            texts=[c["text"] for c in batch],
-            metadatas=[c["metadata"] for c in batch],
-        )
-        done = min(offset + batch_size, len(chunks))
-        print(f"  embedded {done:>5,}/{len(chunks):,}", end="\r", flush=True)
+    try:
+        for offset in range(0, len(chunks), batch_size):
+            batch = chunks[offset : offset + batch_size]
+            _add_with_retry(store, batch)
+            done = min(offset + batch_size, len(chunks))
+            print(f"  embedded {done:>5,}/{len(chunks):,}", end="\r", flush=True)
+    except Exception:
+        print(f"\n  build failed; {persist_dir} left untouched, partial build in {build_dir}")
+        raise
+
+    # Chroma holds the sqlite file open through `store`; drop our handle before the
+    # directory moves so the reopened store below reads from the final path.
+    del store
+    if persist_dir.exists():
+        shutil.rmtree(persist_dir)
+    build_dir.rename(persist_dir)
 
     elapsed = time.time() - started
     print(
         f"\n  {len(chunks):,} chunks · {elapsed:.0f}s · "
         f"{_size_mb(persist_dir):.1f} MB · {persist_dir}"
     )
-    return store
+    return Chroma(
+        collection_name=COLLECTION_NAME,
+        embedding_function=get_embeddings(),
+        persist_directory=str(persist_dir),
+    )
 
 
 def _size_mb(path: Path) -> float:
