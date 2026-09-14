@@ -3,34 +3,34 @@
     "question": "What is Python?",
     "expected_lesson": "w1d1",
     "retrieved_lessons": [
-      "w1d1",
-      "w1d1",
-      "w1d1",
-      "w1d3",
-      "w4d1"
+      "extra",
+      "extra",
+      "extra",
+      "extra",
+      "extra"
     ],
     "retrieved_sources": [
-      "Python I",
-      "Python I",
-      "Python I",
-      "Python Error Handling",
-      "Regular Expresions (Regex)"
+      "3_functions.ipynb",
+      "5_error_handling.ipynb",
+      "1_intro_to_python.ipynb",
+      "bonus_python_oop.ipynb",
+      "3_functions.ipynb"
     ],
     "retrieved_headings": [
-      "",
-      "",
-      "",
-      "",
-      ""
+      "Python Functions",
+      "Python Error Handling",
+      "Demo 1 (Python + Jupyter Notebooks Intro)",
+      "Python - OOP",
+      "Creating & invoking functions"
     ],
     "retrieved_distances": [
-      1.1289430856704712,
-      1.1944080591201782,
-      1.201707363128662,
-      1.2159717082977295,
-      1.2297714948654175
+      1.1604379415512085,
+      1.1674202680587769,
+      1.2003705501556396,
+      1.2318564653396606,
+      1.1896415948867798
     ],
-    "top1_correct": true,
+    "top1_correct": false,
     "top3_correct": true,
     "top5_correct": true
   },
@@ -39,34 +39,34 @@
     "expected_lesson": "w1d1",
     "retrieved_lessons": [
       "extra",
-      "w1d1",
+      "extra",
       "w1d4",
       "w1d1",
-      "w1d1"
+      "extra"
     ],
     "retrieved_sources": [
       "bonus_python_variables_and_memory_model.ipynb",
-      "Python I",
+      "bonus_python_variables_and_memory_model.ipynb",
       "Bonus session - Python variables and the memory model",
       "Python I",
-      "Python I"
+      "1_intro_to_python.ipynb"
     ],
     "retrieved_headings": [
       "1. Python's variables are not like buckets",
+      "Python Variables & the Memory Model",
       "",
       "",
-      "",
-      ""
+      "Variables"
     ],
     "retrieved_distances": [
-      0.716559886932373,
-      0.8280726075172424,
-      0.8317182660102844,
-      0.8450295329093933,
-      0.8537609577178955
+      0.7155643701553345,
+      0.7612057328224182,
+      0.8315143585205078,
+      0.8447619080543518,
+      0.8447752594947815
     ],
     "top1_correct": false,
-    "top3_correct": true,
+    "top3_correct": false,
     "top5_correct": true
   },
   {
@@ -94,11 +94,11 @@
       ""
     ],
     "retrieved_distances": [
-      0.9385997653007507,
-      0.984653115272522,
-      1.047525405883789,
-      1.052884817123413,
-      1.0651503801345825
+      0.9390363693237305,
+      0.9851393699645996,
+      1.0478274822235107,
+      1.053357481956482,
+      1.065864086151123
     ],
     "top1_correct": true,
     "top3_correct": true,
@@ -129,11 +129,11 @@
       ""
     ],
     "retrieved_distances": [
-      0.9593276977539062,
-      1.0457494258880615,
-      1.0560811758041382,
-      1.0610768795013428,
-      1.1061879396438599
+      0.9594990611076355,
+      1.0457926988601685,
+      1.056164264678955,
+      1.0611331462860107,
+      1.110628366470337
     ],
     "top1_correct": false,
     "top3_correct": true,
@@ -164,11 +164,11 @@
       ""
     ],
     "retrieved_distances": [
-      0.9993682503700256,
-      1.0219428539276123,
-      1.0256917476654053,
-      1.0260593891143799,
-      1.030619502067566
+      0.9991033673286438,
+      1.0217361450195312,
+      1.02534818649292,
+      1.0258355140686035,
+      1.0304148197174072
     ],
     "top1_correct": true,
     "top3_correct": true,
@@ -199,11 +199,11 @@
       ""
     ],
     "retrieved_distances": [
-      0.7658628225326538,
+      0.765745222568512,
       0.9402446150779724,
       1.0049896240234375,
-      1.0227134227752686,
-      1.0271552801132202
+      1.0230441093444824,
+      1.0270828008651733
     ],
     "top1_correct": true,
     "top3_correct": true,
@@ -213,32 +213,32 @@
     "question": "What is a Python function?",
     "expected_lesson": "w1d2",
     "retrieved_lessons": [
-      "w1d2",
-      "w1d2",
       "extra",
+      "w1d2",
+      "w1d2",
       "w1d2",
       "w1d2"
     ],
     "retrieved_sources": [
-      "Python Functions I (intro + parameters, defaults parameters, positional and keyword params)",
-      "Python Functions I (intro + parameters, defaults parameters, positional and keyword params)",
       "3_functions.ipynb",
+      "Python Functions I (intro + parameters, defaults parameters, positional and keyword params)",
+      "Python Functions I (intro + parameters, defaults parameters, positional and keyword params)",
       "Python Functions IV (lambda functions)",
       "Python Functions I (intro + parameters, defaults parameters, positional and keyword params)"
     ],
     "retrieved_headings": [
-      "",
-      "",
       "Python Functions",
+      "",
+      "",
       "",
       ""
     ],
     "retrieved_distances": [
-      0.8665604591369629,
-      0.8964059352874756,
-      0.7565815448760986,
-      0.9090316295623779,
-      0.9147438406944275
+      0.756672739982605,
+      0.8666136264801025,
+      0.8964943885803223,
+      0.9092555642127991,
+      0.9148533940315247
     ],
     "top1_correct": true,
     "top3_correct": true,
@@ -249,31 +249,31 @@
     "expected_lesson": "w1d2",
     "retrieved_lessons": [
       "w1d2",
-      "w1d2",
-      "w1d2",
       "extra",
+      "w1d2",
+      "w1d2",
       "w1d2"
     ],
     "retrieved_sources": [
       "Python Functions I (intro + parameters, defaults parameters, positional and keyword params)",
-      "Python Functions I (intro + parameters, defaults parameters, positional and keyword params)",
-      "Python Functions I (intro + parameters, defaults parameters, positional and keyword params)",
       "3_functions.ipynb",
+      "Python Functions I (intro + parameters, defaults parameters, positional and keyword params)",
+      "Python Functions I (intro + parameters, defaults parameters, positional and keyword params)",
       "Python Functions I (intro + parameters, defaults parameters, positional and keyword params)"
     ],
     "retrieved_headings": [
       "",
-      "",
-      "",
       "Positional Arguments & Keyword Arguments",
+      "",
+      "",
       ""
     ],
     "retrieved_distances": [
-      0.7254427075386047,
-      0.863539457321167,
-      0.898382306098938,
-      0.8738604784011841,
-      0.9433074593544006
+      0.7253482937812805,
+      0.8738656640052795,
+      0.8634837865829468,
+      0.8983911275863647,
+      0.9432402849197388
     ],
     "top1_correct": true,
     "top3_correct": true,
@@ -287,28 +287,28 @@
       "w1d2",
       "w1d2",
       "w1d2",
-      "w1d2"
+      "extra"
     ],
     "retrieved_sources": [
       "Python Functions III (Scope)",
       "Python Functions III (Scope)",
       "Python Functions III (Scope)",
       "Python Functions III (Scope)",
-      "Python Functions III (Scope)"
+      "3_functions.ipynb"
     ],
     "retrieved_headings": [
       "",
       "",
       "",
       "",
-      ""
+      "Scope"
     ],
     "retrieved_distances": [
       0.7803429961204529,
-      0.7921515703201294,
+      0.7918356657028198,
       0.811142086982727,
       0.823982834815979,
-      0.8398084044456482
+      0.8387514352798462
     ],
     "top1_correct": true,
     "top3_correct": true,
@@ -319,31 +319,31 @@
     "expected_lesson": "w1d2",
     "retrieved_lessons": [
       "w1d2",
+      "extra",
       "w1d2",
       "w1d2",
-      "w1d5",
-      "w1d2"
+      "w1d5"
     ],
     "retrieved_sources": [
       "Python Functions IV (lambda functions)",
+      "3_functions.ipynb",
       "Python Functions IV (lambda functions)",
       "Python Functions IV (lambda functions)",
-      "Pandas Groupby",
-      "Python Functions IV (lambda functions)"
+      "Pandas Groupby"
     ],
     "retrieved_headings": [
       "",
-      "",
+      "Lambda functions",
       "",
       "",
       ""
     ],
     "retrieved_distances": [
-      0.6590368151664734,
-      0.8148237466812134,
-      0.8526248335838318,
-      0.8772507905960083,
-      0.8805585503578186
+      0.6591662764549255,
+      0.7765270471572876,
+      0.8149451017379761,
+      0.8532852530479431,
+      0.8773609399795532
     ],
     "top1_correct": true,
     "top3_correct": true,
@@ -374,11 +374,11 @@
       ""
     ],
     "retrieved_distances": [
-      0.7274947166442871,
-      0.7574928998947144,
-      0.7611433267593384,
-      0.7624813318252563,
-      0.7653759717941284
+      0.7273983955383301,
+      0.7574176788330078,
+      0.7610748410224915,
+      0.7624391317367554,
+      0.7653892636299133
     ],
     "top1_correct": true,
     "top3_correct": true,
@@ -390,30 +390,30 @@
     "retrieved_lessons": [
       "w1d2",
       "w1d2",
-      "w1d2",
+      "extra",
       "w1d2",
       "w1d2"
     ],
     "retrieved_sources": [
       "Python List Comprehensions Explained",
       "Python List Comprehensions Explained",
-      "Python List Comprehensions Explained",
+      "4_comprehensions.ipynb",
       "Python List Comprehensions Explained",
       "Python List Comprehensions Explained"
     ],
     "retrieved_headings": [
       "",
       "",
-      "",
+      "Python Comprehensions",
       "",
       ""
     ],
     "retrieved_distances": [
-      0.6740102767944336,
-      0.7031202912330627,
-      0.7227771282196045,
-      0.7241051197052002,
-      0.7342995405197144
+      0.6737393736839294,
+      0.7028633952140808,
+      0.7544269561767578,
+      0.7225319147109985,
+      0.7238987684249878
     ],
     "top1_correct": true,
     "top3_correct": true,
@@ -421,41 +421,6 @@
   },
   {
     "question": "How do try and except work?",
-    "expected_lesson": "w1d3",
-    "retrieved_lessons": [
-      "w5d2",
-      "w7d3",
-      "w5d3",
-      "w7d3",
-      "w5d2"
-    ],
-    "retrieved_sources": [
-      "Prompt Engineering",
-      "Retrieval Agents",
-      "OpenAI API Usage + example of prompt injection",
-      "Retrieval Agents",
-      "Prompt Engineering"
-    ],
-    "retrieved_headings": [
-      "",
-      "",
-      "",
-      "",
-      ""
-    ],
-    "retrieved_distances": [
-      1.217742919921875,
-      1.224155306816101,
-      1.2583796977996826,
-      1.2591441869735718,
-      1.268076777458191
-    ],
-    "top1_correct": false,
-    "top3_correct": false,
-    "top5_correct": false
-  },
-  {
-    "question": "Why is exception handling important?",
     "expected_lesson": "w1d3",
     "retrieved_lessons": [
       "w1d3",
@@ -479,15 +444,50 @@
       ""
     ],
     "retrieved_distances": [
-      0.9699089527130127,
-      0.9981050491333008,
-      1.0278939008712769,
-      1.048174500465393,
-      1.064293384552002
+      1.152381181716919,
+      1.1815910339355469,
+      1.2215070724487305,
+      1.2245020866394043,
+      1.2288005352020264
     ],
     "top1_correct": true,
     "top3_correct": true,
     "top5_correct": true
+  },
+  {
+    "question": "Why is exception handling important?",
+    "expected_lesson": "w1d3",
+    "retrieved_lessons": [
+      "w2d3",
+      "w2d4",
+      "w2d3",
+      "w2d3",
+      "w2d3"
+    ],
+    "retrieved_sources": [
+      "End to End Supervised Learning Workflow \ud83d\udccc",
+      "Supervised End-to-end process (activity + QA)",
+      "End to End Supervised Learning Workflow \ud83d\udccc",
+      "End to End Supervised Learning Workflow \ud83d\udccc",
+      "End to End Supervised Learning Workflow \ud83d\udccc"
+    ],
+    "retrieved_headings": [
+      "",
+      "",
+      "",
+      "",
+      ""
+    ],
+    "retrieved_distances": [
+      1.3373360633850098,
+      1.3506234884262085,
+      1.3545143604278564,
+      1.377314805984497,
+      1.378493070602417
+    ],
+    "top1_correct": false,
+    "top3_correct": false,
+    "top5_correct": false
   },
   {
     "question": "What does map() do?",
@@ -514,11 +514,11 @@
       ""
     ],
     "retrieved_distances": [
-      0.9929766654968262,
-      0.9977962970733643,
-      1.036440134048462,
-      1.050502896308899,
-      1.0510467290878296
+      0.9929631352424622,
+      0.9977328777313232,
+      1.0363118648529053,
+      1.0504146814346313,
+      1.05095636844635
     ],
     "top1_correct": true,
     "top3_correct": true,
@@ -553,7 +553,7 @@
       1.0220763683319092,
       1.0417803525924683,
       1.0448956489562988,
-      1.0545843839645386
+      1.0545217990875244
     ],
     "top1_correct": false,
     "top3_correct": false,
@@ -567,14 +567,14 @@
       "w2d1",
       "w2d1",
       "w2d2",
-      "w2d3"
+      "w2d4"
     ],
     "retrieved_sources": [
       "ML demo II (Logistic Regression)",
       "ML demo II (Logistic Regression)",
       "ML demo II (Logistic Regression)",
       "ML Algorithms Classification",
-      "IV (class imbalance, train and compare, hyperparameter tuning, final evaluation)"
+      "Supervised End-to-end process (activity + QA)"
     ],
     "retrieved_headings": [
       "",
@@ -584,11 +584,11 @@
       ""
     ],
     "retrieved_distances": [
-      1.237083911895752,
-      1.257378101348877,
-      1.2991293668746948,
-      1.308207392692566,
-      1.330960750579834
+      1.2370320558547974,
+      1.257340908050537,
+      1.299058437347412,
+      1.3081965446472168,
+      1.3342792987823486
     ],
     "top1_correct": false,
     "top3_correct": false,
@@ -619,11 +619,11 @@
       ""
     ],
     "retrieved_distances": [
-      0.7360358834266663,
-      0.764286458492279,
-      0.8012089729309082,
-      0.8246431350708008,
-      0.8548427820205688
+      0.7360201478004456,
+      0.7641624808311462,
+      0.8008970022201538,
+      0.8244765400886536,
+      0.8548858761787415
     ],
     "top1_correct": true,
     "top3_correct": true,
@@ -654,11 +654,11 @@
       ""
     ],
     "retrieved_distances": [
-      0.6116902828216553,
-      0.6182556748390198,
-      0.7035323977470398,
-      0.7112579345703125,
-      0.723199725151062
+      0.611121654510498,
+      0.6188087463378906,
+      0.7035694122314453,
+      0.7112882137298584,
+      0.7226292490959167
     ],
     "top1_correct": true,
     "top3_correct": true,
@@ -668,32 +668,32 @@
     "question": "What is Pandas?",
     "expected_lesson": "w1d4",
     "retrieved_lessons": [
-      "w1d4",
-      "w1d4",
-      "w1d4",
       "extra",
-      "w1d4"
+      "w1d4",
+      "w1d4",
+      "w1d4",
+      "extra"
     ],
     "retrieved_sources": [
-      "Pandas",
-      "Pandas",
-      "Pandas",
       "3_1_pandas_intro.ipynb",
-      "Pandas"
+      "Pandas",
+      "Pandas",
+      "Pandas",
+      "3_1_pandas_intro.ipynb"
     ],
     "retrieved_headings": [
-      "",
-      "",
-      "",
       "Pandas intro",
-      ""
+      "",
+      "",
+      "",
+      "Pandas DataFrames"
     ],
     "retrieved_distances": [
-      0.7953574657440186,
-      0.8056110143661499,
-      0.8183954954147339,
-      0.6838379502296448,
-      0.8452721238136292
+      0.6839726567268372,
+      0.7954432964324951,
+      0.8057851791381836,
+      0.8185603022575378,
+      0.8388660550117493
     ],
     "top1_correct": true,
     "top3_correct": true,
@@ -724,11 +724,11 @@
       ""
     ],
     "retrieved_distances": [
-      0.7155548930168152,
-      0.7553956508636475,
-      0.7893739938735962,
-      0.8182398676872253,
-      0.8274692296981812
+      0.7153900861740112,
+      0.7552218437194824,
+      0.7892775535583496,
+      0.8180698752403259,
+      0.8272616267204285
     ],
     "top1_correct": true,
     "top3_correct": true,
@@ -742,28 +742,28 @@
       "extra",
       "w1d5",
       "w1d5",
-      "w1d5"
+      "extra"
     ],
     "retrieved_sources": [
       "3_2_pandas_groupby.ipynb",
       "3_2_pandas_groupby.ipynb",
       "Pandas Groupby",
       "Pandas Groupby",
-      "Pandas Groupby"
+      "3_2_pandas_groupby.ipynb"
     ],
     "retrieved_headings": [
       "Pandas Groupby",
       "Intro",
       "",
       "",
-      ""
+      "Split-Apply-Combine Pattern"
     ],
     "retrieved_distances": [
-      0.6138744354248047,
-      0.6412943601608276,
-      0.8469283580780029,
-      0.8635586500167847,
-      0.8713955283164978
+      0.6143399477005005,
+      0.6418701410293579,
+      0.8475204110145569,
+      0.8642435669898987,
+      0.8207235336303711
     ],
     "top1_correct": true,
     "top3_correct": true,
@@ -776,29 +776,29 @@
       "w1d5",
       "w1d5",
       "w1d5",
-      "w1d5",
+      "extra",
       "w1d5"
     ],
     "retrieved_sources": [
       "Pandas Concat and Merge",
       "Pandas Concat and Merge",
       "Pandas Concat and Merge",
-      "Pandas Concat and Merge",
+      "3_3_pandas_combining_dataframes.ipynb",
       "Pandas Concat and Merge"
     ],
     "retrieved_headings": [
       "",
       "",
       "",
-      "",
+      "3. Merge",
       ""
     ],
     "retrieved_distances": [
-      0.6144026517868042,
-      0.6836987733840942,
-      0.7136631608009338,
-      0.7181717157363892,
-      0.7652620673179626
+      0.6139306426048279,
+      0.6836642622947693,
+      0.713979959487915,
+      0.716020405292511,
+      0.7181817889213562
     ],
     "top1_correct": true,
     "top3_correct": true,
@@ -810,30 +810,30 @@
     "retrieved_lessons": [
       "w1d5",
       "w1d5",
-      "w1d5",
+      "extra",
       "w1d5",
       "w1d5"
     ],
     "retrieved_sources": [
       "Pandas Concat and Merge",
       "Pandas Concat and Merge",
-      "Pandas Concat and Merge",
+      "3_3_pandas_combining_dataframes.ipynb",
       "Pandas Concat and Merge",
       "Pandas Concat and Merge"
     ],
     "retrieved_headings": [
       "",
       "",
-      "",
+      "2. Concat",
       "",
       ""
     ],
     "retrieved_distances": [
-      0.5952136516571045,
-      0.6147311925888062,
-      0.67432701587677,
-      0.6858879923820496,
-      0.696063756942749
+      0.5952242612838745,
+      0.614626944065094,
+      0.6176548600196838,
+      0.6744699478149414,
+      0.6857367753982544
     ],
     "top1_correct": true,
     "top3_correct": true,
@@ -866,9 +866,9 @@
     "retrieved_distances": [
       0.7629734873771667,
       0.8084977865219116,
-      0.822294294834137,
-      0.8574850559234619,
-      0.8706550002098083
+      0.8222370743751526,
+      0.8575083613395691,
+      0.8707219958305359
     ],
     "top1_correct": true,
     "top3_correct": true,
@@ -899,11 +899,11 @@
       ""
     ],
     "retrieved_distances": [
-      0.9041881561279297,
-      0.9171518683433533,
-      0.9443082213401794,
-      0.9662870168685913,
-      0.9709339141845703
+      0.9042177200317383,
+      0.9169206619262695,
+      0.9441766738891602,
+      0.9661832451820374,
+      0.9707846641540527
     ],
     "top1_correct": true,
     "top3_correct": true,
@@ -934,11 +934,11 @@
       ""
     ],
     "retrieved_distances": [
-      0.8924828767776489,
-      0.9092779755592346,
-      0.8729475140571594,
-      0.9601929783821106,
-      0.9671940207481384
+      0.8925777077674866,
+      0.9093933701515198,
+      0.8731178045272827,
+      0.9603767991065979,
+      0.9674215316772461
     ],
     "top1_correct": true,
     "top3_correct": true,
@@ -952,32 +952,32 @@
       "w2d3",
       "w2d3",
       "w2d3",
-      "w2d1"
+      "w2d3"
     ],
     "retrieved_sources": [
       "II (data splitting)",
       "II (data splitting)",
       "II (data splitting)",
-      "II (data splitting)",
-      "ML demo I - Linear Regression (train-test split, train a model, overfitting...)"
+      "7_supervised_end_to_end_demo.ipynb",
+      "End to End Supervised Learning Workflow \ud83d\udccc"
     ],
     "retrieved_headings": [
       "",
       "",
       "",
-      "",
+      "4.1 - Common options for splitting data",
       ""
     ],
     "retrieved_distances": [
       0.727716326713562,
       0.7313535213470459,
       0.7766680121421814,
-      0.835774838924408,
-      0.8499574661254883
+      0.8751004338264465,
+      0.8285313248634338
     ],
     "top1_correct": false,
     "top3_correct": false,
-    "top5_correct": true
+    "top5_correct": false
   },
   {
     "question": "What is overfitting?",
@@ -1004,11 +1004,11 @@
       ""
     ],
     "retrieved_distances": [
-      0.7582788467407227,
-      0.7586259841918945,
-      0.7317861318588257,
-      0.7451149225234985,
-      0.7728143930435181
+      0.7574730515480042,
+      0.7585625052452087,
+      0.7317654490470886,
+      0.7446736097335815,
+      0.772775411605835
     ],
     "top1_correct": true,
     "top3_correct": true,
@@ -1039,11 +1039,11 @@
       ""
     ],
     "retrieved_distances": [
-      0.8029301166534424,
-      0.8461226224899292,
-      0.836530327796936,
-      0.9683586955070496,
-      0.8287656903266907
+      0.8027881383895874,
+      0.8459914922714233,
+      0.8356810808181763,
+      0.9682875871658325,
+      0.8287001252174377
     ],
     "top1_correct": false,
     "top3_correct": true,
@@ -1109,11 +1109,11 @@
       ""
     ],
     "retrieved_distances": [
-      0.649936854839325,
-      0.7939637303352356,
-      0.8413729667663574,
-      0.8655787706375122,
-      0.871051549911499
+      0.6499440670013428,
+      0.7949148416519165,
+      0.8414666652679443,
+      0.8655165433883667,
+      0.8710213303565979
     ],
     "top1_correct": true,
     "top3_correct": true,
@@ -1144,11 +1144,11 @@
       ""
     ],
     "retrieved_distances": [
-      0.5332633256912231,
-      0.6846506595611572,
-      0.7525640726089478,
-      0.8419714570045471,
-      0.7461743950843811
+      0.533535361289978,
+      0.6849393844604492,
+      0.757152795791626,
+      0.8424566984176636,
+      0.7466185092926025
     ],
     "top1_correct": true,
     "top3_correct": true,
@@ -1179,11 +1179,11 @@
       ""
     ],
     "retrieved_distances": [
-      0.8795613646507263,
-      0.8833619356155396,
-      0.9272931814193726,
-      0.8681671023368835,
-      0.9543066024780273
+      0.8797049522399902,
+      0.8839884996414185,
+      0.9274592399597168,
+      0.8688420057296753,
+      0.955281138420105
     ],
     "top1_correct": false,
     "top3_correct": true,
@@ -1214,11 +1214,11 @@
       ""
     ],
     "retrieved_distances": [
-      0.9185439348220825,
-      0.9704163670539856,
-      1.083467960357666,
-      0.9863848686218262,
-      1.0174988508224487
+      0.9186933040618896,
+      0.9705116748809814,
+      1.084120512008667,
+      0.9866793155670166,
+      1.017714023590088
     ],
     "top1_correct": true,
     "top3_correct": true,
@@ -1231,15 +1231,15 @@
       "w7d3",
       "w7d3",
       "w7d3",
-      "w7d5",
-      "w7d3"
+      "w7d3",
+      "w7d5"
     ],
     "retrieved_sources": [
       "Retrieval Agents",
       "Retrieval Agents",
       "Retrieval Agents",
-      "Recap Week 7",
-      "Retrieval Agents"
+      "Retrieval Agents",
+      "Recap Week 7"
     ],
     "retrieved_headings": [
       "",
@@ -1249,11 +1249,11 @@
       ""
     ],
     "retrieved_distances": [
-      1.1632544994354248,
-      1.1864657402038574,
-      1.2237169742584229,
-      1.2410215139389038,
-      1.2494728565216064
+      1.1627734899520874,
+      1.1859240531921387,
+      1.2219877243041992,
+      1.2231885194778442,
+      1.2404674291610718
     ],
     "top1_correct": false,
     "top3_correct": false,
@@ -1284,11 +1284,11 @@
       ""
     ],
     "retrieved_distances": [
-      0.8679709434509277,
-      1.0218316316604614,
-      1.0238581895828247,
-      1.0499801635742188,
-      1.0510470867156982
+      0.867986261844635,
+      1.0218088626861572,
+      1.0238940715789795,
+      1.050083875656128,
+      1.0511757135391235
     ],
     "top1_correct": false,
     "top3_correct": true,
@@ -1309,21 +1309,21 @@
       "ML Algorithms Classification",
       "ML Algorithms Classification",
       "ML Algorithms Classification",
-      "6_supervised_algorithms_classification.ipynb"
+      "ML Algorithms Classification"
     ],
     "retrieved_headings": [
       "",
       "",
       "",
       "",
-      "5. Other Algorithms"
+      ""
     ],
     "retrieved_distances": [
-      0.6736522316932678,
-      0.6844673156738281,
-      0.705163300037384,
-      0.7115395069122314,
-      0.8126873970031738
+      0.6735655069351196,
+      0.6844507455825806,
+      0.7050996422767639,
+      0.7114606499671936,
+      0.7581251263618469
     ],
     "top1_correct": true,
     "top3_correct": true,
@@ -1354,11 +1354,11 @@
       "1. Linear Models"
     ],
     "retrieved_distances": [
-      0.7434401512145996,
-      0.7097028493881226,
-      0.7171547412872314,
-      0.7686792612075806,
-      0.7886213660240173
+      0.7435932159423828,
+      0.7096542716026306,
+      0.7171326279640198,
+      0.7685343027114868,
+      0.7886253595352173
     ],
     "top1_correct": true,
     "top3_correct": true,
@@ -1389,11 +1389,11 @@
       ""
     ],
     "retrieved_distances": [
-      0.7074638605117798,
-      0.7803662419319153,
-      0.7866370677947998,
-      0.7879767417907715,
-      0.7897583246231079
+      0.7073029279708862,
+      0.7802409529685974,
+      0.7861185073852539,
+      0.7879692316055298,
+      0.7896836400032043
     ],
     "top1_correct": true,
     "top3_correct": true,
@@ -1424,11 +1424,11 @@
       ""
     ],
     "retrieved_distances": [
-      0.8000603914260864,
-      0.9199379682540894,
-      0.8497968912124634,
-      0.8745484352111816,
-      0.8935421109199524
+      0.800055980682373,
+      0.9198027849197388,
+      0.8494235277175903,
+      0.8745650053024292,
+      0.8935967683792114
     ],
     "top1_correct": true,
     "top3_correct": true,
@@ -1459,11 +1459,11 @@
       ""
     ],
     "retrieved_distances": [
-      1.0431724786758423,
-      0.9621458649635315,
-      1.0625933408737183,
-      1.043709635734558,
-      1.0549991130828857
+      1.043180227279663,
+      0.9621495008468628,
+      1.0625886917114258,
+      1.0249643325805664,
+      1.043688178062439
     ],
     "top1_correct": true,
     "top3_correct": true,
@@ -1494,11 +1494,11 @@
       ""
     ],
     "retrieved_distances": [
-      0.7200949192047119,
-      0.7829097509384155,
-      0.786078929901123,
-      0.7870151400566101,
-      0.7890884280204773
+      0.7201182246208191,
+      0.7861353754997253,
+      0.7870523929595947,
+      0.7899892330169678,
+      0.790924072265625
     ],
     "top1_correct": true,
     "top3_correct": true,
@@ -1529,11 +1529,11 @@
       ""
     ],
     "retrieved_distances": [
-      0.6704279780387878,
-      0.7179895639419556,
-      0.7817524075508118,
-      0.7994158864021301,
-      0.8263987302780151
+      0.6705756187438965,
+      0.7179332971572876,
+      0.7821117639541626,
+      0.7994492053985596,
+      0.8263797760009766
     ],
     "top1_correct": true,
     "top3_correct": true,
@@ -1564,11 +1564,11 @@
       ""
     ],
     "retrieved_distances": [
-      0.6434652209281921,
-      0.7875658869743347,
-      0.7905654907226562,
-      0.8006765842437744,
-      0.862334668636322
+      0.6427431702613831,
+      0.7873936891555786,
+      0.7902642488479614,
+      0.8008185625076294,
+      0.8621358871459961
     ],
     "top1_correct": true,
     "top3_correct": true,
@@ -1599,11 +1599,11 @@
       ""
     ],
     "retrieved_distances": [
-      0.8749346137046814,
-      0.875751256942749,
-      0.8822674751281738,
-      0.898769736289978,
-      0.8989822864532471
+      0.8751129508018494,
+      0.8760883808135986,
+      0.8836830854415894,
+      0.8989827632904053,
+      0.8992167711257935
     ],
     "top1_correct": true,
     "top3_correct": true,
@@ -1634,11 +1634,11 @@
       ""
     ],
     "retrieved_distances": [
-      0.7899031043052673,
-      0.8077203631401062,
-      0.8599089980125427,
-      0.828193187713623,
-      0.8350653648376465
+      0.7903165817260742,
+      0.8079283237457275,
+      0.8601543307304382,
+      0.828281044960022,
+      0.8352288007736206
     ],
     "top1_correct": true,
     "top3_correct": true,
@@ -1669,11 +1669,11 @@
       "Use cases"
     ],
     "retrieved_distances": [
-      0.7086419463157654,
-      0.731877863407135,
-      0.9201459884643555,
-      0.8327516317367554,
-      0.9560471177101135
+      0.7084643840789795,
+      0.7317864894866943,
+      0.9198393225669861,
+      0.8327083587646484,
+      0.955771267414093
     ],
     "top1_correct": true,
     "top3_correct": true,
@@ -1704,11 +1704,11 @@
       ""
     ],
     "retrieved_distances": [
-      1.015405297279358,
-      1.038834810256958,
-      1.0575217008590698,
-      1.0639915466308594,
-      1.068189263343811
+      1.0156091451644897,
+      1.0389630794525146,
+      1.057767391204834,
+      1.0642199516296387,
+      1.0698261260986328
     ],
     "top1_correct": true,
     "top3_correct": true,
@@ -1739,11 +1739,11 @@
       ""
     ],
     "retrieved_distances": [
-      0.7568707466125488,
-      0.7820695042610168,
-      0.7831753492355347,
-      0.8313812017440796,
-      0.8512465953826904
+      0.7567790150642395,
+      0.7817123532295227,
+      0.7829363346099854,
+      0.8311643004417419,
+      0.8506525754928589
     ],
     "top1_correct": true,
     "top3_correct": true,
@@ -1760,25 +1760,25 @@
       "w4d2"
     ],
     "retrieved_sources": [
+      "Example of NLP + unsupervised learning (News Clustering)",
       "NLP II (tokenization, remove punctuation, stemmers and lemmatizers)",
       "NLP_2.ipynb",
       "Example of NLP + unsupervised learning (News Clustering)",
-      "NLP II (tokenization, remove punctuation, stemmers and lemmatizers)",
       "NLP II (tokenization, remove punctuation, stemmers and lemmatizers)"
     ],
     "retrieved_headings": [
       "",
-      "2.3 Stemming and Lemmatizing",
       "",
+      "2.3 Stemming and Lemmatizing",
       "",
       ""
     ],
     "retrieved_distances": [
-      0.8439770340919495,
-      0.9162596464157104,
-      0.8949016332626343,
-      0.9143209457397461,
-      0.9466272592544556
+      0.8426023125648499,
+      0.8439657688140869,
+      0.9164727926254272,
+      0.8948059678077698,
+      0.9142463207244873
     ],
     "top1_correct": true,
     "top3_correct": true,
@@ -1809,11 +1809,11 @@
       "3.3 Feature weighting (Inverse Document Frequency)"
     ],
     "retrieved_distances": [
-      0.800755500793457,
-      0.7878139019012451,
-      0.9253395199775696,
-      0.7997943162918091,
-      0.9398335218429565
+      0.8008044958114624,
+      0.7878994345664978,
+      0.9254643321037292,
+      0.7998402714729309,
+      0.9399487972259521
     ],
     "top1_correct": true,
     "top3_correct": true,
@@ -1845,8 +1845,8 @@
     ],
     "retrieved_distances": [
       0.7425111532211304,
-      0.9891822338104248,
-      0.8762832880020142,
+      0.9891211986541748,
+      0.8762182593345642,
       0.9010744690895081,
       0.952372670173645
     ],
@@ -1879,11 +1879,11 @@
       ""
     ],
     "retrieved_distances": [
-      0.7868159413337708,
-      0.6724567413330078,
-      0.8829306364059448,
-      0.8267492055892944,
-      0.8976949453353882
+      0.7862849235534668,
+      0.6719793677330017,
+      0.8823588490486145,
+      0.826202929019928,
+      0.8971656560897827
     ],
     "top1_correct": true,
     "top3_correct": true,
@@ -1914,11 +1914,11 @@
       ""
     ],
     "retrieved_distances": [
-      0.7029309272766113,
-      0.6197008490562439,
-      0.6301381587982178,
-      0.632133424282074,
-      0.6579844951629639
+      0.7027837038040161,
+      0.6196314096450806,
+      0.6300421953201294,
+      0.6324125528335571,
+      0.6579445600509644
     ],
     "top1_correct": true,
     "top3_correct": true,
@@ -1949,11 +1949,11 @@
       ""
     ],
     "retrieved_distances": [
-      0.6645715236663818,
-      0.636074960231781,
-      0.6984220743179321,
-      0.665428638458252,
-      0.6768365502357483
+      0.6645770072937012,
+      0.6361027956008911,
+      0.6984489560127258,
+      0.6653461456298828,
+      0.676766037940979
     ],
     "top1_correct": true,
     "top3_correct": true,
@@ -1974,7 +1974,7 @@
       "SQLite I - Intro and CRUD operations",
       "SQLite I - Intro and CRUD operations",
       "SQLite I - Intro and CRUD operations",
-      "Intro to Databases + SQLite setup"
+      "SQLite I - Intro and CRUD operations"
     ],
     "retrieved_headings": [
       "",
@@ -1984,11 +1984,11 @@
       ""
     ],
     "retrieved_distances": [
-      0.7156738042831421,
-      0.7645247578620911,
-      0.8032727241516113,
-      0.8202375769615173,
-      0.8486868143081665
+      0.7155230641365051,
+      0.7643218040466309,
+      0.803081750869751,
+      0.8201043605804443,
+      0.8484686613082886
     ],
     "top1_correct": true,
     "top3_correct": true,
@@ -2005,23 +2005,23 @@
       "w5d2"
     ],
     "retrieved_sources": [
-      "1_whats_an_api.ipynb",
       "What's an API",
+      "1_whats_an_api.ipynb",
       "What's an API",
       "What's an API",
       "What's an API"
     ],
     "retrieved_headings": [
-      "What is an API?",
       "",
+      "What is an API?",
       "",
       "",
       ""
     ],
     "retrieved_distances": [
-      0.7461076974868774,
       0.6400248408317566,
-      0.6866912245750427,
+      0.746167004108429,
+      0.6887574791908264,
       0.7158942222595215,
       0.7594665884971619
     ],
@@ -2042,9 +2042,9 @@
     "retrieved_sources": [
       "OpenAI API example I",
       "OpenAI API example I",
-      "2_openai_api_demo.ipynb",
       "OpenAI API example I",
-      "What's an API"
+      "What's an API",
+      "OpenAI API example I"
     ],
     "retrieved_headings": [
       "",
@@ -2054,11 +2054,11 @@
       ""
     ],
     "retrieved_distances": [
-      0.6260021924972534,
-      0.6548522114753723,
-      0.7325209975242615,
-      0.6851150989532471,
-      0.7043854594230652
+      0.6259398460388184,
+      0.6547755002975464,
+      0.684999406337738,
+      0.7043492794036865,
+      0.7216798663139343
     ],
     "top1_correct": true,
     "top3_correct": true,
@@ -2089,11 +2089,11 @@
       "Structure of a Prompt"
     ],
     "retrieved_distances": [
-      0.9590912461280823,
-      0.9259434342384338,
-      1.076850414276123,
-      0.9841464161872864,
-      1.086005449295044
+      0.9594910144805908,
+      0.9251787066459656,
+      1.079211711883545,
+      0.9842332005500793,
+      1.0859591960906982
     ],
     "top1_correct": true,
     "top3_correct": true,
@@ -2124,11 +2124,11 @@
       "Recommendations to Avoid Prompt Injection Attacks"
     ],
     "retrieved_distances": [
-      0.8157294392585754,
-      0.8249484896659851,
-      0.6780393123626709,
-      0.6810058355331421,
-      0.8564668297767639
+      0.8164451122283936,
+      0.8267607092857361,
+      0.6781257390975952,
+      0.6807917952537537,
+      0.8560218214988708
     ],
     "top1_correct": true,
     "top3_correct": true,
@@ -2159,11 +2159,11 @@
       "How Tool Calling Works"
     ],
     "retrieved_distances": [
-      0.715441882610321,
-      0.7465311884880066,
-      0.6124241352081299,
-      0.6259374618530273,
-      0.8007378578186035
+      0.7155596017837524,
+      0.7466781139373779,
+      0.612263560295105,
+      0.6260021924972534,
+      0.8009126782417297
     ],
     "top1_correct": true,
     "top3_correct": true,
@@ -2175,30 +2175,30 @@
     "retrieved_lessons": [
       "w5d4",
       "w5d4",
+      "extra",
       "w5d4",
-      "w5d4",
-      "w5d5"
+      "w5d4"
     ],
     "retrieved_sources": [
       "1_quantization.ipynb",
       "1_quantization.ipynb",
+      "3_explanations_qlora.ipynb",
       "1_quantization.ipynb",
-      "Quantization + Labs intro",
-      "QLoRA + Labs intro"
+      "Quantization + Labs intro"
     ],
     "retrieved_headings": [
       "2. What Is Quantization, Conceptually?",
       "1. Why Quantization?",
+      "Brief Introduction to Quantization",
       "7. Key Takeaways",
-      "",
       ""
     ],
     "retrieved_distances": [
-      0.5670518279075623,
-      0.6320002675056458,
-      0.719633162021637,
-      0.6792542338371277,
-      0.688147783279419
+      0.5671256184577942,
+      0.6323030591011047,
+      0.6257877349853516,
+      0.7197257280349731,
+      0.6793950796127319
     ],
     "top1_correct": true,
     "top3_correct": true,
@@ -2210,30 +2210,30 @@
     "retrieved_lessons": [
       "extra",
       "extra",
+      "extra",
       "w5d5",
-      "w5d5",
-      "w5d5"
+      "extra"
     ],
     "retrieved_sources": [
       "1_transfer_learning.ipynb",
       "1_transfer_learning.ipynb",
+      "1_transfer_learning.ipynb",
       "Transfer Learning + LoRA",
-      "Transfer Learning + LoRA",
-      "Transfer Learning + LoRA"
+      "1_transfer_learning.ipynb"
     ],
     "retrieved_headings": [
       "What is Transfer Learning",
       "Transfer Learning",
+      "Main categories of Transfer Learning",
       "",
-      "",
-      ""
+      "Main categories of Transfer Learning"
     ],
     "retrieved_distances": [
-      0.6288168430328369,
-      0.6306909322738647,
-      0.788399338722229,
-      0.8476443290710449,
-      0.8639006018638611
+      0.6289637088775635,
+      0.6308729648590088,
+      0.7912808060646057,
+      0.7885894179344177,
+      0.8746934533119202
     ],
     "top1_correct": true,
     "top3_correct": true,
@@ -2243,34 +2243,34 @@
     "question": "What is LoRA?",
     "expected_lesson": "w5d5",
     "retrieved_lessons": [
-      "w5d5",
-      "w5d5",
+      "extra",
       "extra",
       "w5d5",
+      "extra",
       "w5d5"
     ],
     "retrieved_sources": [
-      "Transfer Learning + LoRA",
-      "Transfer Learning + LoRA",
+      "3_explanations_qlora.ipynb",
       "3_explanations_qlora.ipynb",
       "Transfer Learning + LoRA",
+      "2_explanations_lora.ipynb",
       "Transfer Learning + LoRA"
     ],
     "retrieved_headings": [
-      "",
-      "",
       "LoRA vs. QLoRA",
+      "QLoRA. Fine-tuning a 4-bit Quantized Model using LoRA.",
       "",
+      "LoRA Tuning",
       ""
     ],
     "retrieved_distances": [
-      0.9070037007331848,
-      0.9313937425613403,
-      0.7850844860076904,
-      0.9392589926719666,
-      0.9511082172393799
+      0.7850337624549866,
+      0.8807405233383179,
+      0.9068698883056641,
+      0.9271528124809265,
+      0.9313158392906189
     ],
-    "top1_correct": true,
+    "top1_correct": false,
     "top3_correct": true,
     "top5_correct": true
   },
@@ -2278,32 +2278,32 @@
     "question": "What is QLoRA?",
     "expected_lesson": "w5d5",
     "retrieved_lessons": [
-      "w5d5",
       "extra",
       "extra",
       "w5d5",
-      "w5d5"
+      "w5d5",
+      "extra"
     ],
     "retrieved_sources": [
-      "QLoRA + Labs intro",
       "3_explanations_qlora.ipynb",
       "3_explanations_qlora.ipynb",
       "QLoRA + Labs intro",
-      "Transfer Learning + LoRA"
+      "QLoRA + Labs intro",
+      "3_explanations_qlora.ipynb"
     ],
     "retrieved_headings": [
-      "",
       "QLoRA. Fine-tuning a 4-bit Quantized Model using LoRA.",
       "LoRA vs. QLoRA",
       "",
-      ""
+      "",
+      "QLoRA Tuning using PEFT from Hugging Face"
     ],
     "retrieved_distances": [
-      0.8518179655075073,
       0.7114695310592651,
       0.7129015922546387,
-      0.8818671703338623,
-      0.9205048680305481
+      0.8518179655075073,
+      0.8820080757141113,
+      0.9108125567436218
     ],
     "top1_correct": true,
     "top3_correct": true,
@@ -2334,11 +2334,11 @@
       ""
     ],
     "retrieved_distances": [
-      0.6021075248718262,
-      0.6120215654373169,
-      0.628206729888916,
-      0.6488915085792542,
-      0.6989278793334961
+      0.6018844842910767,
+      0.6117802858352661,
+      0.62797611951828,
+      0.6486601829528809,
+      0.6987103819847107
     ],
     "top1_correct": true,
     "top3_correct": true,
@@ -2369,11 +2369,11 @@
       ""
     ],
     "retrieved_distances": [
-      1.037001132965088,
-      1.095246434211731,
-      1.1635160446166992,
-      1.2158410549163818,
-      1.2261894941329956
+      1.0355210304260254,
+      1.0952036380767822,
+      1.163433313369751,
+      1.2159638404846191,
+      1.2263647317886353
     ],
     "top1_correct": true,
     "top3_correct": true,
@@ -2404,11 +2404,11 @@
       ""
     ],
     "retrieved_distances": [
-      0.5967055559158325,
-      0.6044553518295288,
-      0.6157914996147156,
-      0.6654897928237915,
-      0.6675007343292236
+      0.596734881401062,
+      0.6044066548347473,
+      0.6157892942428589,
+      0.6659865379333496,
+      0.6673107147216797
     ],
     "top1_correct": true,
     "top3_correct": true,
@@ -2439,11 +2439,11 @@
       ""
     ],
     "retrieved_distances": [
-      0.5816001892089844,
-      0.6714276075363159,
-      0.6725544929504395,
-      0.7305859327316284,
-      0.6898173093795776
+      0.5833002924919128,
+      0.6714766025543213,
+      0.6726675033569336,
+      0.730542778968811,
+      0.6899950504302979
     ],
     "top1_correct": true,
     "top3_correct": true,
@@ -2453,34 +2453,34 @@
     "question": "What is LCEL?",
     "expected_lesson": "w7d1",
     "retrieved_lessons": [
+      "extra",
       "w7d1",
       "w7d1",
-      "w7d1",
-      "w7d1",
+      "w1d3",
       "w7d1"
     ],
     "retrieved_sources": [
-      "2_langchain-expression-language.ipynb",
-      "2_langchain-expression-language.ipynb",
-      "2_langchain-expression-language.ipynb",
-      "2_langchain-expression-language.ipynb",
-      "2_langchain-expression-language.ipynb"
+      "3_rag.ipynb",
+      "Langchain intro + setup with virtual environments",
+      "Langchain intro + setup with virtual environments",
+      "Discussion on LLMs (how we can use them to learn, tips, etc) + Graduation requirements",
+      "Langchain intro + setup with virtual environments"
     ],
     "retrieved_headings": [
-      "Intro to LCEL",
-      "LangChain Expression Language (LCEL)",
-      "LCEL Deep Dive",
-      "LCEL Syntax",
-      "Runnable Lambdas"
+      "RAG Dataset",
+      "",
+      "",
+      "",
+      ""
     ],
     "retrieved_distances": [
-      0.8600724935531616,
-      0.907525897026062,
-      0.9768906831741333,
-      1.0235875844955444,
-      1.0498780012130737
+      1.224149830286521,
+      1.2776614427566528,
+      1.306180477142334,
+      1.3286324739456177,
+      1.3294017314910889
     ],
-    "top1_correct": true,
+    "top1_correct": false,
     "top3_correct": true,
     "top5_correct": true
   },
@@ -2488,34 +2488,34 @@
     "question": "What is RAG?",
     "expected_lesson": "w7d2",
     "retrieved_lessons": [
+      "extra",
       "w7d2",
-      "w7d2",
-      "w7d4",
+      "extra",
       "extra",
       "w7d2"
     ],
     "retrieved_sources": [
-      "3_langchain-RAG.ipynb",
-      "RAG I - Intro",
-      "Labs intro + Q&A",
       "16_extra-langsmith-deep-dive.ipynb",
-      "RAG II - Indexing"
+      "3_langchain-RAG.ipynb",
+      "3_rag.ipynb",
+      "3_rag.ipynb",
+      "RAG I - Intro"
     ],
     "retrieved_headings": [
-      "Intro to RAG",
-      "",
-      "",
       "Evaluating RAG",
+      "Intro to RAG",
+      "RAG Evaluation",
+      "Types of RAG eval",
       ""
     ],
     "retrieved_distances": [
-      0.8784445524215698,
-      0.8320692777633667,
-      0.8375797271728516,
-      0.7400504946708679,
-      0.9065476059913635
+      0.7398761510848999,
+      0.8782690167427063,
+      0.7846516697645463,
+      0.8236223509946718,
+      0.8318225145339966
     ],
-    "top1_correct": true,
+    "top1_correct": false,
     "top3_correct": true,
     "top5_correct": true
   },
@@ -2525,30 +2525,30 @@
     "retrieved_lessons": [
       "w7d2",
       "w7d4",
-      "w7d2",
+      "extra",
       "w7d2",
       "w7d2"
     ],
     "retrieved_sources": [
       "3_langchain-RAG.ipynb",
       "Labs intro + Q&A",
+      "16_extra-langsmith-deep-dive.ipynb",
       "RAG I - Intro",
-      "3_langchain-RAG.ipynb",
-      "RAG I - Intro"
+      "3_langchain-RAG.ipynb"
     ],
     "retrieved_headings": [
       "Intro to RAG",
       "",
+      "Evaluating RAG",
       "",
-      "Intro to RAG",
-      ""
+      "Intro to RAG"
     ],
     "retrieved_distances": [
-      0.8115990161895752,
-      0.7499821186065674,
-      0.7991124987602234,
-      0.913154125213623,
-      0.8816754817962646
+      0.8119052052497864,
+      0.7502552270889282,
+      0.7898341417312622,
+      0.7994186282157898,
+      0.9131283164024353
     ],
     "top1_correct": true,
     "top3_correct": true,
@@ -2579,11 +2579,11 @@
       ""
     ],
     "retrieved_distances": [
-      0.9757380485534668,
-      0.9818484783172607,
-      1.002190113067627,
-      1.0170069932937622,
-      1.0409146547317505
+      0.9762111306190491,
+      0.9823733568191528,
+      1.0026943683624268,
+      1.0174951553344727,
+      1.0414724349975586
     ],
     "top1_correct": true,
     "top3_correct": true,
@@ -2616,8 +2616,8 @@
     "retrieved_distances": [
       0.8451255559921265,
       0.8518407344818115,
-      0.9020931124687195,
-      0.9240292310714722,
+      0.9022239446640015,
+      0.9251325726509094,
       0.9283527731895447
     ],
     "top1_correct": false,
@@ -2628,10 +2628,10 @@
     "question": "What is LangChain Memory?",
     "expected_lesson": "w7d3",
     "retrieved_lessons": [
-      "w7d2",
-      "w7d2",
-      "w7d2",
-      "w7d2",
+      "w7d3",
+      "w7d3",
+      "w7d3",
+      "w7d3",
       "w7d1"
     ],
     "retrieved_sources": [
@@ -2649,11 +2649,11 @@
       ""
     ],
     "retrieved_distances": [
-      0.5736064314842224,
+      0.5736061334609985,
       0.5773295760154724,
       0.5923129916191101,
       0.6397328972816467,
-      0.5542612671852112
+      0.5544200539588928
     ],
     "top1_correct": true,
     "top3_correct": true,
@@ -2684,11 +2684,11 @@
       ""
     ],
     "retrieved_distances": [
-      0.6615289449691772,
-      0.6992061138153076,
-      0.7383174300193787,
-      0.7629173994064331,
-      0.7979009747505188
+      0.6614043712615967,
+      0.699044406414032,
+      0.7382328510284424,
+      0.7627692222595215,
+      0.7979055643081665
     ],
     "top1_correct": true,
     "top3_correct": true,
@@ -2699,34 +2699,34 @@
     "expected_lesson": "w7d3",
     "retrieved_lessons": [
       "w7d1",
-      "w7d1",
-      "w7d1",
-      "w7d3",
-      "w7d4"
+      "extra",
+      "extra",
+      "extra",
+      "w7d1"
     ],
     "retrieved_sources": [
       "Langchain intro + setup with virtual environments",
-      "Langchain intro + setup with virtual environments",
-      "Langchain intro + setup with virtual environments",
-      "Retrieval Agents",
-      "Streaming"
+      "8_langchain-agents.ipynb",
+      "8_langchain-agents.ipynb",
+      "8_langchain-agents.ipynb",
+      "Langchain intro + setup with virtual environments"
     ],
     "retrieved_headings": [
       "",
-      "",
-      "",
-      "",
+      "What is an agent?",
+      "LangChain Agents \ud83e\udd16",
+      "Agent types",
       ""
     ],
     "retrieved_distances": [
-      0.5998365879058838,
-      0.6716796159744263,
-      0.7067513465881348,
-      0.7098119854927063,
-      0.7269333004951477
+      0.5998966693878174,
+      0.5929569467549562,
+      0.7113519310951233,
+      0.6134449725630019,
+      0.6717166304588318
     ],
     "top1_correct": false,
-    "top3_correct": false,
+    "top3_correct": true,
     "top5_correct": true
   },
   {
@@ -2754,11 +2754,11 @@
       ""
     ],
     "retrieved_distances": [
-      0.7499361038208008,
-      0.8007935285568237,
-      0.8607151508331299,
+      0.7498958110809326,
+      0.8006367683410645,
+      0.8605559468269348,
       0.8126140236854553,
-      0.8358604907989502
+      0.8367062211036682
     ],
     "top1_correct": true,
     "top3_correct": true,
@@ -2789,11 +2789,11 @@
       ""
     ],
     "retrieved_distances": [
-      0.8353343605995178,
-      1.0562647581100464,
-      0.9954662322998047,
-      1.0044665336608887,
-      1.0434130430221558
+      0.835471510887146,
+      1.0563894510269165,
+      0.9955981969833374,
+      1.0053722858428955,
+      1.0437122583389282
     ],
     "top1_correct": true,
     "top3_correct": true,
@@ -2806,29 +2806,29 @@
       "w8d1",
       "w8d1",
       "w8d1",
-      "w8d1",
+      "extra",
       "w8d1"
     ],
     "retrieved_sources": [
       "13_multi-modal-rag.ipynb",
       "13_multi-modal-rag.ipynb",
       "13_multi-modal-rag.ipynb",
-      "13_multi-modal-rag.ipynb",
-      "Multi-modal RAG"
+      "14_extra-multi-modal-rag-chroma.ipynb",
+      "13_multi-modal-rag.ipynb"
     ],
     "retrieved_headings": [
       "Multi-modal RAG",
       "RAG",
       "From Text-Only to Multimodal RAG",
-      "RAG",
-      ""
+      "Chroma multi-modal RAG",
+      "RAG"
     ],
     "retrieved_distances": [
-      0.5757092237472534,
-      0.6025186777114868,
-      0.7038731575012207,
-      0.7668529152870178,
-      0.7537533044815063
+      0.5758355855941772,
+      0.6025528907775879,
+      0.7039321064949036,
+      0.7419735193252563,
+      0.767159104347229
     ],
     "top1_correct": true,
     "top3_correct": true,
@@ -2859,11 +2859,11 @@
       "Conclusions"
     ],
     "retrieved_distances": [
-      0.6847096681594849,
-      0.7653072476387024,
-      0.8106358051300049,
-      0.8569125533103943,
-      0.872106671333313
+      0.6849223375320435,
+      0.7653518915176392,
+      0.8107109069824219,
+      0.8566581606864929,
+      0.8722290992736816
     ],
     "top1_correct": true,
     "top3_correct": true,
@@ -2894,11 +2894,11 @@
       "ROUGE"
     ],
     "retrieved_distances": [
-      0.8882558345794678,
-      0.9578519463539124,
-      0.9915487766265869,
-      1.019812822341919,
-      1.0887364149093628
+      0.8880913853645325,
+      0.9580852389335632,
+      0.9912437200546265,
+      1.019690990447998,
+      1.0890026092529297
     ],
     "top1_correct": true,
     "top3_correct": true,
@@ -2912,31 +2912,31 @@
       "extra",
       "extra",
       "extra",
-      "w7d4"
+      "extra"
     ],
     "retrieved_sources": [
       "Labs intro + Q&A",
+      "3_rag.ipynb",
+      "3_rag.ipynb",
       "4_evaluating-rag-giskard.ipynb",
-      "3_rag.ipynb",
-      "3_rag.ipynb",
-      "Labs intro + Q&A"
+      "3_rag.ipynb"
     ],
     "retrieved_headings": [
       "",
-      "Evaluating a RAG solution with Giskard",
       "Types of RAG eval",
       "RAG Evaluation",
-      ""
+      "Evaluating a RAG solution with Giskard",
+      "RAG Evaluators"
     ],
     "retrieved_distances": [
-      0.7808160781860352,
-      0.8095775749106054,
-      0.7899510322575375,
-      0.7909797722547474,
-      0.9415158033370972
+      0.7799866795539856,
+      0.7898514826984524,
+      0.7905832275081934,
+      0.8093529696201784,
+      0.8292586818149948
     ],
     "top1_correct": false,
-    "top3_correct": true,
+    "top3_correct": false,
     "top5_correct": true
   }
 ]

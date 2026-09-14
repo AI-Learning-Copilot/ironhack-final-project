@@ -191,12 +191,12 @@ w7d1,recordings,recording,c - LangChain Chains II:,,https://www.loom.com/share/a
 w7d1,recordings,recording,d - Labs Intro:,,https://www.loom.com/share/f0ab9fd1e0364a319b7ae3e028c33509
 w7d2,,github,Repo with the code from today:,,https://github.com/ironhack-ai-eng-june2026/demos_ai_eng
 w7d2,files,notebook,3_langchain-RAG.ipynb,14_LangChain/3_langchain-RAG.ipynb,
-w7d2,files,notebook,4_langchain-memory.ipynb,14_LangChain/4_langchain-memory.ipynb,
 w7d2,recordings,recording,a - RAG I - Intro:,,https://www.loom.com/share/4421b00033f74db7afa16c9f874a7487
 w7d2,recordings,recording,b - RAG II - Indexing:,,https://www.loom.com/share/9adc63fbe9f84e93a7334a8c80c20569
 w7d2,recordings,recording,c - RAG III - Retrieval and Generation:,,https://www.loom.com/share/e49da4da75fc497cbd4cd7458dd1b1ab
 w7d2,bonus,github,I've created this gist with a few ideas about the different versions of LangChain:,,https://gist.github.com/luisjunco/8f190ef4f7665ec00239adc5a8e3c2b8
 w7d3,,github,Repo with the code from today:,,https://github.com/ironhack-ai-eng-june2026/demos_ai_eng
+w7d3,files,notebook,4_langchain-memory.ipynb,14_LangChain/4_langchain-memory.ipynb,
 w7d3,files,notebook,5_langchain-retrieval-agents.ipynb,14_LangChain/5_langchain-retrieval-agents.ipynb,
 w7d3,recordings,recording,a - Recap (LanChain Memory + RAG Pipeline):,,https://www.loom.com/share/f8e3c125cc974d64ac85f94c1ea78e47
 w7d3,recordings,recording,b - Retrieval Agents:,,https://www.loom.com/share/d06ccfb467d34e8ea0566a5ebc33a2f0
