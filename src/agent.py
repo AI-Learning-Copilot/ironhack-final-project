@@ -24,7 +24,7 @@ from langchain_openai import ChatOpenAI
 
 import config  # noqa: F401  (loads .env once, sets telemetry off)
 from config import CHAT_MODEL, llm_kwargs
-from schemas import REFUSAL_MARKERS, build_response
+from schemas import REFUSAL_MARKERS, SPANISH_REFUSAL_MARKERS, build_response
 from tools import CitationCollector, SearchScope, SourceLog, make_tools
 
 log = logging.getLogger(__name__)
@@ -140,10 +140,13 @@ including explain_concept. Re-explain from what is already in the conversation i
     all, you just rephrase your own previous answer using an analogy.
 - If a tool returns NO_RESULTS, OR the results it did return are clearly not actually \
 about what was asked, say plainly that it was not covered. Do not fall back on general \
-knowledge and do not apologise at length. Use almost exactly this template, translated \
-to the student's language: "That wasn't covered in the course." (Spanish example: \
-"Eso no fue cubierto en el curso.") Using this near-exact wording matters — it is how \
-the citations get cleaned up afterwards.
+knowledge and do not apologise at length. Write EXACTLY this English sentence: "That \
+wasn't covered in the course." If the student wrote in another language, follow the \
+English sentence with the same sentence in the STUDENT'S language, nothing else — a \
+Spanish student gets "That wasn't covered in the course. Eso no fue cubierto en el \
+curso.", a French student gets the French sentence after the English one. Never label \
+the translation or put it in brackets. The exact English wording matters — it is how \
+the citations get cleaned up afterwards, whatever language the student uses.
 - For compound or mixed questions, evaluate EACH part of the student's question against \
 the tool results. Answer only the parts that are supported by the course material. If \
 one part is supported and another is not, answer the supported part normally and say \
@@ -296,8 +299,10 @@ class Copilot:
         answer = result["output"]
         lowered = answer.lower()
 
+        spanish = any(marker in lowered for marker in SPANISH_REFUSAL_MARKERS)
+
         if self._ITERATION_LIMIT_MESSAGE in lowered:
-            return build_response(self._not_covered(), [])
+            return build_response(self._not_covered(spanish), [])
 
         # If the model says it wasn't covered, we show no sources — whatever the
         # retriever thought. A distance threshold alone cannot catch this: "quantum
@@ -321,7 +326,7 @@ class Copilot:
                 # generic wording rather than trying to prompt it into the distinction,
                 # which is unreliable and would also have to survive translation.
                 if self.scope.active:
-                    return build_response(self._not_covered(), [])
+                    return build_response(self._not_covered(spanish), [])
                 return build_response(answer, [])
 
         response = build_response(answer, self.collector.metadatas)
@@ -332,14 +337,27 @@ class Copilot:
         self.sources.record(question, response["citations"])
         return response
 
-    def _not_covered(self) -> str:
-        """The refusal wording, which depends on whether a scope narrowed the search."""
+    def _not_covered(self, spanish: bool = False) -> str:
+        """The refusal wording, which depends on whether a scope narrowed the search.
+
+        `spanish` keeps the rewrite in the student's language when the model's own
+        refusal was Spanish. Other languages fall back to English; the model's original
+        wording is discarded here, so this is the one place the app speaks for itself.
+        """
         if self.scope.active:
+            if spanish:
+                return (
+                    f"Eso no fue cubierto en {self.scope.label()}. "
+                    f"Puede estar cubierto en otra parte del curso: "
+                    f"quita el filtro de lección para buscar en las 8 semanas."
+                )
             return (
                 f"That wasn't covered in {self.scope.label()}. "
                 f"It may still be covered elsewhere in the course — "
                 f"turn the lesson filter off to search all 8 weeks."
             )
+        if spanish:
+            return "Eso no fue cubierto en el curso."
         return "That wasn't covered in the course."
 
     def tools_used(self, result: dict | None = None) -> list[str]:

@@ -45,11 +45,21 @@ CHAT_MODEL = "gpt-4o-mini"
 #
 # The system prompt gives the model this exact English template and a Spanish example,
 # so wording stays predictable enough for keyword matching to work.
+# The system prompt asks for the English sentence verbatim in every refusal, with a
+# translation after it when the student wrote in another language, so the English
+# markers are the ones that matter. The others are a second net for the turns where
+# the model translates anyway.
 REFUSAL_MARKERS = (
     "wasn't covered", "was not covered", "not covered in the course",
     "does not cover", "do not cover", "doesn't cover",
-    "no fue cubierto", "no está cubierto", "no se cubrió",
+    "no fue cubierto", "no está cubierto", "no se cubrió", "no se cubre",
+    "não foi coberto", "não foi abordado", "n'a pas été couvert", "n'a pas été abordé",
+    "wurde nicht behandelt", "non è stato trattato",
 )
+
+# Which of the refusal markers are Spanish, so a refusal the app rewrites (a scoped
+# search that found nothing) can stay in the student's language.
+SPANISH_REFUSAL_MARKERS = tuple(m for m in REFUSAL_MARKERS if m.startswith("no "))
 
 NOTEBOOK_REPO = "https://github.com/ironhack-ai-eng-june2026/demos_ai_eng/blob/main"
 LOOM_EMBED = "https://www.loom.com/embed"

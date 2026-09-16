@@ -14,7 +14,17 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
 from chunking import chunk_all, chunk_cues, chunk_recording  # noqa: E402
-from ingestion import Cue, load_all  # noqa: E402
+import unittest  # noqa: E402
+
+from ingestion import CAPTIONS_DIR, Cue  # noqa: E402
+from ingestion import load_all as _load_all  # noqa: E402
+
+
+def load_all(*args, **kwargs):
+    """Skip, not crash, on a clone without the gitignored captions."""
+    if not CAPTIONS_DIR.exists():
+        raise unittest.SkipTest("data/raw/captions missing; run data/raw/fetch_captions.sh")
+    return _load_all(*args, **kwargs)
 from schemas import VIDEO_CHUNK_SIZE, build_citation  # noqa: E402
 
 
@@ -97,6 +107,8 @@ if __name__ == "__main__":
             try:
                 fn()
                 print("  ok   " + name)
+            except unittest.SkipTest as exc:
+                print("  skip " + name + ": " + str(exc))
             except AssertionError as exc:
                 failures += 1
                 print("  FAIL " + name + ": " + str(exc))
