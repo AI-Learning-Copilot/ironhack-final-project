@@ -1,0 +1,31 @@
+# Render blueprint for the API. Free plan on purpose: the process peaks at ~290 MB
+# (measured 18 Sep 2026, two live sessions) against the plan's 512 MB.
+#
+# Free-plan behaviour worth knowing: the service spins down after 15 minutes without
+# traffic and takes 30-60 s to wake. A free UptimeRobot monitor on /api/health every
+# 5 minutes keeps it warm during demo hours. Upgrade to Starter only if that bites.
+#
+# Set OPENAI_API_KEY in the Render dashboard (sync: false below means "ask me"), and
+# ALLOWED_ORIGINS to the Lovable / Vercel origin(s) of the frontend, comma-separated.
+services:
+  - type: web
+    name: course-copilot-api
+    runtime: python
+    plan: free
+    region: frankfurt
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn api.main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /api/health
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.9
+      - key: PYTHONPATH
+        value: src
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: ALLOWED_ORIGINS
+        value: "*"
+      - key: COURSE_ID
+        value: ironhack-ai-engineering
+      - key: ANONYMIZED_TELEMETRY
+        value: "False"
