@@ -96,8 +96,13 @@ as a source would be a lie, and refusals never carry any.
 
 **External links need an onClick, not just `target="_blank"`.** Measured: a blocked popup
 makes a `target="_blank"` anchor do nothing at all, which reads as broken rather than
-blocked. See `web/src/external.js` — try `window.open`, fall back to same-tab navigation,
-and leave the `href` on the anchor so right-click and middle-click still work.
+blocked. Try `window.open`; if it returns `null`, navigate in the same tab; leave the
+`href` on the anchor so right-click and middle-click still work.
+
+**Errors come back as JSON, not text.** A failed turn is HTTP 502/503/504 with
+`{"detail": {"message": "…", "kind": "rate_limit|timeout|connection|auth|quiz|unknown"}}`.
+Show `message` to the student as-is (it is written for them) and offer a Retry button;
+keep the question in the input.
 
 ## Design constraints that are not negotiable
 
@@ -147,15 +152,24 @@ in a README. It can be small and quiet. It cannot be removed.
 
 Should be usable on a phone. Students will check something on the way to class.
 
+## Auth: build the screen now, the API enforces it later
+
+Sign-in will be **Supabase Auth with Google** (and email as a fallback). Connect the
+Lovable project to Supabase, build the sign-in screen with it, and send the Supabase
+session token as `Authorization: Bearer <jwt>` on every `/api` call. The API ignores the
+header today and will start requiring it, so a frontend that already sends it needs no
+change when that happens. Do not build your own accounts, passwords or profiles.
+
 ## Do not build
 
-- Login, accounts, or profiles. There is no auth and the session id is the only identity.
-- Anything that stores conversations client-side. Persistence is a decision we have not
-  made.
-- Streaming. The endpoint does not support it.
+- Anything that stores conversations client-side. Persistence will live in Supabase on
+  the API side.
+- Streaming. The endpoint does not support it yet; when it does it will be a separate
+  `/api/ask/stream` SSE endpoint and `/api/ask` will keep working unchanged.
 
 ## Known gaps, so nothing here is a surprise
 
 - **No streaming**, so the wait is the design problem.
-- **No auth.** Anyone holding a session id can read that conversation.
+- **No auth yet.** Anyone holding a session id can read that conversation. See the
+  auth section above.
 - **Nothing survives a restart.** Sessions are in memory.

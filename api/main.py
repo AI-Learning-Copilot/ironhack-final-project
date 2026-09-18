@@ -1,20 +1,27 @@
-"""HTTP surface for the Copilot, so a React frontend can talk to it.
+"""HTTP surface for the Copilot. The frontend (built in Lovable) talks to this.
 
 Deliberately thin. `Copilot.ask()` already returns the frozen `{answer, citations}` shape
 and `build_citation` already computes the label and the URL, so there is nothing for this
 layer to decide about presentation — the same reason the Streamlit UI never had to know
-about Loom's `?t=` quirk applies to a React one.
+about Loom's `?t=` quirk applies to any other one.
 
 What this layer DOES own is the session, which Streamlit used to own implicitly. See
-`sessions.py`; that is where the real work of the spike is.
+`sessions.py`.
 
 Run it:
 
     PYTHONPATH=src .venv/bin/uvicorn api.main:app --reload --port 8000
+
+`api/openapi.json` is the contract the frontend is generated from. Regenerate it after
+any change to a route or a model:
+
+    PYTHONPATH=src .venv/bin/python -c "import json, api.main as m; \\
+        print(json.dumps(m.app.openapi(), indent=2))" > api/openapi.json
 """
 
 from __future__ import annotations
 
+import logging
 import os
 import sys
 import time
@@ -22,7 +29,6 @@ from pathlib import Path
 
 from fastapi import APIRouter, FastAPI, HTTPException
 from fastapi.responses import Response
-from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 
@@ -35,11 +41,34 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 import course  # noqa: E402
 import pdf  # noqa: E402
+import turnlog  # noqa: E402
+from agent import CopilotError  # noqa: E402
+from config import configure_logging  # noqa: E402
 from retrieval import search_with_scores  # noqa: E402
 from schemas import SOURCE_NOTEBOOK, build_citation  # noqa: E402
 from sessions import InMemorySessionStore, Turn  # noqa: E402
 
-app = FastAPI(title="Ironhack AI Course Copilot API", version="0.1.0-spike")
+configure_logging()
+log = logging.getLogger("api")
+
+app = FastAPI(title="Ironhack AI Course Copilot API", version="0.2.0")
+
+# Which course this deployment serves; the turn log keys on it. One deployment per
+# course until a client table exists.
+COURSE_ID = os.getenv("COURSE_ID", "ironhack-ai-engineering")
+
+# Until the login step lands, every turn is logged under this user. The API has no
+# identity yet: a session id is a bearer capability, nothing more.
+ANONYMOUS_USER = "anonymous"
+
+# The HTTP status a failed turn maps to, by CopilotError.kind. 503 for the transient
+# ones (the client may retry), 502 for a misconfigured upstream, 500 for the rest.
+_STATUS_BY_KIND = {
+    "rate_limit": 503,
+    "timeout": 504,
+    "connection": 503,
+    "auth": 502,
+}
 
 # Any origin, and credentials off.
 #
@@ -238,10 +267,24 @@ def ask(req: AskRequest) -> AskResponse:
 
     try:
         response = copilot.ask(asked)
-    except Exception as exc:  # noqa: BLE001 — surface the failure, do not swallow it
-        raise HTTPException(status_code=502, detail=f"copilot failed: {exc}") from exc
+    except CopilotError as exc:
+        # ask() has already logged the real cause with a request id. The client gets
+        # the student-safe message and a status it can branch on; never the raw error.
+        turnlog.record(
+            user=ANONYMOUS_USER, course=COURSE_ID, question=req.question,
+            usage=copilot.last_usage,
+        )
+        raise HTTPException(
+            status_code=_STATUS_BY_KIND.get(exc.kind, 500),
+            detail={"message": exc.user_message, "kind": exc.kind},
+        ) from exc
 
     elapsed = time.perf_counter() - started
+
+    turnlog.record(
+        user=ANONYMOUS_USER, course=COURSE_ID, question=req.question,
+        usage=copilot.last_usage,
+    )
 
     store.record(
         session_id,
@@ -379,8 +422,13 @@ def quiz(session_id: str, req: QuizRequest) -> dict:
 
     try:
         markdown = tool.func(topic=req.topic, num_questions=req.num_questions)
-    except Exception as exc:  # noqa: BLE001
-        raise HTTPException(status_code=502, detail=f"quiz failed: {exc}") from exc
+    except Exception as exc:  # noqa: BLE001 — the tool calls OpenAI directly, not via ask()
+        log.exception("quiz failed for session %s", session_id)
+        raise HTTPException(
+            status_code=503,
+            detail={"message": "The quiz could not be generated. Try again in a moment.",
+                    "kind": "quiz"},
+        ) from exc
     finally:
         copilot.scope.set(lesson_id=previous[0], week=previous[1])
 
@@ -416,14 +464,11 @@ def get_session(session_id: str) -> dict:
     return state.to_dict()
 
 
-# Both prefixes on purpose. The Vite dev server proxies /api to this process, and the
-# built bundle below is served from this process directly — same fetch code either way.
-app.include_router(router)
+# Everything lives under /api. The frontend is a separate deployment (Lovable), so this
+# process serves no HTML; `/` just says what it is.
 app.include_router(router, prefix="/api")
 
-# Serve the built frontend if it exists, so the whole thing is one process on one port.
-# Mounted last: a mount at "/" would otherwise shadow every route above it.
-# Build it with `npm run build --prefix web`.
-DIST = ROOT / "web" / "dist"
-if DIST.is_dir():
-    app.mount("/", StaticFiles(directory=str(DIST), html=True), name="web")
+
+@app.get("/", include_in_schema=False)
+def root() -> dict:
+    return {"service": app.title, "version": app.version, "docs": "/docs", "api": "/api"}

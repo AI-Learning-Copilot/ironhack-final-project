@@ -39,6 +39,10 @@ pypdf==6.14.2
 beautifulsoup4==4.15.0
 requests==2.34.2
 
+# --- API (api/main.py, deployed on Render; see render.yaml) ---
+fastapi==0.141.1
+uvicorn==0.52.1
+
 # --- App ---
 streamlit==1.61.1
 # st.login() (the sign-in gate in app/auth.py) imports Authlib at call time and fails
