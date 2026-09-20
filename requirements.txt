@@ -42,6 +42,10 @@ requests==2.34.2
 # --- API (api/main.py, deployed on Render; see render.yaml) ---
 fastapi==0.141.1
 uvicorn==0.52.1
+# Supabase: auth tokens are verified locally with PyJWT (crypto extra for ES256/RS256
+# signing keys); the client stores sessions and the usage log. See supabase/schema.sql.
+PyJWT[crypto]==2.14.0
+supabase==2.31.0
 
 # --- App ---
 streamlit==1.61.1

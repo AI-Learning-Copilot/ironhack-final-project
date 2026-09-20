@@ -4,13 +4,18 @@ Everything below is a working, running API. `api/openapi.json` is the full contr
 paste that into Lovable first, because it is the thing that stops a generated frontend
 inventing endpoints that do not exist.
 
-Start the backend, then point Lovable at it:
+The backend is deployed:
 
-```bash
-PYTHONPATH=src .venv/bin/uvicorn api.main:app --host 0.0.0.0 --port 8000
-```
+    API base URL      https://course-copilot-api-vvnm.onrender.com/api
+    Interactive docs  https://course-copilot-api-vvnm.onrender.com/docs
+    Supabase URL      https://ktbnppcvuxcghilaxdrh.supabase.co
+    Supabase key      sb_publishable_knTrfjryIDQzk6BnDWAYTQ_t5niYAfq   (public, for the browser)
 
-Interactive docs, useful for checking a shape by hand: http://127.0.0.1:8000/docs
+Free hosting: the API sleeps after 15 minutes idle and takes 30-60 s to wake, so the
+first request of a session can be slow. Show a "waking up" state if a request takes more
+than 10 s; do not treat it as an error before 90 s.
+
+For local work: `PYTHONPATH=src .venv/bin/uvicorn api.main:app --port 8000`.
 
 ## What the product is
 
@@ -154,11 +159,15 @@ Should be usable on a phone. Students will check something on the way to class.
 
 ## Auth: build the screen now, the API enforces it later
 
-Sign-in will be **Supabase Auth with Google** (and email as a fallback). Connect the
-Lovable project to Supabase, build the sign-in screen with it, and send the Supabase
-session token as `Authorization: Bearer <jwt>` on every `/api` call. The API ignores the
-header today and will start requiring it, so a frontend that already sends it needs no
-change when that happens. Do not build your own accounts, passwords or profiles.
+Sign-in is **Supabase Auth** on the project above: email + password now, Google once the
+OAuth client is configured. Connect the Lovable project to that Supabase project, build
+the sign-in screen with Supabase Auth, and send the session's access token as
+`Authorization: Bearer <access_token>` on every `/api` call. The API verifies it and
+answers 401 `{"detail": {"message": "…", "kind": "auth"}}` when it is missing or expired
+(send the student back to sign-in) and 403 `kind: "forbidden"` when the account is not on
+the access list (show the message; there is nothing the student can do). Sessions belong
+to the signed-in user: a session id from another account gets 403. Do not build your own
+accounts, passwords or profiles, and never put the Supabase secret key in the frontend.
 
 ## Do not build
 

@@ -73,10 +73,13 @@ class ConversationState:
     source_log: list[dict] = field(default_factory=list)
     created_at: float = field(default_factory=time.time)
     last_seen: float = field(default_factory=time.time)
+    # Who owns the conversation. "anonymous" until the frontend sends tokens.
+    user_id: str = "anonymous"
 
     def to_dict(self) -> dict:
         return {
             "session_id": self.session_id,
+            "user_id": self.user_id,
             "turns": [t.to_dict() for t in self.turns],
             "source_log": self.source_log,
             "created_at": self.created_at,
@@ -91,6 +94,7 @@ class ConversationState:
             source_log=raw.get("source_log", []),
             created_at=raw.get("created_at", time.time()),
             last_seen=raw.get("last_seen", time.time()),
+            user_id=raw.get("user_id", "anonymous"),
         )
 
 
@@ -126,7 +130,7 @@ class SessionStore(ABC):
     """
 
     @abstractmethod
-    def create(self) -> str: ...
+    def create(self, user_id: str = "anonymous") -> str: ...
 
     @abstractmethod
     def get(self, session_id: str) -> tuple[Copilot, ConversationState] | None: ...
@@ -157,10 +161,10 @@ class InMemorySessionStore(SessionStore):
         self._states: dict[str, ConversationState] = {}
         self._live: dict[str, Copilot] = {}
 
-    def create(self) -> str:
+    def create(self, user_id: str = "anonymous") -> str:
         self._sweep()
         session_id = uuid.uuid4().hex
-        self._states[session_id] = ConversationState(session_id=session_id)
+        self._states[session_id] = ConversationState(session_id=session_id, user_id=user_id)
         return session_id
 
     def get(self, session_id: str) -> tuple[Copilot, ConversationState] | None:
@@ -242,5 +246,140 @@ class InMemorySessionStore(SessionStore):
         if len(self._live) > MAX_LIVE_SESSIONS:
             by_age = sorted(self._live, key=lambda sid: self._states[sid].last_seen
                             if sid in self._states else 0)
+            for session_id in by_age[: len(self._live) - MAX_LIVE_SESSIONS]:
+                self._live.pop(session_id, None)
+
+
+class SupabaseSessionStore(SessionStore):
+    """Conversations in Postgres, live Copilots in this process.
+
+    The `sessions` table holds `ConversationState.to_dict()` per row (see
+    supabase/schema.sql). A request that lands on a process with no live Copilot for the
+    session reads the row and rehydrates — the cold-replica path `evict` simulates, now
+    for real. The in-process cache of live Copilots is the same one `InMemorySessionStore`
+    keeps, with the same cap; it is an optimisation, not the source of truth.
+
+    Every write goes to the table immediately. There is no write-behind: if this process
+    dies, the last answered turn is already stored.
+    """
+
+    TABLE = "sessions"
+
+    def __init__(self, course: str = "") -> None:
+        import supa  # local import: the module is optional on a laptop
+
+        self._db = supa.client()
+        self._course = course
+        self._live: dict[str, Copilot] = {}
+        self._last_seen: dict[str, float] = {}
+
+    # -- rows ---------------------------------------------------------------------
+
+    def _load(self, session_id: str) -> ConversationState | None:
+        rows = (
+            self._db.table(self.TABLE)
+            .select("id,user_id,state")
+            .eq("id", session_id)
+            .limit(1)
+            .execute()
+            .data
+        )
+        if not rows:
+            return None
+        raw = rows[0]["state"] or {}
+        raw.setdefault("session_id", session_id)
+        state = ConversationState.from_dict(raw)
+        state.user_id = rows[0].get("user_id") or "anonymous"
+        return state
+
+    def _save(self, state: ConversationState) -> None:
+        self._db.table(self.TABLE).upsert(
+            {
+                "id": state.session_id,
+                "user_id": state.user_id,
+                "course": self._course,
+                "state": state.to_dict(),
+                "updated_at": "now()",
+            }
+        ).execute()
+
+    # -- SessionStore -------------------------------------------------------------
+
+    def create(self, user_id: str = "anonymous") -> str:
+        self._sweep()
+        session_id = uuid.uuid4().hex
+        state = ConversationState(session_id=session_id, user_id=user_id)
+        self._save(state)
+        return session_id
+
+    def get(self, session_id: str) -> tuple[Copilot, ConversationState] | None:
+        self._sweep()
+        state = self._load(session_id)
+        if state is None:
+            return None
+        state.last_seen = time.time()
+        self._last_seen[session_id] = state.last_seen
+
+        copilot = self._live.get(session_id)
+        if copilot is None:
+            copilot = rehydrate(state)
+            self._live[session_id] = copilot
+        return copilot, state
+
+    def record(self, session_id: str, turn: Turn) -> None:
+        state = self._load(session_id)
+        if state is None:
+            return
+        state.turns.append(turn)
+        state.last_seen = time.time()
+        copilot = self._live.get(session_id)
+        if copilot is not None:
+            state.source_log = list(copilot.sources.turns)
+        self._save(state)
+
+    def reset(self, session_id: str) -> bool:
+        state = self._load(session_id)
+        if state is None:
+            return False
+        state.turns.clear()
+        state.source_log.clear()
+        self._save(state)
+        self._live.pop(session_id, None)
+        return True
+
+    def delete(self, session_id: str) -> bool:
+        self._live.pop(session_id, None)
+        self._last_seen.pop(session_id, None)
+        deleted = self._db.table(self.TABLE).delete().eq("id", session_id).execute().data
+        return bool(deleted)
+
+    def was_rebuilt_on_next_get(self, session_id: str) -> bool:
+        if session_id in self._live:
+            return False
+        state = self._load(session_id)
+        return bool(state and state.turns)
+
+    def evict_live(self, session_id: str) -> bool:
+        return self._live.pop(session_id, None) is not None
+
+    def stats(self) -> dict:
+        return {
+            "backend": "supabase",
+            "live_copilots": len(self._live),
+            "ttl_seconds": SESSION_TTL_SECONDS,
+            "max_live": MAX_LIVE_SESSIONS,
+        }
+
+    def _sweep(self) -> None:
+        # Only the in-process cache is swept here; rows stay (they are the history a
+        # student may come back to). A retention rule for the table is a product
+        # decision, not a cache policy.
+        cutoff = time.time() - SESSION_TTL_SECONDS
+        for session_id, seen in list(self._last_seen.items()):
+            if seen < cutoff:
+                self._live.pop(session_id, None)
+                self._last_seen.pop(session_id, None)
+        if len(self._live) > MAX_LIVE_SESSIONS:
+            by_age = sorted(self._live, key=lambda sid: self._last_seen.get(sid, 0))
             for session_id in by_age[: len(self._live) - MAX_LIVE_SESSIONS]:
                 self._live.pop(session_id, None)

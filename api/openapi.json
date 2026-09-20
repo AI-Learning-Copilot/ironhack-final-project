@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "Ironhack AI Course Copilot API",
-    "version": "0.2.0"
+    "version": "0.3.0"
   },
   "paths": {
     "/api/health": {
@@ -42,7 +42,12 @@
               }
             }
           }
-        }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
       }
     },
     "/api/ask": {
@@ -81,7 +86,12 @@
               }
             }
           }
-        }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
       }
     },
     "/api/lessons": {
@@ -207,6 +217,11 @@
         "summary": "Set Scope",
         "description": "Narrow the search to a lesson or a week for the rest of the conversation.\n\nSet on the retrieval side rather than worded into the question \u2014 see SearchScope.\nA scoped refusal says \"not in THIS lesson\", which is a different fact from \"not in\nthe course\", and the frontend should show the filter that caused it.",
         "operationId": "set_scope_api_session__session_id__scope_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
         "parameters": [
           {
             "name": "session_id",
@@ -259,6 +274,11 @@
         "summary": "Quiz",
         "description": "Generate a scored quiz on a topic, honouring the session's scope.\n\nCalls the tool directly rather than asking the agent to pick it. The agent route\nworks but costs an extra model call to decide something the button already decided.",
         "operationId": "quiz_api_session__session_id__quiz_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
         "parameters": [
           {
             "name": "session_id",
@@ -310,6 +330,11 @@
       "post": {
         "summary": "Reset",
         "operationId": "reset_api_session__session_id__reset_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
         "parameters": [
           {
             "name": "session_id",
@@ -352,6 +377,11 @@
         "summary": "Evict",
         "description": "Drop the live Copilot, keep the conversation.\n\nThe most important endpoint here. Call it between two turns and the next answer has\nto come from a Copilot rebuilt out of stored state \u2014 which is exactly what happens\nwhen a follow-up lands on a replica that never saw the first question. If the\nfollow-up still resolves, horizontal scaling is unblocked.",
         "operationId": "evict_api_session__session_id__evict_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
         "parameters": [
           {
             "name": "session_id",
@@ -393,6 +423,11 @@
       "get": {
         "summary": "Get Session",
         "operationId": "get_session_api_session__session_id__get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
         "parameters": [
           {
             "name": "session_id",
@@ -645,6 +680,12 @@
           "type"
         ],
         "title": "ValidationError"
+      }
+    },
+    "securitySchemes": {
+      "HTTPBearer": {
+        "type": "http",
+        "scheme": "bearer"
       }
     }
   }

@@ -27,7 +27,7 @@ import sys
 import time
 from pathlib import Path
 
-from fastapi import APIRouter, FastAPI, HTTPException
+from fastapi import APIRouter, Depends, FastAPI, HTTPException
 from fastapi.responses import Response
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
@@ -41,25 +41,23 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 import course  # noqa: E402
 import pdf  # noqa: E402
+import supa  # noqa: E402
 import turnlog  # noqa: E402
 from agent import CopilotError  # noqa: E402
+from auth import User, current_user  # noqa: E402
 from config import configure_logging  # noqa: E402
 from retrieval import search_with_scores  # noqa: E402
 from schemas import SOURCE_NOTEBOOK, build_citation  # noqa: E402
-from sessions import InMemorySessionStore, Turn  # noqa: E402
+from sessions import InMemorySessionStore, SupabaseSessionStore, Turn  # noqa: E402
 
 configure_logging()
 log = logging.getLogger("api")
 
-app = FastAPI(title="Ironhack AI Course Copilot API", version="0.2.0")
+app = FastAPI(title="Ironhack AI Course Copilot API", version="0.3.0")
 
 # Which course this deployment serves; the turn log keys on it. One deployment per
 # course until a client table exists.
 COURSE_ID = os.getenv("COURSE_ID", "ironhack-ai-engineering")
-
-# Until the login step lands, every turn is logged under this user. The API has no
-# identity yet: a session id is a bearer capability, nothing more.
-ANONYMOUS_USER = "anonymous"
 
 # The HTTP status a failed turn maps to, by CopilotError.kind. 503 for the transient
 # ones (the client may retry), 502 for a misconfigured upstream, 500 for the rest.
@@ -77,10 +75,10 @@ _STATUS_BY_KIND = {
 # origin is not allowed. An allowlist would mean editing this file every time a frontend
 # moves.
 #
-# Safe here specifically because there is no auth and no cookies: a session id is passed
-# in the request body, so there is nothing for a third-party page to ride on. That stops
-# being true the moment this gains authentication — at which point allow_origins has to
-# become a real list and credentials come back on.
+# Safe because nothing is sent automatically: no cookies, and the Supabase token travels
+# in an Authorization header the frontend sets by hand, which a third-party page cannot
+# make a browser attach. So "*" plus bearer tokens is fine. Once the Lovable origin is
+# known, set ALLOWED_ORIGINS to it anyway; it costs nothing and narrows the surface.
 #
 # allow_credentials must stay False: the CORS spec forbids "*" together with credentials,
 # and browsers reject the combination outright rather than falling back.
@@ -92,8 +90,41 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-store = InMemorySessionStore()
+# Postgres-backed sessions when Supabase is configured, in-memory otherwise. Same
+# interface either way; `stats()` says which one is running.
+if supa.configured():
+    store = SupabaseSessionStore(course=COURSE_ID)
+    log.info("sessions: supabase")
+else:
+    store = InMemorySessionStore()
+    log.info("sessions: in-memory (SUPABASE_URL not set)")
+
 router = APIRouter()
+
+
+def _record(user: User, session_id: str | None, question: str, usage: dict) -> None:
+    """Both usage sinks: the local SQLite log (ephemeral on Render) and Supabase."""
+    turnlog.record(user=user.email or user.id, course=COURSE_ID, question=question, usage=usage)
+    supa.record_turn(
+        user_id=user.id, user_email=user.email, course=COURSE_ID,
+        session_id=session_id, question=question, usage=usage,
+    )
+
+
+def _owned(session_id: str, user: User):
+    """The session, or 404 if unknown, or 403 if it belongs to someone else.
+
+    Anonymous sessions (created before the frontend sent tokens) stay reachable by
+    anyone holding the id, which is what they were before. A session created by a
+    signed-in user is theirs alone.
+    """
+    found = store.get(session_id)
+    if found is None:
+        raise HTTPException(status_code=404, detail={"message": "unknown session", "kind": "session"})
+    _copilot, state = found
+    if state.user_id != "anonymous" and state.user_id != user.id:
+        raise HTTPException(status_code=403, detail={"message": "not your session", "kind": "forbidden"})
+    return found
 
 
 class AskRequest(BaseModel):
@@ -229,19 +260,19 @@ def health() -> dict:
 
 
 @router.post("/session")
-def new_session() -> dict:
-    return {"session_id": store.create()}
+def new_session(user: User = Depends(current_user)) -> dict:
+    return {"session_id": store.create(user_id=user.id)}
 
 
 @router.post("/ask", response_model=AskResponse)
-def ask(req: AskRequest) -> AskResponse:
+def ask(req: AskRequest, user: User = Depends(current_user)) -> AskResponse:
     """One turn. Creates a session if the client did not supply one.
 
     `rehydrated` is in the response on purpose: it is how the frontend (and we, during
     the spike) can see when an answer came from a Copilot rebuilt from stored state
     rather than one that was already live. That flag is the experiment.
     """
-    session_id = req.session_id or store.create()
+    session_id = req.session_id or store.create(user_id=user.id)
 
     # A rebuild only counts as one if there was a conversation to rebuild. A brand new
     # session also has no live Copilot, and reporting that as a rehydration would make
@@ -252,9 +283,11 @@ def ask(req: AskRequest) -> AskResponse:
     if found is None:
         # An expired or unknown id. Start a fresh session rather than 404ing, so a
         # student who left a tab open overnight gets a working page, not an error.
-        session_id = store.create()
+        session_id = store.create(user_id=user.id)
         found = store.get(session_id)
         rebuilt = False
+    elif found[1].user_id != "anonymous" and found[1].user_id != user.id:
+        raise HTTPException(status_code=403, detail={"message": "not your session", "kind": "forbidden"})
 
     copilot, _state = found
     started = time.perf_counter()
@@ -270,10 +303,7 @@ def ask(req: AskRequest) -> AskResponse:
     except CopilotError as exc:
         # ask() has already logged the real cause with a request id. The client gets
         # the student-safe message and a status it can branch on; never the raw error.
-        turnlog.record(
-            user=ANONYMOUS_USER, course=COURSE_ID, question=req.question,
-            usage=copilot.last_usage,
-        )
+        _record(user, session_id, req.question, copilot.last_usage)
         raise HTTPException(
             status_code=_STATUS_BY_KIND.get(exc.kind, 500),
             detail={"message": exc.user_message, "kind": exc.kind},
@@ -281,10 +311,7 @@ def ask(req: AskRequest) -> AskResponse:
 
     elapsed = time.perf_counter() - started
 
-    turnlog.record(
-        user=ANONYMOUS_USER, course=COURSE_ID, question=req.question,
-        usage=copilot.last_usage,
-    )
+    _record(user, session_id, req.question, copilot.last_usage)
 
     store.record(
         session_id,
@@ -367,17 +394,14 @@ def get_syllabus_pdf() -> Response:
 
 
 @router.post("/session/{session_id}/scope")
-def set_scope(session_id: str, req: ScopeRequest) -> dict:
+def set_scope(session_id: str, req: ScopeRequest, user: User = Depends(current_user)) -> dict:
     """Narrow the search to a lesson or a week for the rest of the conversation.
 
     Set on the retrieval side rather than worded into the question — see SearchScope.
     A scoped refusal says "not in THIS lesson", which is a different fact from "not in
     the course", and the frontend should show the filter that caused it.
     """
-    found = store.get(session_id)
-    if found is None:
-        raise HTTPException(status_code=404, detail="unknown session")
-    copilot, _state = found
+    copilot, _state = _owned(session_id, user)
 
     if req.lesson_id is None and req.week is None:
         copilot.scope.clear()
@@ -393,16 +417,13 @@ def set_scope(session_id: str, req: ScopeRequest) -> dict:
 
 
 @router.post("/session/{session_id}/quiz")
-def quiz(session_id: str, req: QuizRequest) -> dict:
+def quiz(session_id: str, req: QuizRequest, user: User = Depends(current_user)) -> dict:
     """Generate a scored quiz on a topic, honouring the session's scope.
 
     Calls the tool directly rather than asking the agent to pick it. The agent route
     works but costs an extra model call to decide something the button already decided.
     """
-    found = store.get(session_id)
-    if found is None:
-        raise HTTPException(status_code=404, detail="unknown session")
-    copilot, _state = found
+    copilot, _state = _owned(session_id, user)
 
     tool = next((t for t in copilot.executor.tools if t.name == "generate_quiz"), None)
     if tool is None:
@@ -436,14 +457,14 @@ def quiz(session_id: str, req: QuizRequest) -> dict:
 
 
 @router.post("/session/{session_id}/reset")
-def reset(session_id: str) -> dict:
-    if not store.reset(session_id):
-        raise HTTPException(status_code=404, detail="unknown session")
+def reset(session_id: str, user: User = Depends(current_user)) -> dict:
+    _owned(session_id, user)
+    store.reset(session_id)
     return {"ok": True}
 
 
 @router.post("/session/{session_id}/evict")
-def evict(session_id: str) -> dict:
+def evict(session_id: str, user: User = Depends(current_user)) -> dict:
     """Drop the live Copilot, keep the conversation.
 
     The most important endpoint here. Call it between two turns and the next answer has
@@ -451,16 +472,14 @@ def evict(session_id: str) -> dict:
     when a follow-up lands on a replica that never saw the first question. If the
     follow-up still resolves, horizontal scaling is unblocked.
     """
+    _owned(session_id, user)
     evicted = store.evict_live(session_id)
     return {"evicted": evicted, **store.stats()}
 
 
 @router.get("/session/{session_id}")
-def get_session(session_id: str) -> dict:
-    found = store.get(session_id)
-    if found is None:
-        raise HTTPException(status_code=404, detail="unknown session")
-    _copilot, state = found
+def get_session(session_id: str, user: User = Depends(current_user)) -> dict:
+    _copilot, state = _owned(session_id, user)
     return state.to_dict()
 
 

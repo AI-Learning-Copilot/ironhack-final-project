@@ -29,3 +29,15 @@ services:
         value: ironhack-ai-engineering
       - key: ANONYMIZED_TELEMETRY
         value: "False"
+      # Supabase: sessions, usage log, and token verification. Leave the two secrets
+      # empty to run without Supabase (in-memory sessions, local SQLite usage log).
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_SERVICE_ROLE_KEY
+        sync: false
+      # Only for projects still on the legacy HS256 secret; JWKS needs nothing here.
+      - key: SUPABASE_JWT_SECRET
+        sync: false
+      # Flip to "true" once the frontend sends the Supabase token on every call.
+      - key: AUTH_REQUIRED
+        value: "false"
