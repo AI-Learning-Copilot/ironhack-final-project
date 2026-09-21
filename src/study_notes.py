@@ -27,6 +27,7 @@ from __future__ import annotations
 
 import json
 import re
+import shutil
 import sys
 from pathlib import Path
 
@@ -49,8 +50,9 @@ if str(SRC_DIR) not in sys.path:
 
 from langchain_openai import ChatOpenAI
 
+from config import llm_kwargs
 from retrieval import get_store
-from schemas import CHAT_MODEL, build_citation
+from schemas import build_citation
 
 # ---------------------------------------------------------------------------
 # Paths
@@ -69,8 +71,20 @@ MAP_CHUNK_SIZE = 8
 # Keep individual chunks reasonably small when sending them to the LLM.
 MAX_CHUNK_CHARS = 5000
 
-# Maximum size of the combined map summaries passed to the reduce step.
+# Maximum size of the combined map summaries passed to the reduce step. A lesson whose
+# summaries exceed this is compacted with an extra merge pass (see _compact_to_budget)
+# rather than truncated — a hard cut here used to silently drop the tail of a long
+# lesson's notes.
 MAX_SUMMARY_CHARS = 30000
+
+# Longer than config.py's general MAX_TOKENS default: the reduce step writes a full
+# multi-section Markdown document, not a short answer or a quiz.
+STUDY_NOTES_MAX_TOKENS = 4096
+
+# Where per-batch MAP summaries are cached mid-run, so a crash (rate limit, timeout,
+# API outage) partway through a long lesson doesn't require re-paying for every batch
+# that already succeeded — the next run picks up where it left off.
+CACHE_DIR = NOTES_DIR / ".cache"
 
 
 # ---------------------------------------------------------------------------
@@ -192,6 +206,10 @@ def format_chunk(
 # ---------------------------------------------------------------------------
 
 
+def _batch_cache_path(lesson_id: str, batch_number: int) -> Path:
+    return CACHE_DIR / lesson_id / f"batch_{batch_number:03d}.txt"
+
+
 def map_batch(
     llm: ChatOpenAI,
     lesson_id: str,
@@ -255,6 +273,52 @@ COURSE MATERIAL:
 # ---------------------------------------------------------------------------
 
 
+def _merge_summaries(llm: ChatOpenAI, summaries: list[str]) -> str:
+    """Merge several map summaries into one, keeping every distinct concept.
+
+    Only an intermediate compaction step (see `_compact_to_budget`) — never the final
+    study notes — so there are no structure or formatting rules here, just lossless
+    merging.
+    """
+    joined = "\n\n---\n\n".join(summaries)
+    prompt = (
+        "Merge the study-note excerpts below into ONE combined summary. Keep every "
+        "distinct concept, definition and example mentioned in any of them — do not "
+        "drop material for length, only remove exact repetition between excerpts.\n\n"
+        f"{joined}"
+    )
+    return llm.invoke(prompt).content.strip()
+
+
+def _compact_to_budget(
+    llm: ChatOpenAI,
+    summaries: list[str],
+    budget: int,
+) -> list[str]:
+    """Merge summaries, in groups, until the joined text fits `budget` characters.
+
+    Replaces a hard truncation that used to silently drop whatever fell past
+    MAX_SUMMARY_CHARS — for a long lesson that could be the back half of its notes.
+    This is a hierarchical reduce: each pass merges MAP_CHUNK_SIZE summaries into one,
+    same as the MAP step did with raw chunks, and repeats until it fits.
+    """
+    current = summaries
+    while sum(len(s) for s in current) > budget and len(current) > 1:
+        merged = [
+            group[0] if len(group) == 1 else _merge_summaries(llm, group)
+            for group in (
+                current[start : start + MAP_CHUNK_SIZE]
+                for start in range(0, len(current), MAP_CHUNK_SIZE)
+            )
+        ]
+        if len(merged) == len(current):
+            # A single oversized summary that can't be grouped down further —
+            # stop rather than loop forever.
+            break
+        current = merged
+    return current
+
+
 def reduce_summaries(
     llm: ChatOpenAI,
     lesson_id: str,
@@ -263,6 +327,8 @@ def reduce_summaries(
 ) -> str:
     """Combine map summaries into the final study notes."""
 
+    summaries = _compact_to_budget(llm, summaries, MAX_SUMMARY_CHARS)
+
     combined = "\n\n".join(
         f"### Material section {index}\n{summary}"
         for index, summary in enumerate(
@@ -270,8 +336,6 @@ def reduce_summaries(
             start=1,
         )
     )
-
-    combined = combined[:MAX_SUMMARY_CHARS]
 
     prompt = f"""
 You are creating the final study notes for an Ironhack AI Engineering
@@ -608,10 +672,7 @@ def generate_study_notes(
         f"Found {len(chunks)} indexed chunks."
     )
 
-    llm = ChatOpenAI(
-        model=CHAT_MODEL,
-        temperature=0,
-    )
+    llm = ChatOpenAI(**llm_kwargs(max_tokens=STUDY_NOTES_MAX_TOKENS))
 
     # -----------------------------------------------------------------------
     # MAP
@@ -636,17 +697,30 @@ def generate_study_notes(
         batches,
         start=1,
     ):
-        print(
-            f"  Summarizing batch "
-            f"{batch_number}/{len(batches)}..."
-        )
+        cache_path = _batch_cache_path(lesson_id, batch_number)
 
-        summary = map_batch(
-            llm=llm,
-            lesson_id=lesson_id,
-            batch=batch,
-            batch_number=batch_number,
-        )
+        if cache_path.exists():
+            print(
+                f"  Batch {batch_number}/{len(batches)} already summarized "
+                f"(cached) — skipping."
+            )
+            summary = cache_path.read_text(encoding="utf-8")
+        else:
+            print(
+                f"  Summarizing batch "
+                f"{batch_number}/{len(batches)}..."
+            )
+
+            summary = map_batch(
+                llm=llm,
+                lesson_id=lesson_id,
+                batch=batch,
+                batch_number=batch_number,
+            )
+
+            if summary:
+                cache_path.parent.mkdir(parents=True, exist_ok=True)
+                cache_path.write_text(summary, encoding="utf-8")
 
         if summary:
             summaries.append(summary)
@@ -703,6 +777,11 @@ def generate_study_notes(
         markdown,
         encoding="utf-8",
     )
+
+    # Cache only needs to survive a crash-and-retry within one generation run — once
+    # it succeeds, clear it so a future rebuild (e.g. after a reindex) doesn't serve
+    # stale cached batches.
+    shutil.rmtree(CACHE_DIR / lesson_id, ignore_errors=True)
 
     print()
     print(

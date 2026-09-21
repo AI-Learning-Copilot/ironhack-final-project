@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import argparse
 import csv
 import json
 import sys
@@ -33,14 +34,26 @@ class EvaluationResult:
     top5_correct: bool
 
 
-def load_questions() -> list[dict]:
-    """Load evaluation questions."""
+def load_questions(split: str = "all") -> list[dict]:
+    """Load evaluation questions, optionally filtered to one split.
+
+    `golden_questions.csv` carries a `split` column ("tune" / "holdout"): the reranker
+    constants in reranking.py (EXTRA_NOTEBOOK_PENALTY etc.) were originally chosen on
+    the same 84 questions they were then scored against, which overstates how much
+    they actually help. The 20 "holdout" questions were never used to pick a constant
+    and should stay that way — use --split=holdout to check a change hasn't overfit
+    the other 64, and --split=tune for the set you're allowed to look at while tuning.
+    """
 
     with QUESTIONS.open(
         newline="",
         encoding="utf-8",
     ) as f:
-        return list(csv.DictReader(f))
+        rows = list(csv.DictReader(f))
+
+    if split == "all":
+        return rows
+    return [row for row in rows if row.get("split") == split]
 
 
 def evaluate_question(
@@ -158,6 +171,7 @@ def evaluate_question(
 
 def summarize(
     results: list[EvaluationResult],
+    split: str = "all",
 ) -> None:
     """Print evaluation summary."""
 
@@ -188,7 +202,7 @@ def summarize(
 
     print()
     print("=" * 60)
-    print("Retrieval Evaluation")
+    print(f"Retrieval Evaluation — split: {split}")
     print("=" * 60)
     print()
 
@@ -376,14 +390,27 @@ def write_report(
 
 def main() -> None:
 
-    rows = load_questions()
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument(
+        "--split",
+        choices=["all", "tune", "holdout"],
+        default="all",
+        help="Score only the 'tune' or 'holdout' questions (see load_questions). "
+        "Default 'all' scores every question, same as before the split existed.",
+    )
+    args = parser.parse_args()
+
+    rows = load_questions(args.split)
+
+    if not rows:
+        sys.exit(f"no questions in split {args.split!r}")
 
     results = [
         evaluate_question(row)
         for row in rows
     ]
 
-    summarize(results)
+    summarize(results, split=args.split)
 
     print_failures(results)
 
