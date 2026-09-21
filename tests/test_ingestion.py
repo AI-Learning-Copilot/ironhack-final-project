@@ -8,12 +8,23 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
+import unittest  # noqa: E402
+
 from ingestion import (  # noqa: E402
+    CAPTIONS_DIR,
     clean_text,
-    load_all,
     parse_title,
     timestamp_to_seconds,
 )
+from ingestion import load_all as _load_all  # noqa: E402
+
+
+def load_all(*args, **kwargs):
+    """The captions are gitignored (classmates' names). On a clone without them the
+    tests that read transcripts skip instead of crashing with FileNotFoundError."""
+    if not CAPTIONS_DIR.exists():
+        raise unittest.SkipTest(f"{CAPTIONS_DIR.relative_to(CAPTIONS_DIR.parents[2])} missing; run data/raw/fetch_captions.sh")
+    return _load_all(*args, **kwargs)
 
 
 def test_speaker_tags_are_stripped():
@@ -87,6 +98,8 @@ if __name__ == "__main__":
             try:
                 fn()
                 print("  ok   " + name)
+            except unittest.SkipTest as exc:
+                print("  skip " + name + ": " + str(exc))
             except AssertionError as exc:
                 failures += 1
                 print("  FAIL " + name + ": " + str(exc))
