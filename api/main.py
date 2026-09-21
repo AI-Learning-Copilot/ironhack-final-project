@@ -21,6 +21,8 @@ any change to a route or a model:
 
 from __future__ import annotations
 
+import asyncio
+import json
 import logging
 import os
 import sys
@@ -28,7 +30,7 @@ import time
 from pathlib import Path
 
 from fastapi import APIRouter, Depends, FastAPI, HTTPException
-from fastapi.responses import Response
+from fastapi.responses import Response, StreamingResponse
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 
@@ -264,14 +266,8 @@ def new_session(user: User = Depends(current_user)) -> dict:
     return {"session_id": store.create(user_id=user.id)}
 
 
-@router.post("/ask", response_model=AskResponse)
-def ask(req: AskRequest, user: User = Depends(current_user)) -> AskResponse:
-    """One turn. Creates a session if the client did not supply one.
-
-    `rehydrated` is in the response on purpose: it is how the frontend (and we, during
-    the spike) can see when an answer came from a Copilot rebuilt from stored state
-    rather than one that was already live. That flag is the experiment.
-    """
+def _resolve_session(req: AskRequest, user: User):
+    """The (session_id, copilot, rebuilt) triple both ask routes start from."""
     session_id = req.session_id or store.create(user_id=user.id)
 
     # A rebuild only counts as one if there was a conversation to rebuild. A brand new
@@ -290,25 +286,25 @@ def ask(req: AskRequest, user: User = Depends(current_user)) -> AskResponse:
         raise HTTPException(status_code=403, detail={"message": "not your session", "kind": "forbidden"})
 
     copilot, _state = found
-    started = time.perf_counter()
+    return session_id, copilot, rebuilt
 
-    asked = req.question
+
+def _question_for_agent(req: AskRequest) -> str:
+    """An explicit language choice becomes an instruction appended to the question;
+    the transcript keeps the student's own words."""
     if req.language == "en":
-        asked = f"{req.question}\n\nAnswer in English."
-    elif req.language == "es":
-        asked = f"{req.question}\n\nResponde en español."
+        return f"{req.question}\n\nAnswer in English."
+    if req.language == "es":
+        return f"{req.question}\n\nResponde en español."
+    return req.question
 
-    try:
-        response = copilot.ask(asked)
-    except CopilotError as exc:
-        # ask() has already logged the real cause with a request id. The client gets
-        # the student-safe message and a status it can branch on; never the raw error.
-        _record(user, session_id, req.question, copilot.last_usage)
-        raise HTTPException(
-            status_code=_STATUS_BY_KIND.get(exc.kind, 500),
-            detail={"message": exc.user_message, "kind": exc.kind},
-        ) from exc
 
+def _complete_turn(
+    session_id: str, user: User, req: AskRequest, copilot, response: dict,
+    started: float, rebuilt: bool,
+) -> AskResponse:
+    """Everything that happens once the agent has answered: usage log, session row,
+    citation condensing, related notebooks. Shared by /ask and /ask/stream."""
     elapsed = time.perf_counter() - started
 
     _record(user, session_id, req.question, copilot.last_usage)
@@ -337,6 +333,89 @@ def ask(req: AskRequest, user: User = Depends(current_user)) -> AskResponse:
         related_notebooks=suggestions,
         elapsed_seconds=round(elapsed, 2),
         rehydrated=rebuilt,
+    )
+
+
+@router.post("/ask", response_model=AskResponse)
+def ask(req: AskRequest, user: User = Depends(current_user)) -> AskResponse:
+    """One turn. Creates a session if the client did not supply one.
+
+    `rehydrated` is in the response on purpose: it is how the frontend (and we, during
+    the spike) can see when an answer came from a Copilot rebuilt from stored state
+    rather than one that was already live. That flag is the experiment.
+    """
+    session_id, copilot, rebuilt = _resolve_session(req, user)
+    started = time.perf_counter()
+
+    try:
+        response = copilot.ask(_question_for_agent(req))
+    except CopilotError as exc:
+        # ask() has already logged the real cause with a request id. The client gets
+        # the student-safe message and a status it can branch on; never the raw error.
+        _record(user, session_id, req.question, copilot.last_usage)
+        raise HTTPException(
+            status_code=_STATUS_BY_KIND.get(exc.kind, 500),
+            detail={"message": exc.user_message, "kind": exc.kind},
+        ) from exc
+
+    return _complete_turn(session_id, user, req, copilot, response, started, rebuilt)
+
+
+def _sse(event: str, data: dict) -> str:
+    return f"event: {event}\ndata: {json.dumps(data, ensure_ascii=False)}\n\n"
+
+
+@router.post("/ask/stream")
+async def ask_stream(req: AskRequest, user: User = Depends(current_user)) -> StreamingResponse:
+    """The same turn as /ask, delivered as server-sent events while the model writes.
+
+    Events, in order:
+
+        session   {"session_id": "..."}                       first, always
+        tool      {"name": "search_course_material"}          a tool is running
+        token     {"text": "An embedding is"}                 answer text, in order
+        reset     {}                                          discard the text so far
+        done      the full AskResponse, same shape as /ask    last on success
+        error     {"message": "...", "kind": "..."}           last on failure
+
+    Render the tokens as they arrive, then replace the text with `done.answer` and
+    show `done.citations`: the final answer can differ from the stream (a scoped
+    refusal is rewritten, for example). `reset` means the model wrote something and
+    then called a tool after all; clear the text and keep waiting.
+
+    Errors arrive as an `error` event with HTTP 200, because the status line has gone
+    out before the agent fails. Same message and kind as /ask would put in `detail`.
+    """
+    session_id, copilot, rebuilt = _resolve_session(req, user)
+    asked = _question_for_agent(req)
+
+    async def events():
+        started = time.perf_counter()
+        yield _sse("session", {"session_id": session_id})
+        try:
+            async for ev in copilot.ask_stream(asked):
+                kind = ev.pop("event")
+                if kind == "done":
+                    # Session row, usage log, related notebooks: blocking I/O, off the
+                    # event loop.
+                    final = await asyncio.to_thread(
+                        _complete_turn, session_id, user, req, copilot, ev, started, rebuilt
+                    )
+                    yield _sse("done", final.model_dump())
+                else:
+                    yield _sse(kind, ev)
+        except CopilotError as exc:
+            await asyncio.to_thread(_record, user, session_id, req.question, copilot.last_usage)
+            yield _sse("error", {"message": exc.user_message, "kind": exc.kind})
+        except Exception:  # noqa: BLE001 — never let the stream die silently
+            log.exception("stream failed for session %s", session_id)
+            yield _sse("error", {"message": "The copilot could not answer this question. Try again.",
+                                 "kind": "unknown"})
+
+    return StreamingResponse(
+        events(),
+        media_type="text/event-stream",
+        headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"},
     )
 
 

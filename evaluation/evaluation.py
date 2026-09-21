@@ -116,15 +116,54 @@ def score_case(case: dict, response: dict, followup: dict | None) -> dict:
 PARTIAL_PATH = Path(__file__).parent / "e2e_results.partial.json"
 
 
-def run(cases: list[dict]) -> list[dict]:
+class ApiCopilot:
+    """The same `ask()` shape as `Copilot`, but through the deployed HTTP API.
+
+    One session per instance, so "fresh memory per case" means a fresh ApiCopilot, the
+    same way it means a fresh Copilot. The API condenses citations (one per recording,
+    extra timestamps under `also_at`); each still carries `lesson_id` and
+    `source_type`, which is all the scoring reads.
+    """
+
+    def __init__(self, base_url: str, token: str | None = None) -> None:
+        import requests
+
+        self._requests = requests
+        self.base = base_url.rstrip("/")
+        self.headers = {"content-type": "application/json"}
+        if token:
+            self.headers["authorization"] = f"Bearer {token}"
+        # Up to 90 s: the free Render instance can take a minute to wake up.
+        r = requests.post(f"{self.base}/session", headers=self.headers, timeout=90)
+        r.raise_for_status()
+        self.session_id = r.json()["session_id"]
+
+    def ask(self, question: str) -> dict:
+        r = self._requests.post(
+            f"{self.base}/ask",
+            headers=self.headers,
+            json={"question": question, "session_id": self.session_id},
+            timeout=120,
+        )
+        if not r.ok:
+            raise RuntimeError(f"HTTP {r.status_code}: {r.text[:200]}")
+        body = r.json()
+        return {"answer": body["answer"], "citations": body["citations"]}
+
+
+def run(cases: list[dict], api: str | None = None) -> list[dict]:
     """Run every case. One failing API call marks that case, not the whole run.
 
     Results are appended to e2e_results.partial.json after each case, so a run that
     dies at case 28 of 30 still leaves 27 scored cases on disk.
+
+    `api` switches from the in-process agent to the deployed HTTP API, so the same 30
+    cases can prove that what is running on Render scores like what runs locally.
     """
     results = []
     for case in cases:
-        copilot = Copilot()  # fresh memory per case, except within a followup pair
+        # fresh memory per case, except within a followup pair
+        copilot = ApiCopilot(api) if api else Copilot()
         started = time.time()
         try:
             response = copilot.ask(case["question"])
@@ -253,6 +292,9 @@ def main() -> None:
     parser.add_argument("--upload", action="store_true", help="push dataset to LangSmith")
     parser.add_argument("--case", help="run a single case id")
     parser.add_argument("--save", action="store_true", help="write evaluation/e2e_results.json")
+    parser.add_argument("--api", metavar="URL",
+                        help="run through the deployed API instead of the local agent, "
+                             "e.g. https://course-copilot-api-vvnm.onrender.com/api")
     args = parser.parse_args()
 
     cases = load_cases()
@@ -265,7 +307,9 @@ def main() -> None:
         upload_dataset(load_cases())
 
     print(f"running {len(cases)} cases\n")
-    results = run(cases)
+    if args.api:
+        print(f"through the API at {args.api}\n")
+    results = run(cases, api=args.api)
     report(results)
 
     if args.save:

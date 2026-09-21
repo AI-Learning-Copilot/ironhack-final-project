@@ -94,6 +94,48 @@
         ]
       }
     },
+    "/api/ask/stream": {
+      "post": {
+        "summary": "Ask Stream",
+        "description": "The same turn as /ask, delivered as server-sent events while the model writes.\n\nEvents, in order:\n\n    session   {\"session_id\": \"...\"}                       first, always\n    tool      {\"name\": \"search_course_material\"}          a tool is running\n    token     {\"text\": \"An embedding is\"}                 answer text, in order\n    reset     {}                                          discard the text so far\n    done      the full AskResponse, same shape as /ask    last on success\n    error     {\"message\": \"...\", \"kind\": \"...\"}           last on failure\n\nRender the tokens as they arrive, then replace the text with `done.answer` and\nshow `done.citations`: the final answer can differ from the stream (a scoped\nrefusal is rewritten, for example). `reset` means the model wrote something and\nthen called a tool after all; clear the text and keep waiting.\n\nErrors arrive as an `error` event with HTTP 200, because the status line has gone\nout before the agent fails. Same message and kind as /ask would put in `detail`.",
+        "operationId": "ask_stream_api_ask_stream_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AskRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
     "/api/lessons": {
       "get": {
         "summary": "Get Lessons",

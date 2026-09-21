@@ -39,8 +39,16 @@ The backend already exists; you build only the frontend.
 2. `POST /session` → `{session_id}`. Keep it for the visit.
 3. `GET /lessons` → `{lessons: [...], weeks: [...]}` for the course browser and the
    scope filter. Static; load once.
-4. `POST /ask` with `{question, session_id, language}` (`language` is `"auto"`, `"en"`
-   or `"es"`, default `"auto"`). Takes ~5 s. Response:
+4. `POST /ask/stream` with `{question, session_id, language}` (`language` is `"auto"`,
+   `"en"` or `"es"`, default `"auto"`). Server-sent events (`text/event-stream`), read
+   with `fetch` + a stream reader (not `EventSource`, which cannot POST). Events in
+   order: `session {session_id}` → `tool {name}` (show "searching the course…") →
+   `token {text}` (append to the answer as it arrives, first token in ~2 s) →
+   optionally `reset {}` (clear the text, keep waiting) → `done` (the full response
+   below; replace the streamed text with `done.answer` and render `done.citations`)
+   or `error {message, kind}` (HTTP is 200; treat like an error response).
+   `POST /ask` with the same body returns the same `done` object in one piece after
+   ~5 s; use it as the fallback if streaming fails. Response:
    ```json
    {"session_id": "...", "answer": "markdown", "citations": [...],
     "related_notebooks": [...], "elapsed_seconds": 4.3, "rehydrated": false}
@@ -101,6 +109,5 @@ The backend already exists; you build only the frontend.
 
 ## Do not build
 
-- Streaming (not supported yet; `/ask` returns the whole answer).
 - Client-side storage of conversations.
 - Your own auth, accounts, or profiles.

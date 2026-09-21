@@ -111,10 +111,14 @@ keep the question in the input.
 
 ## Design constraints that are not negotiable
 
-**Answers take about five seconds.** Median ~5s, p95 ~10s, worst case ~12s. There is no
-streaming yet, so the UI must carry that wait: a visible thinking state, and the question
-staying on screen while it works. This is the single biggest thing the current frontend
-gets wrong.
+**Answers stream.** `POST /api/ask/stream` sends server-sent events: `session`, then
+`tool` while the course is searched (~2 s), then `token` events as the model writes,
+then `done` with the same object `/api/ask` returns. Render tokens as they arrive and
+replace the text with `done.answer` at the end (a scoped refusal is rewritten there).
+`reset` means "clear what you have, the model changed its mind and is searching". An
+`error` event replaces `done` on failure, with the same `{message, kind}` as `/api/ask`.
+Read it with `fetch` and a stream reader; `EventSource` cannot send a POST body. Keep the
+question on screen and a visible thinking state until the first token.
 
 **A refusal shows no citations.** When the answer is "That wasn't covered in the course",
 the citations array is empty by design — a refusal must never look sourced. Style it as a
@@ -173,12 +177,11 @@ accounts, passwords or profiles, and never put the Supabase secret key in the fr
 
 - Anything that stores conversations client-side. Persistence will live in Supabase on
   the API side.
-- Streaming. The endpoint does not support it yet; when it does it will be a separate
-  `/api/ask/stream` SSE endpoint and `/api/ask` will keep working unchanged.
+- A second answer path: `/api/ask/stream` is the primary, `/api/ask` the fallback when
+  streaming fails. Same body, same final object.
 
 ## Known gaps, so nothing here is a surprise
 
-- **No streaming**, so the wait is the design problem.
 - **No auth yet.** Anyone holding a session id can read that conversation. See the
   auth section above.
 - **Nothing survives a restart.** Sessions are in memory.

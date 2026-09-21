@@ -30,3 +30,4 @@ index/dev/
 # Runtime
 logs/
 .streamlit/secrets.toml
+evaluation/e2e_results.partial.json

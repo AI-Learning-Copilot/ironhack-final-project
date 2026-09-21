@@ -10,8 +10,8 @@ API-backed frontend passes the same evaluation.
 
 ```text
 api/
-  main.py       FastAPI under /api: session, ask, lessons, notes (md + pdf), syllabus.pdf,
-                scope, quiz, reset, evict, health
+  main.py       FastAPI under /api: session, ask, ask/stream (SSE), lessons, notes
+                (md + pdf), syllabus.pdf, scope, quiz, reset, evict, health
   sessions.py   ConversationState, rehydrate(), SessionStore ABC, InMemorySessionStore
   course.py     lessons.json + summaries/ as plain data for the API
   openapi.json  the contract the frontend is generated from — regenerate after any change
@@ -47,6 +47,11 @@ follow-up resolves "it" correctly and comes back `rehydrated: true`.
   never the raw exception. The real cause is in the server log with a request id.
 - `turnlog`: every `/api/ask` writes tokens, cost and latency to `logs/turns.sqlite`,
   under user `anonymous` until the login step lands.
+- `/api/ask/stream` (21 September): the same turn as server-sent events — `session`,
+  `tool`, `token`…, `done` (or `error`). First token about 2 s in; `done` carries the
+  exact object `/api/ask` returns. `Copilot.ask_stream()` in `src/agent.py` drives it
+  through LangChain's `astream_events`; `ask()` and `ask_stream()` share the usage
+  bookkeeping and refusal handling in `_finish()`.
 
 ## What is deliberately not here yet
 
@@ -58,5 +63,3 @@ In the order they will be done:
 2. **Persistence across restarts.** `InMemorySessionStore` is the same lifetime Streamlit
    gave us. A Supabase Postgres implementation of `SessionStore` replaces it; the
    interface is already there.
-3. **Streaming.** `/api/ask` returns the whole answer after ~5 s. An SSE variant is
-   the first UX improvement after auth.

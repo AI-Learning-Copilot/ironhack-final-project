@@ -1,0 +1,567 @@
+[
+  {
+    "id": "f01",
+    "kind": "content",
+    "question": "What is RAG and why would I use it?",
+    "answer": "RAG stands for **Retrieval-Augmented Generation**. It is a technique that connects a language model (LLM) to an external knowledge source at query time, allowing the model to access information beyond what it memorized during training. This is particularly useful for proprietary or private data that isn't available on the open web.\n\nYou would use RAG when you want to provide the model with information that it likely doesn't have in its training data. This is especially relevant for proprietary information, as general web searches may not cover specific internal documents or databases. RAG allows for more control over the content and quality of the information used to ground the model's answers, making it a preferable option in many cases where accuracy and reliability are critical.\n\nIn summary, RAG is beneficial when dealing with proprietary data or when you need to ensure that the information provided to the model is accurate and relevant, rather than relying solely on general web searches.",
+    "cited": [
+      "w7d2",
+      "w7d2",
+      "w7d4",
+      "extra"
+    ],
+    "latency": 7.614129304885864,
+    "passed": false,
+    "checks": {
+      "source_correct": true,
+      "has_citations": true,
+      "not_refused": true,
+      "mentions:retriev": true,
+      "mentions:context": false
+    },
+    "notes": [
+      "answer mentions none of ['context']"
+    ]
+  },
+  {
+    "id": "f02",
+    "kind": "content",
+    "question": "What is an embedding?",
+    "answer": "An embedding is a representation of words, sentences, or other data types in a multi-dimensional space, where each item is encoded as a sequence of numbers. This allows for the preservation of relationships and meanings between different items. For example, in a multi-dimensional space, words that are related, like \"puppy\" and \"dog,\" will be positioned closer together than unrelated words, such as \"banana.\" \n\nEmbeddings can be applied not only to words but also to sentences, documents, images, audio, video, and even biological data like proteins and DNA. The core idea is to convert each token or word into a dense vector representation, which reduces the dimensionality of the data while maintaining the relationships between the items. This is beneficial for various applications, including natural language processing and machine learning. \n\nThis concept was introduced in week 4, day 3 of the course.",
+    "cited": [
+      "w4d3"
+    ],
+    "latency": 8.64415693283081,
+    "passed": false,
+    "checks": {
+      "source_correct": true,
+      "has_citations": true,
+      "not_refused": true,
+      "mentions:vector|numbers|numerical|dimensional": true,
+      "mentions:similar": false
+    },
+    "notes": [
+      "answer mentions none of ['similar']"
+    ]
+  },
+  {
+    "id": "f03",
+    "kind": "content",
+    "question": "How does CLIP work?",
+    "answer": "CLIP (Contrastive Language-Image Pretraining) is a model that has been trained on both images and text, calculating embeddings in the same embedding space. The core idea is that it uses two different neural networks: one to encode images and another to encode text. \n\nWhen an image is passed into the image encoder, CLIP computes a vector representation of that image. It then compares this vector to a set of possible captions (text labels) and classifies the image with the label that results in the highest cosine similarity. This allows CLIP to effectively match images with their corresponding textual descriptions.\n\nAdditionally, CLIP's learned geometry of the embedding space enables it to operate mathematically on the concepts represented in both images and text, translating differences in content into distances between vectors in the embedding space. This capability allows for impressive image classification results, as demonstrated by the OpenAI team.\n\nThis information was covered in week 8, day 1 of the course.",
+    "cited": [
+      "w8d1"
+    ],
+    "latency": 12.621628046035767,
+    "passed": true,
+    "checks": {
+      "source_correct": true,
+      "has_citations": true,
+      "not_refused": true,
+      "mentions:image": true,
+      "mentions:text": true
+    },
+    "notes": []
+  },
+  {
+    "id": "f04",
+    "kind": "content",
+    "question": "What is the difference between precision and recall?",
+    "answer": "Precision and recall are two important metrics used to evaluate the performance of classification models, and they have an inherent tradeoff.\n\n- **Precision** measures the accuracy of the positive predictions made by the model. It is defined as the ratio of true positives to the sum of true positives and false positives. In simpler terms, it tells you how many of the items flagged as positive are actually positive. For example, in spam detection, high precision means that most emails marked as spam are indeed spam, minimizing the chances of incorrectly classifying a legitimate email as spam.\n\n- **Recall**, on the other hand, measures the ability of the model to identify all relevant instances. It is defined as the ratio of true positives to the sum of true positives and false negatives. This metric indicates how many of the actual positive cases were captured by the model. For instance, in a medical diagnosis scenario, high recall means that most patients with a disease are correctly identified, even if it means some healthy patients are incorrectly flagged as having the disease.\n\nThe tradeoff between precision and recall means that increasing one often leads to a decrease in the other. For example, if you want to catch more positive cases (higher recall), you may accept more false alarms (lower precision), and vice versa. Depending on the context, you may prioritize one metric over the other. For instance, in critical situations like detecting bombs or diseases, recall is often prioritized to ensure that as many true cases as possible are identified. \n\nThis information was covered in week 2 day 2 of the course.",
+    "cited": [
+      "w2d2",
+      "w2d2"
+    ],
+    "latency": 8.249608039855957,
+    "passed": true,
+    "checks": {
+      "source_correct": true,
+      "has_citations": true,
+      "not_refused": true,
+      "mentions:precision": true,
+      "mentions:recall": true
+    },
+    "notes": []
+  },
+  {
+    "id": "f05",
+    "kind": "content",
+    "question": "How do I deploy a model with FastAPI?",
+    "answer": "In the course, deploying a model with FastAPI was covered in several lessons. Here are the key points:\n\n1. **Introduction to FastAPI**: FastAPI is a modern framework for building APIs in Python. It allows you to create endpoints for your model, enabling you to send requests and receive predictions. This was discussed in week 6, day 1, where the instructor mentioned using FastAPI for implementing an API.\n\n2. **Creating an API**: The process involves setting up endpoints, such as a health check and a prediction endpoint. The instructor demonstrated how to run the API locally and test it using Postman. This was detailed in the same lesson, where they explained how to handle GET and POST requests.\n\n3. **Deployment**: The deployment of the API on Render.com was also covered, which includes making the API accessible online after testing it locally. This was mentioned towards the end of the same lesson.\n\nFor a more detailed understanding, you might want to refer to the specific timestamps in week 6, day 1, where these topics were discussed.",
+    "cited": [
+      "w6d1",
+      "w6d1",
+      "w6d1"
+    ],
+    "latency": 6.705528020858765,
+    "passed": true,
+    "checks": {
+      "source_correct": true,
+      "has_citations": true,
+      "not_refused": true,
+      "mentions:api": true
+    },
+    "notes": []
+  },
+  {
+    "id": "f06",
+    "kind": "content",
+    "question": "What is quantization and why does it help?",
+    "answer": "Quantization is the process of reducing the precision of floating-point numbers, which typically occupy 32 bits, to lower-bit integers, such as 8 or even 4 bits. This is done specifically to the model's weights and activation values in neural networks. \n\nThe main benefits of quantization include:\n\n1. **Reduced Memory Footprint**: By using fewer bits to store model weights, quantization significantly shrinks the memory required for the model.\n2. **Faster Inference**: Lower precision calculations can lead to quicker computations, enhancing the model's agility during inference.\n3. **Minimal Loss of Precision**: Particularly with 8-bit quantization, the loss of precision is often minimal, allowing the model to maintain its performance while benefiting from the reduced resource requirements.\n\nQuantization works by mapping a wide range of float values onto a smaller set of discrete values, which helps preserve the overall relationships in the data while saving space. There are two main approaches to quantization: Post-Training Quantization (PTQ), which applies quantization to an already-trained model without retraining, and Quantization-Aware Training (QAT), which incorporates precision-awareness into the training process itself.\n\nIn summary, quantization helps optimize models for storage and speed, making them more efficient for deployment.",
+    "cited": [
+      "w5d4",
+      "extra",
+      "w5d5"
+    ],
+    "latency": 7.243978023529053,
+    "passed": true,
+    "checks": {
+      "source_correct": true,
+      "has_citations": true,
+      "not_refused": true,
+      "mentions:model": true
+    },
+    "notes": []
+  },
+  {
+    "id": "f07",
+    "kind": "content",
+    "question": "What is overfitting and how do I spot it?",
+    "answer": "Overfitting occurs when a model is too complex and learns not only the underlying patterns in the training data but also the noise. This results in high performance on the training set but poor performance on unseen data. In other words, the model memorizes the training examples instead of generalizing from them. This is characterized as \"high variance\" in the model.\n\nTo spot overfitting, you can compare the model's performance on the training set versus the test set. The main indicators are:\n\n- If the training score is high but the test score is significantly lower, this suggests overfitting.\n- A rule of thumb for detecting overfitting is to look at the difference between the training and test scores (e.g., R²):\n  - If Train R² − Test R² < 0.05: Generally good generalization.\n  - If Train R² − Test R² is between 0.05 and 0.15: Possible mild overfitting — monitor.\n  - If Train R² − Test R² > 0.15: Likely overfitting — needs attention.\n\nThis method works because the test set was not used during training, providing a clear indication of how well the model performs on new, unseen data. \n\nIn summary, overfitting is when a model learns too much from the training data, including noise, leading to poor generalization on new data. You can detect it by comparing training and test scores, looking for a significant drop in performance on the test set.",
+    "cited": [
+      "w2d1",
+      "w2d1",
+      "w3d1"
+    ],
+    "latency": 7.308779954910278,
+    "passed": true,
+    "checks": {
+      "source_correct": true,
+      "has_citations": true,
+      "not_refused": true,
+      "mentions:train": true
+    },
+    "notes": []
+  },
+  {
+    "id": "f08",
+    "kind": "content",
+    "question": "How does tokenization work in NLP?",
+    "answer": "Tokenization in Natural Language Processing (NLP) is the process of breaking down text into individual elements, which are often words, but can also include punctuation and other characters. The instructor explained that when you have a text with a certain number of words, it typically translates to a higher number of tokens. For example, a text with 100 words might take about 130 tokens. A rough rule of thumb is that one token is approximately equal to 0.75 words.\n\nDuring tokenization, each word and punctuation mark is treated as a separate token. For instance, in a sentence like \"The children spent the afternoon playing in the garden, reading books and helping,\" each word and the comma would be counted as individual tokens. The process also involves cleaning the text, such as removing punctuation, to prepare the data for further analysis.\n\nDifferent models may use different tokenization methods, and it's important to note that tokenization is not always a one-to-one correspondence between words and tokens. For modern language models, a collection of words can be translated into multiple tokens. \n\nThis was covered in week 4, day 2 of the course.",
+    "cited": [
+      "w4d2",
+      "w4d2"
+    ],
+    "latency": 6.115509986877441,
+    "passed": true,
+    "checks": {
+      "source_correct": true,
+      "has_citations": true,
+      "not_refused": true,
+      "mentions:token": true
+    },
+    "notes": []
+  },
+  {
+    "id": "f09",
+    "kind": "content",
+    "question": "What is LoRA and how does it relate to fine-tuning?",
+    "answer": "LoRA, or Low-Rank Adaptation, is a technique used to fine-tune a pretrained model by freezing its original weights and training only a small set of low-rank adapter matrices. This approach allows for a significant reduction in the number of parameters that need to be trained, which can lead to lower memory requirements and faster training times. Specifically, instead of modifying a large matrix directly, LoRA breaks it down into two smaller matrices. When these smaller matrices are multiplied, they yield the original matrix size, but with far fewer parameters to adjust. This can result in training only about 0.02% of the original parameters in some language models, while still achieving performance comparable to full fine-tuning.\n\nIn relation to fine-tuning, LoRA is a method that allows for efficient adaptation of models without the need to retrain all parameters. It is part of the broader concept of transfer learning, where a pretrained model is adapted to new tasks. Fine-tuning typically involves retraining the entire model, but with LoRA, the focus is on training just the low-rank adapters, which can lead to similar or even better results than traditional fine-tuning methods while being more resource-efficient.\n\nThis information was covered in week 5 day 5 and in the LoRA tuning notebooks.",
+    "cited": [
+      "extra",
+      "w5d5",
+      "extra"
+    ],
+    "latency": 6.1459619998931885,
+    "passed": true,
+    "checks": {
+      "source_correct": true,
+      "has_citations": true,
+      "not_refused": true,
+      "mentions:fine": true
+    },
+    "notes": []
+  },
+  {
+    "id": "f10",
+    "kind": "content",
+    "question": "What is a transformer architecture?",
+    "answer": "The transformer architecture is a neural network design that powers modern AI, particularly in natural language processing (NLP). It consists of two main components: an encoder and a decoder. The encoder processes input data and the decoder generates output based on the encoded information. \n\nOne of the key features of the transformer architecture is its ability to use multi-attention mechanisms, allowing it to analyze all words in a sentence simultaneously rather than sequentially. This parallel processing capability significantly speeds up training and enhances the model's ability to learn complex patterns. Modern transformer models can have over 100 layers, enabling them to capture intricate relationships within the data.\n\nThis architecture has become foundational for large language models (LLMs) and is characterized by a sequence of many decoder blocks stacked together, which helps in generating high-quality outputs. \n\nThis information was covered in week 5, day 2 of the course.",
+    "cited": [
+      "w5d2"
+    ],
+    "latency": 4.944881916046143,
+    "passed": true,
+    "checks": {
+      "source_correct": true,
+      "has_citations": true,
+      "not_refused": true,
+      "mentions:attention": true
+    },
+    "notes": []
+  },
+  {
+    "id": "f11",
+    "kind": "content",
+    "question": "How does backpropagation train a neural network?",
+    "answer": "Backpropagation is a key process in training neural networks. Here's how it works:\n\n1. **Forward Propagation**: Initially, the input data flows through the network layers, and the model produces a prediction. This is known as forward propagation.\n\n2. **Loss Calculation**: After obtaining the prediction, the next step is to calculate the loss by comparing the prediction with the actual label. The loss function quantifies how far off the prediction is from the true value. For example, in regression tasks, a common loss function is the mean square error.\n\n3. **Backpropagation**: Once the loss is calculated, backpropagation begins. The algorithm works backward through the network to determine how much each weight contributed to the error. This involves calculating the gradients of the loss with respect to each weight.\n\n4. **Weight Adjustment**: Based on the gradients calculated during backpropagation, optimization algorithms (like Gradient Descent) adjust the weights to minimize the loss. This process is repeated for multiple batches of data and across several epochs, allowing the model to learn and improve its predictions over time.\n\nIn summary, backpropagation helps the neural network learn by adjusting weights based on the errors made in predictions, thereby optimizing the model's performance. This entire process is typically repeated for many epochs to ensure the model learns effectively. \n\nThis explanation is based on the content covered in week 3 day 1 of the course.",
+    "cited": [
+      "w3d1"
+    ],
+    "latency": 7.08982515335083,
+    "passed": true,
+    "checks": {
+      "source_correct": true,
+      "has_citations": true,
+      "not_refused": true,
+      "mentions:gradient|descent|derivative|slope|error": true,
+      "mentions:weight|parameter": true
+    },
+    "notes": []
+  },
+  {
+    "id": "f12",
+    "kind": "content",
+    "question": "What is prompt injection?",
+    "answer": "Prompt injection occurs when untrusted user input manipulates the model's behavior by overriding or hijacking system instructions. This can happen in two main ways: direct prompt injection, where the model receives instructions that directly contain the task or attempt to override its expected behavior, and indirect prompt injection, which is more complex and can occur through more elaborate means.\n\nTo prevent prompt injection attacks, several recommendations include:\n\n1. **Separate System Instructions from User Input**: Always place trusted instructions in the system role and never interpolate raw user input directly into the system prompt.\n2. **Clearly Delimit User Data**: Use explicit delimiters to distinguish trusted instructions from untrusted data.\n3. **Write Explicit, Defensive System Prompts**: Instruct the model to ignore any orders or requests found within the user data section.\n4. **Validate and Sanitize User Input**: Reject or sanitize strings containing suspicious patterns before passing input to the model.\n5. **Validate Model Output**: Ensure the model's response conforms to the expected format.\n\nThese strategies help mitigate the risks associated with prompt injection attacks. This was covered in week 5, day 2.",
+    "cited": [
+      "w5d2",
+      "w5d3",
+      "w5d3"
+    ],
+    "latency": 15.103929996490479,
+    "passed": true,
+    "checks": {
+      "source_correct": true,
+      "has_citations": true,
+      "not_refused": true,
+      "mentions:prompt": true
+    },
+    "notes": []
+  },
+  {
+    "id": "f13",
+    "kind": "content",
+    "question": "How does chunking work when indexing documents?",
+    "answer": "Chunking in the context of indexing documents involves splitting larger documents into smaller, manageable pieces, or \"chunks,\" to facilitate more efficient processing and retrieval. Here are the key points about how chunking works:\n\n1. **Purpose of Chunking**: The main reason for chunking is to avoid processing entire long documents at once, which can be inefficient and costly. By breaking documents into smaller sections, such as paragraphs, the system can focus on relevant chunks when answering queries, rather than searching through the entire document.\n\n2. **Chunk Size and Overlap**: Typically, chunks are created based on logical divisions like paragraphs. If a paragraph exceeds a certain length (e.g., 400 tokens), it is further split. Additionally, to maintain context, there may be some overlap between chunks, meaning that part of the text from the end of one chunk may be included at the beginning of the next chunk.\n\n3. **Embedding Representation**: Once the text is chunked, each chunk is converted into a numerical representation using embeddings. This allows for similarity searches, where chunks that are semantically similar are located closer together in the embedding space.\n\n4. **Metadata and Tracking**: Each chunk can also have associated metadata, such as an ID, which helps in tracking and referencing the chunks later during retrieval.\n\nThis process is crucial for optimizing the indexing of large datasets, making it easier to search and retrieve relevant information efficiently. This was covered in week 7 day 2 of the course.",
+    "cited": [
+      "w7d2",
+      "w7d2"
+    ],
+    "latency": 15.715118169784546,
+    "passed": true,
+    "checks": {
+      "source_correct": true,
+      "has_citations": true,
+      "not_refused": true,
+      "mentions:chunk": true
+    },
+    "notes": []
+  },
+  {
+    "id": "f14",
+    "kind": "content",
+    "question": "What is a JOIN in SQL?",
+    "answer": "In SQL, a JOIN is used to combine rows from two or more tables based on a related column between them. There are four main types of joins:\n\n1. **Inner Join**: This returns only the rows that have matching values in both tables. For example, if you are joining a \"users\" table with an \"orders\" table on a common column like customer ID, the inner join will only include users who have placed orders.\n\n2. **Left Join**: This returns all the rows from the left table and the matching rows from the right table. If there is no match, the result will include NULL for columns from the right table.\n\n3. **Right Join**: This is similar to the left join, but it returns all the rows from the right table and the matching rows from the left table, filling in NULLs for any non-matching rows from the left table.\n\n4. **Full Outer Join**: This returns all rows from both tables, filling in NULLs for any non-matching rows from either side.\n\nThese joins allow you to combine data from different tables in a relational database effectively. This was covered in week 5 day 1.",
+    "cited": [
+      "w5d1"
+    ],
+    "latency": 7.722902059555054,
+    "passed": true,
+    "checks": {
+      "source_correct": true,
+      "has_citations": true,
+      "not_refused": true,
+      "mentions:table": true
+    },
+    "notes": []
+  },
+  {
+    "id": "l01",
+    "kind": "location",
+    "question": "Where was cosine similarity covered?",
+    "answer": "Cosine similarity was covered in week 4 day 3, specifically during the \"Embeddings Demo\" at 11:05.",
+    "cited": [
+      "w4d3"
+    ],
+    "latency": 6.064922094345093,
+    "passed": true,
+    "checks": {
+      "source_correct": true,
+      "has_citations": true,
+      "not_refused": true
+    },
+    "notes": []
+  },
+  {
+    "id": "l02",
+    "kind": "location",
+    "question": "Which lesson explained LangChain memory?",
+    "answer": "LangChain memory was explained in the following lessons:\n\n- In week 7 day 1, during the \"Langchain intro + setup with virtual environments\" at 8:17.\n- In week 7 day 3, during the recap of \"LangChain Memory + RAG Pipeline\" at 1:24.\n- Additionally, it was covered in week 7 day 1 in the \"LangChain Chains II\" section at multiple timestamps: 14:05, 15:25, 41:04, and 57:46.",
+    "cited": [
+      "w7d1",
+      "w7d3",
+      "w7d1"
+    ],
+    "latency": 8.405648946762085,
+    "passed": true,
+    "checks": {
+      "source_correct": true,
+      "has_citations": true,
+      "not_refused": true
+    },
+    "notes": []
+  },
+  {
+    "id": "l03",
+    "kind": "location",
+    "question": "When did we cover data augmentation?",
+    "answer": "We covered data augmentation in week 3 day 4. Here are some key moments from that lesson:\n\n- 0:58 - Data Augmentation\n- 6:43 - Data Augmentation\n- 10:21 - Data Augmentation and Transfer Learning\n- 13:58 - Data Augmentation\n- 43:16 - Data Augmentation and Transfer Learning\n- 49:37 - Data Augmentation and Transfer Learning",
+    "cited": [
+      "w3d4",
+      "w3d4"
+    ],
+    "latency": 5.6971399784088135,
+    "passed": true,
+    "checks": {
+      "source_correct": true,
+      "has_citations": true,
+      "not_refused": true
+    },
+    "notes": []
+  },
+  {
+    "id": "l04",
+    "kind": "location",
+    "question": "Where was regular expressions taught?",
+    "answer": "Regular expressions were taught in week 4, day 1. Here are some key moments from that lesson:\n\n- 1:10:29\n- 1:34:58\n- 1:47:13\n- 33:29\n- 44:15\n- 22:51",
+    "cited": [
+      "w4d1"
+    ],
+    "latency": 5.766105890274048,
+    "passed": true,
+    "checks": {
+      "source_correct": true,
+      "has_citations": true,
+      "not_refused": true
+    },
+    "notes": []
+  },
+  {
+    "id": "l05",
+    "kind": "location",
+    "question": "Which day covered pandas groupby?",
+    "answer": "Pandas groupby was covered on week 1, day 5. Here are some key moments from that lesson:\n\n- 8:44\n- 10:41\n- 22:10\n- 28:01\n- 36:43\n- 45:16",
+    "cited": [
+      "w1d5"
+    ],
+    "latency": 5.5094709396362305,
+    "passed": true,
+    "checks": {
+      "source_correct": true,
+      "has_citations": true,
+      "not_refused": true
+    },
+    "notes": []
+  },
+  {
+    "id": "e01",
+    "kind": "spanish",
+    "question": "¿Qué es un embedding y para qué sirve?",
+    "answer": "Un embedding es una representación de palabras, frases, o incluso imágenes en un espacio multidimensional. En el contexto de procesamiento de lenguaje natural, se utiliza para convertir cada palabra o token en una secuencia de números que representan su significado en relación con otras palabras. Por ejemplo, en un espacio tridimensional, palabras con significados similares estarán más cerca unas de otras. Esto permite capturar relaciones semánticas y similitudes entre diferentes elementos, lo que no se logra con técnicas más simples como la codificación one-hot o el modelo de bolsa de palabras.\n\nLos embeddings son útiles porque permiten almacenar y representar información de manera más densa y significativa. Por ejemplo, se pueden usar para recomendaciones en plataformas como Spotify, donde se sugieren canciones similares basadas en la proximidad de sus embeddings en el espacio multidimensional. Además, el concepto de embeddings se puede aplicar no solo a palabras, sino también a oraciones, documentos, imágenes, audio, video, y otros tipos de datos.\n\nEsto fue cubierto en la lección de \"Embeddings Intro\" en la semana 4, día 3, específicamente en los minutos 7:10, 9:36, 13:43, 19:42 y 20:44.",
+    "cited": [
+      "w4d3"
+    ],
+    "latency": 6.803868770599365,
+    "passed": true,
+    "checks": {
+      "source_correct": true,
+      "has_citations": true,
+      "not_refused": true,
+      "answered_in_spanish": true
+    },
+    "notes": []
+  },
+  {
+    "id": "e02",
+    "kind": "spanish",
+    "question": "¿Cómo funciona RAG?",
+    "answer": "RAG, o \"Retrieval-Augmented Generation\", funciona conectando un modelo de lenguaje (LLM) a una fuente de conocimiento externa en el momento de la consulta, en lugar de depender únicamente de lo que ha memorizado durante el entrenamiento o de una búsqueda web de propósito general. La idea central es que, antes de enviar los datos a un LLM, se puede consultar una base de datos vectorial para encontrar información relevante para esa solicitud. Esto es útil porque el conocimiento que un LLM puede tener es limitado a los datos que se incluyeron en su entrenamiento.\n\nRAG es especialmente valioso cuando se tiene información privada o propietaria que no está disponible públicamente. A diferencia de las búsquedas web, que pueden ser más lentas y menos confiables, RAG permite construir y consultar una base de conocimiento propia, lo que otorga control total sobre el contenido, la calidad y la trazabilidad de las fuentes utilizadas para fundamentar las respuestas del modelo.\n\nEn resumen, RAG se utiliza cuando se necesita enviar información al modelo que probablemente no esté en sus datos de entrenamiento, especialmente en casos donde se maneja información privada o específica de una empresa. Esto se discutió en la lección de la semana 7, día 2.",
+    "cited": [
+      "w7d2",
+      "extra",
+      "w7d2",
+      "extra"
+    ],
+    "latency": 9.787137985229492,
+    "passed": true,
+    "checks": {
+      "source_correct": true,
+      "has_citations": true,
+      "not_refused": true,
+      "answered_in_spanish": true
+    },
+    "notes": []
+  },
+  {
+    "id": "e03",
+    "kind": "spanish",
+    "question": "¿Dónde se explicó el overfitting?",
+    "answer": "El overfitting se explicó en varias lecciones:\n\n- En la lección de **w2d1** durante la demostración de ML I - Regresión Lineal, a las **1:48:12**.\n- También en **w2d2** en la lección sobre Algoritmos de ML Clasificación, a las **17:40**.\n- Y en **w2d3** en la lección IV (desbalance de clases, entrenamiento y comparación, ajuste de hiperparámetros, evaluación final), a las **22:43**.\n\nAdemás, hay momentos adicionales en **w2d1** a las **1:43:52**, **1:54:20**, y **1:55:20**.",
+    "cited": [
+      "w2d1",
+      "w2d3",
+      "w2d2"
+    ],
+    "latency": 20.647677898406982,
+    "passed": true,
+    "checks": {
+      "source_correct": true,
+      "has_citations": true,
+      "not_refused": true,
+      "answered_in_spanish": true
+    },
+    "notes": []
+  },
+  {
+    "id": "u01",
+    "kind": "unanswerable",
+    "question": "What is the capital of France?",
+    "answer": "That wasn't covered in the course.",
+    "cited": [],
+    "latency": 3.8021299839019775,
+    "passed": true,
+    "checks": {
+      "refused": true,
+      "no_citations": true
+    },
+    "notes": []
+  },
+  {
+    "id": "u02",
+    "kind": "unanswerable",
+    "question": "Which Kubernetes operator should I use for autoscaling?",
+    "answer": "That wasn't covered in the course.",
+    "cited": [],
+    "latency": 3.3095717430114746,
+    "passed": true,
+    "checks": {
+      "refused": true,
+      "no_citations": true
+    },
+    "notes": []
+  },
+  {
+    "id": "u03",
+    "kind": "unanswerable",
+    "question": "What did the instructor say about quantum error correction?",
+    "answer": "That wasn't covered in the course.",
+    "cited": [],
+    "latency": 2.964311122894287,
+    "passed": true,
+    "checks": {
+      "refused": true,
+      "no_citations": true
+    },
+    "notes": []
+  },
+  {
+    "id": "m01",
+    "kind": "followup",
+    "question": "What is RAG?",
+    "answer": "RAG stands for **Retrieval-Augmented Generation**. It is a technique that connects a language model (LLM) to an external knowledge source at query time, rather than relying solely on the information it memorized during training or on general-purpose web searches. The main idea behind RAG is to build and query a custom knowledge base, which allows for full control over the content, quality, and traceability of the sources used to ground the model's answers.\n\nRAG is particularly useful for accessing proprietary or private data that isn't available on the web, as well as for situations where more control over the sources is needed. It enhances the model's ability to provide accurate and relevant responses by integrating real-time information from a dedicated knowledge base. \n\nThis was discussed in week 7 day 2 of the course.",
+    "cited": [
+      "extra",
+      "w7d2",
+      "extra",
+      "w7d2"
+    ],
+    "latency": 7.613537311553955,
+    "passed": true,
+    "checks": {
+      "source_correct": true,
+      "has_citations": true,
+      "not_refused": true,
+      "followup_used_memory": true
+    },
+    "notes": []
+  },
+  {
+    "id": "m02",
+    "kind": "followup",
+    "question": "What is an embedding?",
+    "answer": "An embedding is a representation of words, sentences, or other data types in a multi-dimensional space, where each item is encoded as a sequence of numbers. This allows for the preservation of relationships and meanings between different items. For example, in a multi-dimensional space, words that are related, like \"puppy\" and \"dog,\" will be positioned closer together than unrelated words, such as \"banana.\" \n\nEmbeddings can be applied not only to words but also to sentences, documents, images, audio, video, and even biological data like proteins and DNA. The core idea is to convert each token or word into a dense vector representation, which reduces the dimensionality of the data while maintaining the relationships between the items. This is beneficial for various applications, including natural language processing and machine learning. \n\nThis concept was introduced in week 4, day 3 of the course.",
+    "cited": [
+      "w4d3"
+    ],
+    "latency": 11.63058066368103,
+    "passed": true,
+    "checks": {
+      "source_correct": true,
+      "has_citations": true,
+      "not_refused": true,
+      "followup_answered": true
+    },
+    "notes": []
+  },
+  {
+    "id": "n01",
+    "kind": "content",
+    "question": "Show me the code for splitting documents into chunks with LangChain.",
+    "answer": "You can find the code for splitting documents into chunks with LangChain in the following notebooks:\n\n- **14_LangChain/3_langchain-RAG.ipynb** · cell 15\n- **14_LangChain/1_langchain-intro.ipynb** · cell 86\n- **14_LangChain/11_langchain-multi-query.ipynb** · cell 0\n- **14_LangChain/9_langchain-streaming.ipynb** · cell 0",
+    "cited": [
+      "w7d2",
+      "w7d1",
+      "w7d4",
+      "w7d4"
+    ],
+    "latency": 4.571594953536987,
+    "passed": true,
+    "checks": {
+      "source_correct": true,
+      "has_citations": true,
+      "not_refused": true,
+      "cites:notebook": true
+    },
+    "notes": []
+  },
+  {
+    "id": "n02",
+    "kind": "content",
+    "question": "Which notebook demonstrates the RAG pipeline?",
+    "answer": "The following notebooks demonstrate the RAG pipeline:\n\n1. **14_LangChain/3_langchain-RAG.ipynb** - cell 4\n2. **14_LangChain/13_multi-modal-rag.ipynb** - cell 18\n3. **Extra · 15_Evaluation/3_rag.ipynb** - cell 2\n4. **Extra · 14_LangChain/16_extra-langsmith-deep-dive.ipynb** - cell 42",
+    "cited": [
+      "w7d2",
+      "w8d1",
+      "extra",
+      "extra"
+    ],
+    "latency": 4.746155023574829,
+    "passed": true,
+    "checks": {
+      "source_correct": true,
+      "has_citations": true,
+      "not_refused": true,
+      "cites:notebook": true
+    },
+    "notes": []
+  },
+  {
+    "id": "n03",
+    "kind": "content",
+    "question": "How is conversation memory implemented in LangChain?",
+    "answer": "In LangChain, conversation memory is implemented to allow chatbots and other applications to remember previous interactions, which is crucial for maintaining context in conversations. This is particularly important because, by default, large language models (LLMs) are stateless, meaning they process each incoming query independently without retaining any memory of past interactions.\n\nThere are several methods to implement conversational memory in LangChain, all built on top of the `ConversationChain`. Some of the popular memory types include:\n\n1. **ConversationBufferMemory**: This method stores every chat interaction directly in the buffer. While it provides good results, it can lead to high data costs and slower response times due to the amount of data being sent to the API.\n\n2. **ConversationBufferWindowMemory**: This method manages memory by only keeping a window of the most recent interactions.\n\n3. **ConversationTokenBufferMemory**: This method focuses on managing the number of tokens used in the conversation.\n\n4. **ConversationSummaryMemory**: This method summarizes past interactions to reduce the amount of data while still retaining context.\n\nAdditionally, there are other memory types like `ConversationKnowledgeGraphMemory` and `ConversationEntityMemory`, which can be explored further in the course. The implementation of these memory types allows LLMs to interact in a more stateful manner, enabling them to refer back to past interactions and provide more coherent responses.\n\nFor more detailed examples and code implementations, you can refer to the notebook on memory in LangChain.",
+    "cited": [
+      "w7d3"
+    ],
+    "latency": 5.554563045501709,
+    "passed": true,
+    "checks": {
+      "source_correct": true,
+      "has_citations": true,
+      "not_refused": true,
+      "cites:notebook": true
+    },
+    "notes": []
+  }
+]

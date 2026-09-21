@@ -259,26 +259,91 @@ class Copilot:
         here, logged with a request id, and translated into a message a student can
         act on. The raw exception stays chained for the logs.
         """
-        request_id = uuid.uuid4().hex[:8]
-        started = time.time()
-        self.collector.reset()
+        request_id, started = self._begin()
         try:
             with get_openai_callback() as usage:
                 result = self.executor.invoke({"input": question})
         except Exception as exc:  # noqa: BLE001 — deliberately broad, see docstring
-            elapsed = time.time() - started
-            error = _classify(exc)
-            self.last_usage = {
-                "request_id": request_id,
-                "latency_s": round(elapsed, 2),
-                "error": error.kind,
-            }
-            log.exception(
-                "turn %s failed after %.1fs (%s): %s",
-                request_id, elapsed, error.kind, type(exc).__name__,
-            )
-            raise error from exc
+            raise self._fail(exc, request_id, started) from exc
+        return self._finish(question, result, usage, request_id, started)
 
+    async def ask_stream(self, question: str):
+        """`ask()` as an async generator of events, for a streaming HTTP endpoint.
+
+        Yields dicts:
+            {"event": "tool",  "name": "search_course_material"}   a tool is running
+            {"event": "token", "text": "An embedding is"}           answer text, in order
+            {"event": "reset"}                                      discard text so far
+            {"event": "done",  "answer": ..., "citations": [...]}   the final response
+
+        `reset` happens when the model wrote some text and then decided to call a tool
+        after all; the text was thinking out loud, not the answer, and the client should
+        clear it. The `done` event carries the same response `ask()` would have
+        returned, so the client renders that and treats the tokens as a preview: a
+        refusal under a scope, for example, is rewritten in `_finish` and the final text
+        differs from what was streamed.
+
+        Raises `CopilotError` exactly like `ask()`; a client sees it as an `error` event
+        from the HTTP layer.
+        """
+        request_id, started = self._begin()
+        result = None
+        streamed_any = False
+        try:
+            with get_openai_callback() as usage:
+                async for ev in self.executor.astream_events(
+                    {"input": question}, version="v1"
+                ):
+                    kind = ev["event"]
+                    if kind == "on_tool_start":
+                        yield {"event": "tool", "name": ev.get("name", "")}
+                    elif kind == "on_chat_model_start":
+                        if streamed_any:
+                            # A new model call after text was streamed means the
+                            # earlier text preceded a tool call: not the answer.
+                            yield {"event": "reset"}
+                            streamed_any = False
+                    elif kind == "on_chat_model_stream":
+                        chunk = ev["data"].get("chunk")
+                        text = getattr(chunk, "content", "") if chunk is not None else ""
+                        if text:
+                            streamed_any = True
+                            yield {"event": "token", "text": text}
+                    elif kind == "on_chain_end" and ev.get("name") == "AgentExecutor":
+                        result = ev["data"].get("output")
+        except Exception as exc:  # noqa: BLE001
+            raise self._fail(exc, request_id, started) from exc
+
+        if not isinstance(result, dict) or "output" not in result:
+            raise self._fail(
+                RuntimeError("agent stream ended without a final output"), request_id, started
+            )
+        response = self._finish(question, result, usage, request_id, started)
+        yield {"event": "done", **response}
+
+    # -- shared by ask() and ask_stream() ------------------------------------------
+
+    def _begin(self) -> tuple[str, float]:
+        self.collector.reset()
+        return uuid.uuid4().hex[:8], time.time()
+
+    def _fail(self, exc: Exception, request_id: str, started: float) -> CopilotError:
+        elapsed = time.time() - started
+        error = _classify(exc)
+        self.last_usage = {
+            "request_id": request_id,
+            "latency_s": round(elapsed, 2),
+            "error": error.kind,
+        }
+        log.exception(
+            "turn %s failed after %.1fs (%s): %s",
+            request_id, elapsed, error.kind, type(exc).__name__,
+        )
+        return error
+
+    def _finish(self, question: str, result: dict, usage, request_id: str, started: float) -> dict:
+        """Usage bookkeeping, refusal handling, citations. The half of a turn that does
+        not depend on how the model output arrived."""
         elapsed = time.time() - started
         tools = [action.tool for action, _ in result.get("intermediate_steps", [])]
         self.last_usage = {
